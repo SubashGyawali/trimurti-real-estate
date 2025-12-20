@@ -1,0 +1,176 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Phone, MessageCircle, User, LogIn, Heart, LogOut, Shield } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import type { Profile } from "@/types/database";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/properties", label: "Properties" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+
+const PHONE_NUMBER = "+91 98765 43210";
+const WHATSAPP_NUMBER = "919876543210";
+
+interface MobileNavProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isAuthenticated?: boolean;
+  isAdmin?: boolean;
+  profile?: Profile | null;
+  onSignOut?: () => void;
+}
+
+export function MobileNav({
+  isOpen,
+  onClose,
+  isAuthenticated = false,
+  isAdmin = false,
+  profile,
+  onSignOut,
+}: MobileNavProps) {
+  const pathname = usePathname();
+
+  const handleWhatsAppClick = () => {
+    const message = encodeURIComponent("Hello! I'm interested in learning more about properties.");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+  };
+
+  return (
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent side="left" className="w-[300px] bg-primary p-0">
+        <SheetHeader className="p-6 pb-4">
+          <SheetTitle className="text-left">
+            <span className="text-xl font-bold text-white">
+              Trimurti{" "}
+              <span className="text-[hsl(var(--brand-gold))]">Real Estate</span>
+            </span>
+          </SheetTitle>
+        </SheetHeader>
+
+        <Separator className="bg-white/20" />
+
+        <nav className="flex flex-col p-6">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onClose}
+              className={cn(
+                "py-3 text-lg font-medium transition-colors",
+                pathname === link.href
+                  ? "text-[hsl(var(--brand-gold))]"
+                  : "text-white/90 hover:text-white"
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <Separator className="bg-white/20" />
+
+        <div className="flex flex-col gap-3 p-6">
+          <Button
+            variant="outline"
+            className="w-full justify-start gap-3 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+            asChild
+          >
+            <a href={`tel:${PHONE_NUMBER.replace(/\s/g, "")}`}>
+              <Phone className="h-4 w-4" />
+              {PHONE_NUMBER}
+            </a>
+          </Button>
+
+          <Button
+            className="w-full justify-start gap-3 bg-[#25D366] text-white hover:bg-[#20BD5A]"
+            onClick={handleWhatsAppClick}
+          >
+            <MessageCircle className="h-4 w-4" />
+            WhatsApp Us
+          </Button>
+        </div>
+
+        <Separator className="bg-white/20" />
+
+        <div className="flex flex-col gap-2 p-6">
+          {isAuthenticated ? (
+            <>
+              {profile?.full_name && (
+                <p className="mb-2 text-sm text-white/60">
+                  Hello, {profile.full_name.split(" ")[0]}
+                </p>
+              )}
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-3 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                asChild
+              >
+                <Link href="/profile" onClick={onClose}>
+                  <User className="h-4 w-4" />
+                  My Profile
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-3 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                asChild
+              >
+                <Link href="/favorites" onClick={onClose}>
+                  <Heart className="h-4 w-4" />
+                  Saved Properties
+                </Link>
+              </Button>
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-3 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                  asChild
+                >
+                  <Link href="/admin" onClick={onClose}>
+                    <Shield className="h-4 w-4" />
+                    Admin Dashboard
+                  </Link>
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-3 border-white/30 bg-transparent text-destructive hover:bg-white/10 hover:text-destructive"
+                onClick={() => {
+                  onSignOut?.();
+                  onClose();
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-3 border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              asChild
+            >
+              <Link href="/login" onClick={onClose}>
+                <LogIn className="h-4 w-4" />
+                Login / Register
+              </Link>
+            </Button>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
