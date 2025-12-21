@@ -69,6 +69,7 @@ export interface Property {
   parking: boolean;
   facing: string | null;
   availability_date: string | null;
+  is_verified: boolean;
   is_featured: boolean;
   is_active: boolean;
   views_count: number;
