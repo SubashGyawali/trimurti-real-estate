@@ -22,6 +22,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ListingBadge, FeaturedBadge, FurnishingBadge, propertyTypeLabels } from "./property-badge";
+import { VerifiedBadge } from "./verified-badge";
 import { CompactPrice } from "./price-display";
 import { FavoriteButton } from "./favorite-button";
 import { cn } from "@/lib/utils";
@@ -146,6 +147,7 @@ export function PropertyCard({
             {/* Badges - Top Left */}
             <div className="absolute left-3 top-3 flex flex-col gap-2">
               <ListingBadge listingType={property.listing_type} />
+              {property.is_verified && <VerifiedBadge />}
               {property.is_featured && <FeaturedBadge />}
             </div>
 

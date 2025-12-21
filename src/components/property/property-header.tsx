@@ -11,6 +11,7 @@ import {
   FeaturedBadge,
   FurnishingBadge,
 } from "@/components/property/property-badge";
+import { VerifiedBadge } from "@/components/property/verified-badge";
 import { FavoriteButton } from "@/components/property/favorite-button";
 import type { PropertyWithDetails } from "@/types";
 
@@ -75,6 +76,7 @@ export function PropertyHeader({ property }: PropertyHeaderProps) {
       {/* Badges */}
       <div className="flex flex-wrap gap-2">
         <ListingBadge listingType={property.listing_type} />
+        {property.is_verified && <VerifiedBadge />}
         {property.is_featured && <FeaturedBadge />}
         <FurnishingBadge furnishing={property.furnishing} />
       </div>
