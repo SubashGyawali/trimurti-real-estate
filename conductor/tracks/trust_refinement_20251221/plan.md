@@ -3,7 +3,7 @@
 Track: Refine Trust Features & Lead Handling (trust_refinement_20251221)
 
 ## Phase 1: Verified Listings System
-- [ ] Task: Update Supabase schema to include `is_verified` field in properties table
+- [x] Task: Update Supabase schema to include `is_verified` field in properties table ff5d498
 - [ ] Task: Create `VerifiedBadge` component - Write tests
 - [ ] Task: Create `VerifiedBadge` component - Implement with shadcn/ui and tooltips
 - [ ] Task: Integrate `VerifiedBadge` into `PropertyCard` and `PropertyDetails` - Write tests
