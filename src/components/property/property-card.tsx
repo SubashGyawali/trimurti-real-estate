@@ -96,10 +96,10 @@ export function PropertyCard({
           <div className="relative">
             <AspectRatio ratio={4 / 3}>
               {hasMultipleImages ? (
-                <Carousel className="h-full w-full">
-                  <CarouselContent>
+                <Carousel className="absolute inset-0">
+                  <CarouselContent className="h-full">
                     {sortedImages.map((image, index) => (
-                      <CarouselItem key={image.id}>
+                      <CarouselItem key={image.id} className="h-full">
                         <div className="relative h-full w-full">
                           <Image
                             src={image.image_url}

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Menu, Phone, MessageCircle, User, ChevronDown, LogOut, Heart, Shield } from "lucide-react";
+import { Menu, Phone, MessageCircle, User, LogOut, Heart, Shield } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,6 +62,15 @@ export function Header() {
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
   };
 
+  const getInitials = (name: string | null | undefined): string => {
+    if (!name) return "U";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
+  };
+
   return (
     <>
       <header
@@ -72,9 +82,9 @@ export function Header() {
         )}
       >
         <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between md:h-20">
+          <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center md:h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center justify-self-start">
               <motion.span
                 className="text-xl font-bold text-white md:text-2xl"
                 whileHover={{ scale: 1.02 }}
@@ -109,7 +119,7 @@ export function Header() {
             </nav>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-self-end gap-2">
               {/* Phone - Desktop only */}
               <Button
                 variant="ghost"
@@ -125,12 +135,13 @@ export function Header() {
 
               {/* WhatsApp Button - Desktop only */}
               <Button
-                size="sm"
-                className="hidden bg-[#25D366] text-white hover:bg-[#20BD5A] md:flex"
+                variant="ghost"
+                size="icon"
+                className="hidden h-9 w-9 rounded-full bg-[#25D366] text-white hover:bg-[#20BD5A] md:flex"
                 onClick={handleWhatsAppClick}
+                aria-label="Contact via WhatsApp"
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
-                WhatsApp
+                <MessageCircle className="h-5 w-5" />
               </Button>
 
               {/* User Menu - Desktop */}
@@ -142,12 +153,14 @@ export function Header() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="text-white hover:bg-white/10 hover:text-white"
+                        size="icon"
+                        className="h-9 w-9 rounded-full p-0 hover:bg-white/10"
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        {profile?.full_name?.split(" ")[0] || "Account"}
-                        <ChevronDown className="ml-1 h-4 w-4" />
+                        <Avatar className="h-9 w-9 border-2 border-white/30">
+                          <AvatarFallback className="bg-white/20 text-white text-sm font-medium">
+                            {getInitials(profile?.full_name)}
+                          </AvatarFallback>
+                        </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">

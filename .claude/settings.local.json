@@ -12,7 +12,13 @@
       "Bash(find:*)",
       "Bash(pnpm tsc:*)",
       "Bash(cat:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "mcp__next-devtools__init",
+      "Bash(timeout 10 npm run dev:*)"
     ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "supabase@claude-plugins-official": true
   }
 }
