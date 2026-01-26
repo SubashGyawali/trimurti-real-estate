@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Home, Building, List, MessageSquare, Calendar, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { Home, Building, List, MessageSquare, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -20,16 +19,18 @@ const nav: NavItem[] = [
   { href: "/admin/visits", label: "Visits", icon: <Calendar className="h-4 w-4" /> },
 ];
 
-export function AdminSidebar({ className }: { className?: string }) {
-  const [open, setOpen] = useState(false);
+interface AdminSidebarProps {
+  className?: string;
+  onNavigate?: () => void;
+}
+
+export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
+  const pathname = usePathname();
 
   return (
-    <aside className={cn("bg-surface border-r w-64 p-4 flex flex-col", className)}>
-      <div className="flex items-center justify-between mb-4">
+    <aside className={cn("bg-background border-r w-64 p-4 flex flex-col h-full", className)}>
+      <div className="mb-4">
         <h3 className="text-lg font-semibold">Admin</h3>
-        <Button variant="ghost" size="icon" onClick={() => setOpen((s) => !s)}>
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
       </div>
 
       <nav className="flex-1 overflow-auto">
@@ -38,7 +39,13 @@ export function AdminSidebar({ className }: { className?: string }) {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-muted"
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                  pathname === item.href
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -48,8 +55,12 @@ export function AdminSidebar({ className }: { className?: string }) {
         </ul>
       </nav>
 
-      <div className="mt-4">
-        <Link href="/" className="text-sm text-muted-foreground hover:underline">
+      <div className="mt-4 pt-4 border-t">
+        <Link
+          href="/"
+          onClick={onNavigate}
+          className="text-sm text-muted-foreground hover:underline"
+        >
           Back to site
         </Link>
       </div>
