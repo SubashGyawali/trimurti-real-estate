@@ -16,11 +16,11 @@ export function OrganizationJsonLd() {
     description:
       'Your trusted partner in Mumbai real estate for over 20 years. Specializing in MHADA properties, flats for sale and rent in Kandivali West.',
     url: SITE_URL,
-    telephone: '+91-9876543210',
+    telephone: '+91-9819446163',
     email: 'contact@trimurtirealestate.com',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'MHADA Complex, Kandivali West',
+      streetAddress: 'Dolphin CHS Ltd 30/007, Opp. Ekta Nagar, Near Atharva College',
       addressLocality: 'Kandivali West',
       addressRegion: 'Mumbai, Maharashtra',
       postalCode: '400067',
@@ -70,10 +70,10 @@ export function LocalBusinessJsonLd() {
     name: 'Trimurti Real Estate',
     description: 'Real estate agency specializing in MHADA properties in Kandivali West, Mumbai',
     url: SITE_URL,
-    telephone: '+91-9876543210',
+    telephone: '+91-9819446163',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'MHADA Complex, Kandivali West',
+      streetAddress: 'Dolphin CHS Ltd 30/007, Opp. Ekta Nagar, Near Atharva College',
       addressLocality: 'Kandivali West',
       addressRegion: 'Mumbai, Maharashtra',
       postalCode: '400067',
@@ -165,7 +165,7 @@ export function PropertyJsonLd({ property }: { property: PropertyWithDetails }) 
     broker: {
       '@type': 'RealEstateAgent',
       name: 'Trimurti Real Estate',
-      telephone: '+91-9876543210',
+      telephone: '+91-9819446163',
       url: SITE_URL,
     },
   };

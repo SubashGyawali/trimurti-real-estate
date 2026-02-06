@@ -15,7 +15,7 @@ import { VerifiedBadge } from "@/components/property/verified-badge";
 import { FavoriteButton } from "@/components/property/favorite-button";
 import type { PropertyWithDetails } from "@/types";
 
-const WHATSAPP_NUMBER = "919876543210";
+const WHATSAPP_NUMBER = "919819446163";
 
 interface PropertyHeaderProps {
   property: PropertyWithDetails;

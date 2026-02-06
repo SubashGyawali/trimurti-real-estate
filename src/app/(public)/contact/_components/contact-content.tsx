@@ -34,11 +34,11 @@ import {
 import { OfficeMap } from "./office-map";
 
 const CONTACT_INFO = {
-  phone: "+919876543210",
-  phoneDisplay: "+91 98765 43210",
-  whatsapp: "919876543210",
+  phone: "+919819446163",
+  phoneDisplay: "+91 98194 46163",
+  whatsapp: "919819446163",
   email: "info@trimurtirealestate.com",
-  address: "Shop No. 5, MHADA Colony, Kandivali West, Mumbai - 400067",
+  address: "30/007, Dolphin CHS, CSR Complex, Opp. Ekta Nagar, Kandivali West, Mumbai 400067",
   hours: "Open 7 Days a Week",
   hoursDetail: "9:00 AM - 8:00 PM",
 };

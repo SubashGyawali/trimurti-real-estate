@@ -11,9 +11,9 @@ const quickLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-const PHONE_NUMBER = "+91 98765 43210";
+const PHONE_NUMBER = "+91 98194 46163";
 const EMAIL = "info@trimurtirealestate.com";
-const ADDRESS = "Shop No. 5, Building A, MHADA Complex, Kandivali West, Mumbai - 400067";
+const ADDRESS = "30/007, Dolphin CHS, CSR Complex, Opp. Ekta Nagar, Kandivali West, Mumbai 400067";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();

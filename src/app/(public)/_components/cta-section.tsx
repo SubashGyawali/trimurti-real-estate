@@ -137,10 +137,10 @@ export function CTASection({ className }: CTASectionProps) {
           >
             Or call us directly at{" "}
             <a
-              href="tel:+919876543210"
+              href="tel:+919819446163"
               className="font-medium text-white hover:text-[hsl(var(--brand-gold))]"
             >
-              +91 98765 43210
+              +91 98194 46163
             </a>
           </motion.p>
         </motion.div>

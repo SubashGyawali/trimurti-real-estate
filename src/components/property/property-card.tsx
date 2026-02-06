@@ -19,7 +19,7 @@ import { FavoriteButton } from "./favorite-button";
 import { cn } from "@/lib/utils";
 import type { PropertyWithImages } from "@/types";
 
-const WHATSAPP_NUMBER = "919876543210";
+const WHATSAPP_NUMBER = "919819446163";
 const PLACEHOLDER_IMAGE = "/images/property-placeholder.jpg";
 
 interface PropertyCardProps {

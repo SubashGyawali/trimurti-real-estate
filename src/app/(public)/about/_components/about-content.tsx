@@ -383,7 +383,7 @@ export function AboutContent() {
                 className="border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
               >
                 <a
-                  href="https://wa.me/919876543210"
+                  href="https://wa.me/919819446163"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -27,8 +27,8 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-const PHONE_NUMBER = "+91 98765 43210";
-const WHATSAPP_NUMBER = "919876543210";
+const PHONE_NUMBER = "+91 98194 46163";
+const WHATSAPP_NUMBER = "919819446163";
 
 export function Header() {
   const router = useRouter();

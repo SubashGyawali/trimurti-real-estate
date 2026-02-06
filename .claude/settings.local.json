@@ -21,7 +21,10 @@
       "Bash(npm run build:*)",
       "Bash(where supabase)",
       "Bash(npm run dev:*)",
-      "Bash(timeout 15 bash:*)"
+      "Bash(timeout 15 bash:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFix: Use useMapsLibrary hook for Google Maps LatLngBounds\n\nReplace direct google.maps.LatLngBounds\\(\\) call with useMapsLibrary\\(\"core\"\\)\nhook to properly access the Google Maps API in TypeScript.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
     ]
   },
   "enabledPlugins": {

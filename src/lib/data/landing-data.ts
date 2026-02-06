@@ -251,8 +251,8 @@ export const teamMembers: TeamMember[] = [
     title: "Founder & Principal Broker",
     image: "/images/Niraj Picture.jpg",
     experience: "20+ years in Kandivali real estate",
-    phone: "+91 98765 43210",
-    whatsapp: "919876543210",
+    phone: "+91 98194 46163",
+    whatsapp: "919819446163",
     email: "niraj@trimurtirealestate.com",
     bio: "A trusted name in Kandivali West real estate, Mr. Niraj has helped over 500 families find their dream homes in MHADA complexes.",
     socialLinks: {
@@ -268,8 +268,8 @@ export const teamMembers: TeamMember[] = [
     image:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
     experience: "15+ years experience",
-    phone: "+91 98765 43211",
-    whatsapp: "919876543211",
+    phone: "+91 98194 46163",
+    whatsapp: "919819446163",
     email: "anita@trimurtirealestate.com",
     bio: "Specializing in rental properties and family relocations in the Kandivali area.",
   },
@@ -281,8 +281,8 @@ export const teamMembers: TeamMember[] = [
     image:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80",
     experience: "10+ years experience",
-    phone: "+91 98765 43212",
-    whatsapp: "919876543212",
+    phone: "+91 98194 46163",
+    whatsapp: "919819446163",
     email: "rahul@trimurtirealestate.com",
     bio: "Expert in MHADA property transfers, legal documentation, and registration procedures.",
   },
@@ -337,7 +337,7 @@ export const ctaBannerContent: BannerContent = {
   },
   secondaryCta: {
     text: "Call Now",
-    href: "tel:+919876543210",
+    href: "tel:+919819446163",
   },
   // Unsplash: modern apartment building exterior, family home
   backgroundImage:
@@ -374,10 +374,10 @@ export const faqs: FAQItem[] = [
  * Contact information
  */
 export const contactInfo = {
-  phone: "+91 98765 43210",
-  whatsapp: "919876543210",
+  phone: "+91 98194 46163",
+  whatsapp: "919819446163",
   email: "info@trimurtirealestate.com",
-  address: "Shop No. 5, MHADA Complex, Kandivali West, Mumbai - 400067",
+  address: "30/007, Dolphin CHS, CSR Complex, Opp. Ekta Nagar, Kandivali West, Mumbai 400067",
   workingHours: "Mon-Sat: 10:00 AM - 7:00 PM",
   googleMapsUrl: "https://maps.google.com/?q=19.2094,72.8544",
 };
