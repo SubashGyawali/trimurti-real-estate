@@ -12,15 +12,6 @@ import {
   Layers,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { ListingBadge, FeaturedBadge, FurnishingBadge, propertyTypeLabels } from "./property-badge";
 import { VerifiedBadge } from "./verified-badge";
 import { CompactPrice } from "./price-display";
@@ -93,56 +84,23 @@ export function PropertyCard({
       >
         <Link href={`/properties/${property.slug}`} className="block">
           {/* Image Section */}
-          <div className="relative">
-            <AspectRatio ratio={4 / 3}>
-              {hasMultipleImages ? (
-                <Carousel className="absolute inset-0">
-                  <CarouselContent className="h-full">
-                    {sortedImages.map((image, index) => (
-                      <CarouselItem key={image.id} className="h-full">
-                        <div className="relative h-full w-full">
-                          <Image
-                            src={image.image_url}
-                            alt={`${property.title} - Image ${index + 1}`}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            loading="lazy"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious
-                    className={cn(
-                      "left-2 h-8 w-8 opacity-0 transition-opacity",
-                      "group-hover:opacity-100"
-                    )}
-                    onClick={(e) => e.preventDefault()}
-                  />
-                  <CarouselNext
-                    className={cn(
-                      "right-2 h-8 w-8 opacity-0 transition-opacity",
-                      "group-hover:opacity-100"
-                    )}
-                    onClick={(e) => e.preventDefault()}
-                  />
-                  {/* Image count indicator */}
-                  <div className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-1 text-xs text-white">
-                    {sortedImages.length} photos
-                  </div>
-                </Carousel>
-              ) : (
-                <Image
-                  src={primaryImage}
-                  alt={property.title}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  loading="lazy"
-                />
-              )}
-            </AspectRatio>
+          <div className="relative aspect-[4/3] overflow-hidden">
+            {/* Always show primary image */}
+            <Image
+              src={primaryImage}
+              alt={property.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              loading="lazy"
+            />
+
+            {/* Image count indicator */}
+            {hasMultipleImages && (
+              <div className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-1 text-xs text-white">
+                {sortedImages.length} photos
+              </div>
+            )}
 
             {/* Badges - Top Left */}
             <div className="absolute left-3 top-3 flex flex-col gap-2">
