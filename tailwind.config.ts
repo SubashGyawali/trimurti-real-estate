@@ -56,6 +56,22 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        "marker-expand": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.3) translateY(50%)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1) translateY(0)",
+          },
+        },
+      },
+      animation: {
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "marker-expand": "marker-expand 200ms ease-out forwards",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

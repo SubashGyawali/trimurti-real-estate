@@ -77,8 +77,9 @@ export function PropertyCard({
     >
       <Card
         className={cn(
-          "group overflow-hidden transition-shadow duration-300",
-          "hover:shadow-lg",
+          "group overflow-hidden rounded-xl border border-gray-100",
+          "shadow-sm transition-all duration-300",
+          "hover:border-primary/20 hover:shadow-lg",
           className
         )}
       >

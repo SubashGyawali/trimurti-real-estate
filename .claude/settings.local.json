@@ -14,7 +14,14 @@
       "Bash(cat:*)",
       "Bash(npx tsc:*)",
       "mcp__next-devtools__init",
-      "Bash(timeout 10 npm run dev:*)"
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(where supabase)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 15 bash:*)"
     ]
   },
   "enabledPlugins": {

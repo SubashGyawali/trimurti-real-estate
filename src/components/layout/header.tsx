@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Menu, Phone, MessageCircle, User, LogOut, Heart, Shield } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,7 @@ export function Header() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const { isAuthenticated, isLoading, isAdmin, profile, signOut } = useAuthContext();
+  const { user, isAuthenticated, isLoading, isAdmin, profile, signOut } = useAuthContext();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -157,6 +157,13 @@ export function Header() {
                         className="h-9 w-9 rounded-full p-0 hover:bg-white/10"
                       >
                         <Avatar className="h-9 w-9 border-2 border-white/30">
+                          {(profile?.avatar_url || user?.user_metadata?.avatar_url) && (
+                            <AvatarImage
+                              src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                              alt={profile?.full_name || "User avatar"}
+                              className="object-cover"
+                            />
+                          )}
                           <AvatarFallback className="bg-white/20 text-white text-sm font-medium">
                             {getInitials(profile?.full_name)}
                           </AvatarFallback>
@@ -233,6 +240,7 @@ export function Header() {
         onClose={() => setIsMobileNavOpen(false)}
         isAuthenticated={isAuthenticated}
         isAdmin={isAdmin}
+        user={user}
         profile={profile}
         onSignOut={handleSignOut}
       />

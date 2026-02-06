@@ -47,9 +47,10 @@ export function OrganizationJsonLd() {
     image: `${SITE_URL}/images/og-default.png`,
     logo: `${SITE_URL}/icon.png`,
     sameAs: [
-      // Add social media URLs when available
-      // 'https://facebook.com/trimurtirealestate',
-      // 'https://instagram.com/trimurtirealestate',
+      'https://www.facebook.com/trimurtiproperty',
+      'https://www.instagram.com/trimurti.real.estate',
+      'https://x.com/Trimurti_Agency',
+      'https://www.youtube.com/@TrimurtiRealEstate',
     ],
   };
 

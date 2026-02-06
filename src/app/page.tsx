@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import {
-  HeroSection,
-  ServicesSection,
-  AboutPreview,
-  LocationSection,
-  CTASection,
+  HeroSectionV2,
+  TrustBadgesSection,
+  FeaturesSection,
+  BackgroundBanner,
+  AgentProfileSection,
+  LandingContactForm,
 } from "./(public)/_components";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -18,12 +19,13 @@ const FeaturedProperties = dynamic(
     ),
   {
     loading: () => (
-      <section className="bg-muted/30 py-16 md:py-24">
+      <section className="bg-white py-16 md:py-24">
         <div className="container mx-auto px-4">
+          <Skeleton className="mx-auto mb-2 h-4 w-32" />
           <Skeleton className="mx-auto mb-8 h-10 w-64" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton key={i} className="aspect-[4/3] w-full rounded-xl" />
             ))}
           </div>
         </div>
@@ -41,10 +43,11 @@ const TestimonialsSection = dynamic(
     loading: () => (
       <section className="bg-muted/30 py-16 md:py-24">
         <div className="container mx-auto px-4">
+          <Skeleton className="mx-auto mb-2 h-4 w-32" />
           <Skeleton className="mx-auto mb-8 h-10 w-64" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-48 w-full rounded-lg" />
+              <Skeleton key={i} className="h-48 w-full rounded-xl" />
             ))}
           </div>
         </div>
@@ -57,16 +60,16 @@ const TestimonialsSection = dynamic(
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "MHADA Properties in Kandivali West, Mumbai",
+  title: "Find Your Dream Home in Kandivali West | Trimurti Real Estate",
   description:
-    "Find your dream home in Kandivali West with Trimurti Real Estate. 20+ years of trusted service. MHADA flats, private buildings, 1BHK, 2BHK, 3BHK for sale and rent.",
+    "20+ years of trusted real estate service. MHADA flats, apartments for sale and rent in Kandivali West, Mumbai. Expert guidance, hassle-free documentation.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Trimurti Real Estate | MHADA Properties in Kandivali West",
+    title: "Find Your Dream Home in Kandivali West | Trimurti Real Estate",
     description:
-      "Find your dream home in Kandivali West. 20+ years of trusted real estate service in Mumbai.",
+      "20+ years of trusted real estate service. MHADA flats, apartments for sale and rent in Kandivali West, Mumbai.",
     url: "/",
   },
 };
@@ -85,13 +88,29 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection />
+      {/* Hero with background image, search bar, and CTAs */}
+      <HeroSectionV2 />
+
+      {/* Trust badges with animated stats */}
+      <TrustBadgesSection />
+
+      {/* Featured property listings from database */}
       <FeaturedProperties properties={featuredProperties || []} />
-      <ServicesSection />
-      <AboutPreview />
-      <LocationSection />
-      <CTASection />
+
+      {/* Feature tiles highlighting value propositions */}
+      <FeaturesSection />
+
+      {/* Full-width CTA banner with background image */}
+      <BackgroundBanner />
+
+      {/* Team member profiles */}
+      <AgentProfileSection />
+
+      {/* Customer testimonials carousel */}
       <TestimonialsSection />
+
+      {/* Contact form with validation */}
+      <LandingContactForm />
     </>
   );
 }

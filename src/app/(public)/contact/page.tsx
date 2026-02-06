@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { ContactContent } from "./_components/contact-content";
 
-// Force dynamic - contact page has a map component that requires window
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Contact Us | Trimurti Real Estate",
   description:

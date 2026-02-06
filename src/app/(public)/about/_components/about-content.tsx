@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import {
   MapPin,
@@ -10,9 +11,9 @@ import {
   Headphones,
   Building,
   ArrowRight,
-  User,
   MessageCircle,
 } from "lucide-react";
+import { siteConfig } from "@/lib/site-config";
 import { Button } from "@/components/ui/button";
 
 const fadeInUp = {
@@ -127,19 +128,15 @@ export function AboutContent() {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <div className="relative mx-auto aspect-[4/3] max-w-md overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10">
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
-                    <User className="h-12 w-12 text-primary/40" />
-                  </div>
-                  <p className="mt-4 text-sm text-muted-foreground">
-                    Photo of Mr. Niraj Koirala
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground/70">
-                    Founder, Trimurti Real Estate
-                  </p>
-                </div>
-                <div className="absolute inset-4 rounded-xl border-2 border-dashed border-primary/20" />
+              <div className="relative mx-auto aspect-[4/3] max-w-md overflow-hidden rounded-2xl">
+                <Image
+                  src={siteConfig.founder.image}
+                  alt={`${siteConfig.founder.name} - ${siteConfig.founder.title}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 448px"
+                  priority
+                />
               </div>
 
               {/* Decorative badge */}

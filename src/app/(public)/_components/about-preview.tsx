@@ -3,8 +3,10 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { Award, Users, MapPin, ArrowRight, User } from "lucide-react";
+import Image from "next/image";
+import { Award, Users, MapPin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 const trustIndicators = [
@@ -45,22 +47,15 @@ export function AboutPreview({ className }: AboutPreviewProps) {
             className="relative"
           >
             {/* Decorative frame */}
-            <div className="relative mx-auto aspect-[4/3] max-w-md overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10">
-              {/* Placeholder content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
-                  <User className="h-12 w-12 text-primary/40" />
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Photo of Mr. Niraj Koirala
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground/70">
-                  Founder, Trimurti Real Estate
-                </p>
-              </div>
-
-              {/* Decorative border */}
-              <div className="absolute inset-4 rounded-xl border-2 border-dashed border-primary/20" />
+            <div className="relative mx-auto aspect-[4/3] max-w-md overflow-hidden rounded-2xl">
+              <Image
+                src={siteConfig.founder.image}
+                alt={`${siteConfig.founder.name} - ${siteConfig.founder.title}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 448px"
+                priority
+              />
             </div>
 
             {/* Decorative elements */}

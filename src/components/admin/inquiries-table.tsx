@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
@@ -50,11 +50,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 
 import type { InquiryStatus, InquiryType } from '@/types/database';
 
@@ -244,210 +239,206 @@ export function InquiriesTable({ initialInquiries }: InquiriesTableProps) {
                             </TableRow>
                         ) : (
                             filteredInquiries.map((inquiry) => (
-                                <Collapsible
-                                    key={inquiry.id}
-                                    open={expandedRow === inquiry.id}
-                                    onOpenChange={(open: boolean) => setExpandedRow(open ? inquiry.id : null)}
-                                    asChild
-                                >
-                                    <>
-                                        <TableRow className="group">
-                                            <TableCell>
-                                                <CollapsibleTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                        {expandedRow === inquiry.id ? (
-                                                            <ChevronUp className="h-4 w-4" />
-                                                        ) : (
-                                                            <ChevronDown className="h-4 w-4" />
-                                                        )}
-                                                    </Button>
-                                                </CollapsibleTrigger>
-                                            </TableCell>
-                                            <TableCell className="text-muted-foreground">
-                                                {formatDate(inquiry.created_at)}
-                                            </TableCell>
-                                            <TableCell className="font-medium">{inquiry.name}</TableCell>
-                                            <TableCell className="hidden sm:table-cell">
-                                                <div className="flex items-center gap-2">
-                                                    <span>{inquiry.phone}</span>
-                                                    <a
-                                                        href={getWhatsAppUrl(inquiry.phone, inquiry.name)}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-green-600 hover:text-green-700"
-                                                        title="Open WhatsApp"
-                                                    >
-                                                        <Phone className="h-4 w-4" />
-                                                    </a>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                <Badge variant={TYPE_COLORS[inquiry.inquiry_type]}>
-                                                    {TYPE_LABELS[inquiry.inquiry_type]}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="hidden lg:table-cell">
-                                                {inquiry.property ? (
-                                                    <span className="text-sm truncate max-w-[200px] block">
-                                                        {inquiry.property.title}
-                                                    </span>
+                                <React.Fragment key={inquiry.id}>
+                                    <TableRow className="group">
+                                        <TableCell>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                onClick={() => setExpandedRow(expandedRow === inquiry.id ? null : inquiry.id)}
+                                            >
+                                                {expandedRow === inquiry.id ? (
+                                                    <ChevronUp className="h-4 w-4" />
                                                 ) : (
-                                                    <span className="text-muted-foreground">-</span>
+                                                    <ChevronDown className="h-4 w-4" />
                                                 )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className={`${STATUS_COLORS[inquiry.status]} text-white`}
+                                            </Button>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground">
+                                            {formatDate(inquiry.created_at)}
+                                        </TableCell>
+                                        <TableCell className="font-medium">{inquiry.name}</TableCell>
+                                        <TableCell className="hidden sm:table-cell">
+                                            <div className="flex items-center gap-2">
+                                                <span>{inquiry.phone}</span>
+                                                <a
+                                                    href={getWhatsAppUrl(inquiry.phone, inquiry.name)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-green-600 hover:text-green-700"
+                                                    title="Open WhatsApp"
+                                                >
+                                                    <Phone className="h-4 w-4" />
+                                                </a>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell">
+                                            <Badge variant={TYPE_COLORS[inquiry.inquiry_type]}>
+                                                {TYPE_LABELS[inquiry.inquiry_type]}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="hidden lg:table-cell">
+                                            {inquiry.property ? (
+                                                <span className="text-sm truncate max-w-[200px] block">
+                                                    {inquiry.property.title}
+                                                </span>
+                                            ) : (
+                                                <span className="text-muted-foreground">-</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className={`${STATUS_COLORS[inquiry.status]} text-white`}
+                                                    >
+                                                        {STATUS_LABELS[inquiry.status]}
+                                                        <ChevronDown className="ml-1 h-3 w-3" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleStatusChange(inquiry, 'new')}
+                                                        disabled={inquiry.status === 'new'}
+                                                    >
+                                                        New
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleStatusChange(inquiry, 'contacted')}
+                                                        disabled={inquiry.status === 'contacted'}
+                                                    >
+                                                        Contacted
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleStatusChange(inquiry, 'closed')}
+                                                        disabled={inquiry.status === 'closed'}
+                                                    >
+                                                        Closed
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
+                                        <TableCell>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem asChild>
+                                                        <a
+                                                            href={getWhatsAppUrl(inquiry.phone, inquiry.name)}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
                                                         >
-                                                            {STATUS_LABELS[inquiry.status]}
-                                                            <ChevronDown className="ml-1 h-3 w-3" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleStatusChange(inquiry, 'new')}
-                                                            disabled={inquiry.status === 'new'}
-                                                        >
-                                                            New
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleStatusChange(inquiry, 'contacted')}
-                                                            disabled={inquiry.status === 'contacted'}
-                                                        >
-                                                            Contacted
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleStatusChange(inquiry, 'closed')}
-                                                            disabled={inquiry.status === 'closed'}
-                                                        >
-                                                            Closed
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
+                                                            <Phone className="mr-2 h-4 w-4" />
+                                                            WhatsApp
+                                                        </a>
+                                                    </DropdownMenuItem>
+                                                    {inquiry.email && (
                                                         <DropdownMenuItem asChild>
-                                                            <a
-                                                                href={getWhatsAppUrl(inquiry.phone, inquiry.name)}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                            >
-                                                                <Phone className="mr-2 h-4 w-4" />
-                                                                WhatsApp
+                                                            <a href={`mailto:${inquiry.email}`}>
+                                                                <Mail className="mr-2 h-4 w-4" />
+                                                                Email
                                                             </a>
                                                         </DropdownMenuItem>
-                                                        {inquiry.email && (
-                                                            <DropdownMenuItem asChild>
-                                                                <a href={`mailto:${inquiry.email}`}>
-                                                                    <Mail className="mr-2 h-4 w-4" />
-                                                                    Email
-                                                                </a>
-                                                            </DropdownMenuItem>
-                                                        )}
-                                                        {inquiry.property && (
-                                                            <DropdownMenuItem asChild>
-                                                                <a
-                                                                    href={`/properties/${inquiry.property.slug}`}
-                                                                    target="_blank"
-                                                                >
-                                                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                                                    View Property
-                                                                </a>
-                                                            </DropdownMenuItem>
-                                                        )}
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem
-                                                            className="text-destructive focus:text-destructive"
-                                                            onClick={() => {
-                                                                setInquiryToDelete(inquiry);
-                                                                setDeleteDialogOpen(true);
-                                                            }}
-                                                        >
-                                                            <Trash className="mr-2 h-4 w-4" />
-                                                            Delete
+                                                    )}
+                                                    {inquiry.property && (
+                                                        <DropdownMenuItem asChild>
+                                                            <a
+                                                                href={`/properties/${inquiry.property.slug}`}
+                                                                target="_blank"
+                                                            >
+                                                                <ExternalLink className="mr-2 h-4 w-4" />
+                                                                View Property
+                                                            </a>
                                                         </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                        <CollapsibleContent asChild>
-                                            <TableRow className="bg-muted/50">
-                                                <TableCell colSpan={8}>
-                                                    <div className="p-4 space-y-3">
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            <div>
-                                                                <p className="text-sm font-medium text-muted-foreground">Contact</p>
-                                                                <p className="text-sm">{inquiry.phone}</p>
-                                                                {inquiry.email && (
-                                                                    <p className="text-sm">{inquiry.email}</p>
-                                                                )}
-                                                            </div>
-                                                            {inquiry.property && (
-                                                                <div>
-                                                                    <p className="text-sm font-medium text-muted-foreground">Property</p>
-                                                                    <p className="text-sm">{inquiry.property.title}</p>
-                                                                </div>
+                                                    )}
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                        className="text-destructive focus:text-destructive"
+                                                        onClick={() => {
+                                                            setInquiryToDelete(inquiry);
+                                                            setDeleteDialogOpen(true);
+                                                        }}
+                                                    >
+                                                        <Trash className="mr-2 h-4 w-4" />
+                                                        Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
+                                    </TableRow>
+                                    {expandedRow === inquiry.id && (
+                                        <TableRow className="bg-muted/50">
+                                            <TableCell colSpan={8}>
+                                                <div className="p-4 space-y-3">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div>
+                                                            <p className="text-sm font-medium text-muted-foreground">Contact</p>
+                                                            <p className="text-sm">{inquiry.phone}</p>
+                                                            {inquiry.email && (
+                                                                <p className="text-sm">{inquiry.email}</p>
                                                             )}
                                                         </div>
-                                                        {inquiry.message && (
+                                                        {inquiry.property && (
                                                             <div>
-                                                                <p className="text-sm font-medium text-muted-foreground">Message</p>
-                                                                <p className="text-sm whitespace-pre-wrap">{inquiry.message}</p>
-                                                            </div>
-                                                        )}
-                                                        {inquiry.inquiry_type === 'requirements' && inquiry.requirements_data && (
-                                                            <div>
-                                                                <p className="text-sm font-medium text-muted-foreground mb-2">Requirements</p>
-                                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-                                                                    {inquiry.requirements_data.listing_type && (
-                                                                        <div>
-                                                                            <span className="text-muted-foreground">Looking for: </span>
-                                                                            <span className="capitalize">{inquiry.requirements_data.listing_type}</span>
-                                                                        </div>
-                                                                    )}
-                                                                    {(inquiry.requirements_data.budget_min || inquiry.requirements_data.budget_max) && (
-                                                                        <div>
-                                                                            <span className="text-muted-foreground">Budget: </span>
-                                                                            {inquiry.requirements_data.budget_min && inquiry.requirements_data.budget_max
-                                                                                ? `₹${inquiry.requirements_data.budget_min.toLocaleString()} - ₹${inquiry.requirements_data.budget_max.toLocaleString()}`
-                                                                                : inquiry.requirements_data.budget_max
-                                                                                    ? `Up to ₹${inquiry.requirements_data.budget_max.toLocaleString()}`
-                                                                                    : `From ₹${inquiry.requirements_data.budget_min?.toLocaleString()}`
-                                                                            }
-                                                                        </div>
-                                                                    )}
-                                                                    {inquiry.requirements_data.property_types?.length > 0 && (
-                                                                        <div>
-                                                                            <span className="text-muted-foreground">Types: </span>
-                                                                            {inquiry.requirements_data.property_types.join(', ').toUpperCase()}
-                                                                        </div>
-                                                                    )}
-                                                                    {inquiry.requirements_data.notes && (
-                                                                        <div className="col-span-full">
-                                                                            <span className="text-muted-foreground">Notes: </span>
-                                                                            {inquiry.requirements_data.notes}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
+                                                                <p className="text-sm font-medium text-muted-foreground">Property</p>
+                                                                <p className="text-sm">{inquiry.property.title}</p>
                                                             </div>
                                                         )}
                                                     </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        </CollapsibleContent>
-                                    </>
-                                </Collapsible>
+                                                    {inquiry.message && (
+                                                        <div>
+                                                            <p className="text-sm font-medium text-muted-foreground">Message</p>
+                                                            <p className="text-sm whitespace-pre-wrap">{inquiry.message}</p>
+                                                        </div>
+                                                    )}
+                                                    {inquiry.inquiry_type === 'requirements' && inquiry.requirements_data && (
+                                                        <div>
+                                                            <p className="text-sm font-medium text-muted-foreground mb-2">Requirements</p>
+                                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                                                                {inquiry.requirements_data.listing_type && (
+                                                                    <div>
+                                                                        <span className="text-muted-foreground">Looking for: </span>
+                                                                        <span className="capitalize">{inquiry.requirements_data.listing_type}</span>
+                                                                    </div>
+                                                                )}
+                                                                {(inquiry.requirements_data.budget_min || inquiry.requirements_data.budget_max) && (
+                                                                    <div>
+                                                                        <span className="text-muted-foreground">Budget: </span>
+                                                                        {inquiry.requirements_data.budget_min && inquiry.requirements_data.budget_max
+                                                                            ? `₹${inquiry.requirements_data.budget_min.toLocaleString()} - ₹${inquiry.requirements_data.budget_max.toLocaleString()}`
+                                                                            : inquiry.requirements_data.budget_max
+                                                                                ? `Up to ₹${inquiry.requirements_data.budget_max.toLocaleString()}`
+                                                                                : `From ₹${inquiry.requirements_data.budget_min?.toLocaleString()}`
+                                                                        }
+                                                                    </div>
+                                                                )}
+                                                                {inquiry.requirements_data.property_types?.length > 0 && (
+                                                                    <div>
+                                                                        <span className="text-muted-foreground">Types: </span>
+                                                                        {inquiry.requirements_data.property_types.join(', ').toUpperCase()}
+                                                                    </div>
+                                                                )}
+                                                                {inquiry.requirements_data.notes && (
+                                                                    <div className="col-span-full">
+                                                                        <span className="text-muted-foreground">Notes: </span>
+                                                                        {inquiry.requirements_data.notes}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </React.Fragment>
                             ))
                         )}
                     </TableBody>

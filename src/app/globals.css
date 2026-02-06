@@ -1,80 +1,41 @@
-@import "leaflet/dist/leaflet.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Leaflet custom marker styles */
-.custom-marker {
-  background: transparent !important;
-  border: none !important;
-}
-
-/* Cluster marker styles */
-.marker-cluster-small,
-.marker-cluster-medium,
-.marker-cluster-large {
-  background: rgba(30, 58, 95, 0.6);
-}
-
-.marker-cluster-small div,
-.marker-cluster-medium div,
-.marker-cluster-large div {
-  background: hsl(var(--primary));
-  color: white;
-  font-weight: 600;
-}
-
-/* Map popup styles */
-.leaflet-popup-content-wrapper {
-  border-radius: 0.5rem;
-  padding: 0;
-  overflow: hidden;
-}
-
-.leaflet-popup-content {
-  margin: 0;
-  min-width: 200px;
-}
-
-.leaflet-popup-close-button {
-  color: hsl(var(--foreground)) !important;
-  font-size: 20px !important;
-  padding: 4px 8px !important;
-}
-
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 204 29% 97%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 213 54% 25%;
+    --primary: 209 88% 44%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217 91% 60%;
+    --accent: 14 100% 67%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 213 54% 25%;
-    --radius: 0.5rem;
+    --ring: 209 88% 44%;
+    --radius: 0.75rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-    /* Brand colors */
-    --brand-blue: 213 54% 25%;
-    --brand-gold: 40 58% 58%;
-    --brand-accent: 217 91% 60%;
+    /* Brand colors - New theme */
+    --brand-blue: 209 88% 44%;
+    --brand-coral: 14 100% 67%;
+    --brand-accent: 209 88% 44%;
+    /* Legacy support */
+    --brand-gold: 14 100% 67%;
   }
 
   .dark {
@@ -112,4 +73,23 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Hide Google Maps bottom attribution and controls */
+.gm-style-cc,
+.gm-style a[href^="https://maps.google.com/maps"],
+.gm-style a[href^="https://www.google.com/intl"],
+.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+  display: none !important;
+}
+
+/* Hide the "Report a map error" link */
+.gm-style .gm-style-cc a,
+.gm-style .gm-style-cc span {
+  display: none !important;
+}
+
+/* Hide keyboard shortcuts button */
+button[aria-label="Keyboard shortcuts"] {
+  display: none !important;
 }

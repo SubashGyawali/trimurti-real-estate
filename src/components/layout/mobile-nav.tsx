@@ -9,10 +9,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/types/database";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -29,6 +31,7 @@ interface MobileNavProps {
   onClose: () => void;
   isAuthenticated?: boolean;
   isAdmin?: boolean;
+  user?: SupabaseUser | null;
   profile?: Profile | null;
   onSignOut?: () => void;
 }
@@ -38,10 +41,20 @@ export function MobileNav({
   onClose,
   isAuthenticated = false,
   isAdmin = false,
+  user,
   profile,
   onSignOut,
 }: MobileNavProps) {
   const pathname = usePathname();
+
+  const getInitials = (name: string | null | undefined): string => {
+    if (!name) return "U";
+    const names = name.trim().split(" ");
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return names[0][0].toUpperCase();
+  };
 
   const handleWhatsAppClick = () => {
     const message = encodeURIComponent("Hello! I'm interested in learning more about properties.");
@@ -109,9 +122,23 @@ export function MobileNav({
           {isAuthenticated ? (
             <>
               {profile?.full_name && (
-                <p className="mb-2 text-sm text-white/60">
-                  Hello, {profile.full_name.split(" ")[0]}
-                </p>
+                <div className="mb-2 flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border-2 border-white/30">
+                    {(profile?.avatar_url || user?.user_metadata?.avatar_url) && (
+                      <AvatarImage
+                        src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                        alt={profile?.full_name}
+                        className="object-cover"
+                      />
+                    )}
+                    <AvatarFallback className="bg-white/20 text-white">
+                      {getInitials(profile?.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className="text-sm text-white/60">
+                    Hello, {profile.full_name.split(" ")[0]}
+                  </p>
+                </div>
               )}
               <Button
                 variant="outline"

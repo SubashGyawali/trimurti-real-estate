@@ -1,117 +1,72 @@
 "use client";
 
-import L from "leaflet";
 import { MARKER_COLORS } from "@/lib/map-config";
-import type { ListingType } from "@/types";
+import { formatPrice } from "@/components/property/price-display";
+import type { PropertyWithImages } from "@/types";
+import { cn } from "@/lib/utils";
 
-/**
- * Creates a custom Leaflet DivIcon for property markers
- *
- * @param listingType - "rent" or "sale" - determines marker color
- * @param isFeatured - if true, adds gold border
- * @returns Leaflet DivIcon
- */
-export function createPropertyMarkerIcon(
-  listingType: ListingType,
-  isFeatured: boolean = false
-): L.DivIcon {
-  const bgColor = listingType === "rent" ? MARKER_COLORS.rent : MARKER_COLORS.sale;
-  const borderColor = isFeatured ? MARKER_COLORS.featured : MARKER_COLORS.default;
-  const borderWidth = isFeatured ? "3px" : "2px";
-  const indicator = listingType === "rent" ? "R" : "S";
-
-  return L.divIcon({
-    className: "custom-marker",
-    html: `
-      <div style="
-        position: relative;
-        width: 32px;
-        height: 32px;
-      ">
-        <div style="
-          position: absolute;
-          background: ${bgColor};
-          border: ${borderWidth} solid ${borderColor};
-          width: 32px;
-          height: 32px;
-          border-radius: 50% 50% 50% 0;
-          transform: rotate(-45deg);
-          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        ">
-          <span style="
-            transform: rotate(45deg);
-            display: block;
-            text-align: center;
-            line-height: 28px;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            font-family: system-ui, sans-serif;
-          ">${indicator}</span>
-        </div>
-      </div>
-    `,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
+interface PriceMarkerProps {
+  property: PropertyWithImages;
+  isActive?: boolean;
 }
 
 /**
- * Creates a cluster icon for grouped markers
- * @param count - number of markers in cluster
- * @returns Leaflet DivIcon
+ * Airbnb-style price pill marker rendered inside AdvancedMarker.
+ * Shows formatted price; inverts colors when active/selected.
  */
-export function createClusterIcon(count: number): L.DivIcon {
-  const size = count < 10 ? "small" : count < 100 ? "medium" : "large";
-  const sizeMap = {
-    small: 40,
-    medium: 50,
-    large: 60,
-  };
-  const dimension = sizeMap[size];
+export function PriceMarker({ property, isActive }: PriceMarkerProps) {
+  const price = formatPrice(property.price, property.listing_type);
+  const isFeatured = property.is_featured;
+  const isRent = property.listing_type === "rent";
 
-  return L.divIcon({
-    html: `
-      <div style="
-        width: ${dimension}px;
-        height: ${dimension}px;
-        background: rgba(30, 58, 95, 0.7);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      ">
-        <div style="
-          width: ${dimension - 10}px;
-          height: ${dimension - 10}px;
-          background: #1e3a5f;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: 600;
-          font-size: ${size === "large" ? "16px" : size === "medium" ? "14px" : "12px"};
-          font-family: system-ui, sans-serif;
-        ">${count}</div>
-      </div>
-    `,
-    className: `marker-cluster marker-cluster-${size}`,
-    iconSize: L.point(dimension, dimension),
-  });
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold shadow-md transition-all duration-150 cursor-pointer select-none whitespace-nowrap",
+        "border-2",
+        isActive
+          ? "bg-foreground text-background border-foreground scale-110 z-10"
+          : "bg-background text-foreground border-border hover:scale-105 hover:shadow-lg",
+        isFeatured && !isActive && "border-[#d4a853]"
+      )}
+    >
+      {!isActive && (
+        <span
+          className="inline-block h-2 w-2 rounded-full shrink-0"
+          style={{
+            backgroundColor: isRent ? MARKER_COLORS.rent : MARKER_COLORS.sale,
+          }}
+        />
+      )}
+      <span>{price}</span>
+    </div>
+  );
+}
+
+interface OfficeMarkerPinProps {
+  className?: string;
 }
 
 /**
- * Default marker icon fallback
+ * Custom office location marker (brand-colored pin).
  */
-export const defaultMarkerIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+export function OfficeMarkerPin({ className }: OfficeMarkerPinProps) {
+  return (
+    <div
+      className={cn(
+        "flex h-10 w-10 items-center justify-center rounded-full bg-[#1e3a5f] border-[3px] border-[#d4a853] shadow-lg",
+        className
+      )}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="white"
+      >
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+      </svg>
+    </div>
+  );
+}

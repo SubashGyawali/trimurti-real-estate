@@ -51,7 +51,7 @@ export function LocationSection({ className }: LocationSectionProps) {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className={cn("py-16 md:py-24", className)}>
+    <section ref={ref} className={cn("overflow-hidden py-16 md:py-24", className)}>
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div

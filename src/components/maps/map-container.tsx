@@ -1,7 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { MapSkeleton } from "./map-skeleton";
+import { APIProvider } from "@vis.gl/react-google-maps";
+import { PropertyMap } from "./property-map";
 import type { PropertyWithImages } from "@/types";
 
 interface PropertyMapContainerProps {
@@ -14,20 +14,8 @@ interface PropertyMapContainerProps {
   zoom?: number;
 }
 
-// Dynamic import to avoid SSR issues with Leaflet
-const PropertyMap = dynamic(
-  () => import("./property-map").then((mod) => mod.PropertyMap),
-  {
-    ssr: false,
-    loading: () => <MapSkeleton className="h-full w-full" />,
-  }
-);
-
 /**
- * PropertyMapContainer - A wrapper component that handles SSR for Leaflet
- *
- * Use this component instead of PropertyMap directly to avoid
- * hydration errors and ensure proper loading states.
+ * PropertyMapContainer — wraps PropertyMap in Google Maps APIProvider.
  *
  * @example
  * ```tsx
@@ -47,15 +35,19 @@ export function PropertyMapContainer({
   center,
   zoom,
 }: PropertyMapContainerProps) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+
   return (
-    <PropertyMap
-      properties={properties}
-      className={className}
-      selectedPropertyId={selectedPropertyId}
-      onPropertySelect={onPropertySelect}
-      showClusters={showClusters}
-      center={center}
-      zoom={zoom}
-    />
+    <APIProvider apiKey={apiKey}>
+      <PropertyMap
+        properties={properties}
+        className={className}
+        selectedPropertyId={selectedPropertyId}
+        onPropertySelect={onPropertySelect}
+        showClusters={showClusters}
+        center={center}
+        zoom={zoom}
+      />
+    </APIProvider>
   );
 }

@@ -143,7 +143,7 @@ export function HeroSection() {
             className="mx-auto mt-10 max-w-2xl"
           >
             <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-md">
-              <div className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-2xl sm:flex-row sm:items-center">
+              <div className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-2xl sm:flex-row sm:items-center" suppressHydrationWarning>
                 {/* Listing Type Tabs */}
                 <Tabs
                   value={listingType}

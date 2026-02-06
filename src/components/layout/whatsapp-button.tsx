@@ -30,6 +30,7 @@ export function WhatsAppButton({
   return (
     <button
       onClick={handleClick}
+      style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
       className={cn(
         "fixed bottom-6 right-6 z-50",
         "flex h-14 w-14 items-center justify-center",
@@ -37,7 +38,7 @@ export function WhatsAppButton({
         "transition-all duration-300 ease-in-out",
         "hover:scale-110 hover:shadow-xl",
         "focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2",
-        "animate-pulse hover:animate-none",
+        "hover:!animate-none",
         className
       )}
       aria-label="Contact us on WhatsApp"

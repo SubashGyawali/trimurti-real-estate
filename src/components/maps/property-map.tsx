@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import MarkerClusterGroup from "react-leaflet-cluster";
-import L from "leaflet";
-import type { MarkerCluster } from "leaflet";
-import { MAP_CONFIG, CLUSTER_CONFIG } from "@/lib/map-config";
-import { createPropertyMarkerIcon, createClusterIcon } from "./property-marker";
-import { MapPopup } from "./map-popup";
+import { useMemo, useEffect, useCallback, useState } from "react";
+import { Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import { MAP_CONFIG } from "@/lib/map-config";
+import {
+  groupPropertiesByLocation,
+  findPropertyInGroups,
+  type PropertyGroup,
+} from "@/lib/map-utils";
+import { TransformableMarker } from "./transformable-marker";
 import type { PropertyWithImages } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -21,33 +22,14 @@ interface PropertyMapProps {
   zoom?: number;
 }
 
-// Component to handle map resize
-function MapResizeHandler() {
-  const map = useMap();
-
-  useEffect(() => {
-    const handleResize = () => {
-      map.invalidateSize();
-    };
-
-    window.addEventListener("resize", handleResize);
-    // Initial resize after mount
-    setTimeout(handleResize, 100);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [map]);
-
-  return null;
-}
-
-// Component to fit bounds to markers
+/**
+ * Fits the map bounds to show all given properties.
+ */
 function FitBounds({ properties }: { properties: PropertyWithImages[] }) {
   const map = useMap();
 
   useEffect(() => {
-    if (properties.length === 0) return;
+    if (!map || properties.length === 0) return;
 
     const validProperties = properties.filter(
       (p) => p.location_lat !== null && p.location_lng !== null
@@ -55,19 +37,20 @@ function FitBounds({ properties }: { properties: PropertyWithImages[] }) {
 
     if (validProperties.length === 0) return;
 
-    const bounds = L.latLngBounds(
-      validProperties.map((p) => [p.location_lat!, p.location_lng!])
-    );
-
-    // Only fit bounds if we have multiple properties
-    if (validProperties.length > 1) {
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
-    } else if (validProperties.length === 1) {
-      map.setView(
-        [validProperties[0].location_lat!, validProperties[0].location_lng!],
-        MAP_CONFIG.defaultZoom
-      );
+    if (validProperties.length === 1) {
+      map.panTo({
+        lat: validProperties[0].location_lat!,
+        lng: validProperties[0].location_lng!,
+      });
+      map.setZoom(MAP_CONFIG.defaultZoom);
+      return;
     }
+
+    const bounds = new google.maps.LatLngBounds();
+    validProperties.forEach((p) => {
+      bounds.extend({ lat: p.location_lat!, lng: p.location_lng! });
+    });
+    map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
   }, [properties, map]);
 
   return null;
@@ -78,14 +61,14 @@ export function PropertyMap({
   className,
   selectedPropertyId,
   onPropertySelect,
-  showClusters = true,
   center,
   zoom,
 }: PropertyMapProps) {
-  const [isMounted, setIsMounted] = useState(false);
-  const markerRefs = useRef<Map<string, L.Marker>>(new Map());
+  // State for tracking active group and index within the group
+  const [activeGroupKey, setActiveGroupKey] = useState<string | null>(null);
+  const [activeIndexInGroup, setActiveIndexInGroup] = useState<number>(0);
 
-  // Filter properties with valid coordinates
+  // Filter properties with valid coordinates and active status
   const mappableProperties = useMemo(
     () =>
       properties.filter(
@@ -97,84 +80,115 @@ export function PropertyMap({
     [properties]
   );
 
-  // Handle client-side mounting
+  // Group properties by location
+  const propertyGroups = useMemo(
+    () => groupPropertiesByLocation(mappableProperties),
+    [mappableProperties]
+  );
+
+  // Sync external selection (e.g., when clicking from property list)
   useEffect(() => {
-    setIsMounted(true);
+    if (!selectedPropertyId) {
+      return;
+    }
+
+    const found = findPropertyInGroups(propertyGroups, selectedPropertyId);
+    if (found) {
+      setActiveGroupKey(found.groupKey);
+      setActiveIndexInGroup(found.index);
+    }
+  }, [selectedPropertyId, propertyGroups]);
+
+  // Handle marker click - opens the group
+  const handleMarkerClick = useCallback(
+    (group: PropertyGroup) => {
+      setActiveGroupKey(group.key);
+      setActiveIndexInGroup(0);
+      // Notify parent of selection (first property in group)
+      if (group.properties[0]) {
+        onPropertySelect?.(group.properties[0]);
+      }
+    },
+    [onPropertySelect]
+  );
+
+  // Handle navigation within a stacked group
+  const handleNavigate = useCallback(
+    (group: PropertyGroup, direction: "prev" | "next") => {
+      // Calculate new index outside of setState to avoid calling onPropertySelect during render
+      const currentIndex = activeIndexInGroup;
+      const newIndex =
+        direction === "next"
+          ? Math.min(currentIndex + 1, group.properties.length - 1)
+          : Math.max(currentIndex - 1, 0);
+
+      // Update state
+      setActiveIndexInGroup(newIndex);
+
+      // Notify parent of the new selection (after state update)
+      if (group.properties[newIndex]) {
+        onPropertySelect?.(group.properties[newIndex]);
+      }
+    },
+    [activeIndexInGroup, onPropertySelect]
+  );
+
+  // Handle close - deactivates the marker
+  const handleClose = useCallback(() => {
+    setActiveGroupKey(null);
+    setActiveIndexInGroup(0);
   }, []);
 
-  // Open popup for selected property
-  useEffect(() => {
-    if (selectedPropertyId && markerRefs.current.has(selectedPropertyId)) {
-      const marker = markerRefs.current.get(selectedPropertyId);
-      marker?.openPopup();
-    }
-  }, [selectedPropertyId]);
-
-  if (!isMounted) {
-    return null;
-  }
+  // Handle map click - closes any open marker
+  const handleMapClick = useCallback(() => {
+    setActiveGroupKey(null);
+    setActiveIndexInGroup(0);
+  }, []);
 
   const mapCenter = center || MAP_CONFIG.center;
   const mapZoom = zoom || MAP_CONFIG.defaultZoom;
 
-  const renderMarkers = () => {
-    return mappableProperties.map((property) => (
-      <Marker
-        key={property.id}
-        position={[property.location_lat!, property.location_lng!]}
-        icon={createPropertyMarkerIcon(property.listing_type, property.is_featured)}
-        ref={(ref) => {
-          if (ref) {
-            markerRefs.current.set(property.id, ref);
-          }
-        }}
-        eventHandlers={{
-          click: () => {
-            onPropertySelect?.(property);
-          },
-        }}
-      >
-        <Popup>
-          <MapPopup property={property} />
-        </Popup>
-      </Marker>
-    ));
-  };
-
   return (
     <div className={cn("h-full w-full", className)}>
-      <MapContainer
-        center={[mapCenter.lat, mapCenter.lng]}
-        zoom={mapZoom}
+      <Map
+        defaultCenter={mapCenter}
+        defaultZoom={mapZoom}
         minZoom={MAP_CONFIG.minZoom}
         maxZoom={MAP_CONFIG.maxZoom}
-        scrollWheelZoom={true}
+        gestureHandling="greedy"
+        disableDefaultUI={true}
+        zoomControl={true}
+        mapId="trimurti-property-map"
         className="h-full w-full rounded-lg"
         style={{ minHeight: "400px" }}
+        onClick={handleMapClick}
       >
-        <TileLayer
-          attribution={MAP_CONFIG.attribution}
-          url={MAP_CONFIG.tileUrl}
-        />
-
-        <MapResizeHandler />
         <FitBounds properties={mappableProperties} />
 
-        {showClusters && mappableProperties.length > 1 ? (
-          <MarkerClusterGroup
-            chunkedLoading={CLUSTER_CONFIG.chunkedLoading}
-            showCoverageOnHover={CLUSTER_CONFIG.showCoverageOnHover}
-            zoomToBoundsOnClick={CLUSTER_CONFIG.zoomToBoundsOnClick}
-            spiderfyOnMaxZoom={CLUSTER_CONFIG.spiderfyOnMaxZoom}
-            maxClusterRadius={CLUSTER_CONFIG.maxClusterRadius}
-            iconCreateFunction={(cluster: MarkerCluster) => createClusterIcon(cluster.getChildCount())}
-          >
-            {renderMarkers()}
-          </MarkerClusterGroup>
-        ) : (
-          renderMarkers()
-        )}
-      </MapContainer>
+        {propertyGroups.map((group) => {
+          const isActive = group.key === activeGroupKey;
+
+          return (
+            <AdvancedMarker
+              key={group.key}
+              position={{
+                lat: group.lat,
+                lng: group.lng,
+              }}
+              zIndex={isActive ? 100 : 1}
+            >
+              <TransformableMarker
+                properties={group.properties}
+                activeIndex={isActive ? activeIndexInGroup : 0}
+                isActive={isActive}
+                onClick={() => handleMarkerClick(group)}
+                onClose={handleClose}
+                onNavigate={(dir) => handleNavigate(group, dir)}
+              />
+            </AdvancedMarker>
+          );
+        })}
+      </Map>
     </div>
   );
 }

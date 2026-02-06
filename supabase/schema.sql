@@ -76,12 +76,14 @@ CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
   phone TEXT,
+  avatar_url TEXT,
   is_admin BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL
 );
 
 COMMENT ON TABLE profiles IS 'Extended user profiles linked to Supabase auth.users';
+COMMENT ON COLUMN profiles.avatar_url IS 'User profile avatar URL (from Google OAuth or custom upload)';
 COMMENT ON COLUMN profiles.is_admin IS 'Single admin flag - must be manually set in database';
 
 -- -----------------------------------------------------
@@ -604,20 +606,51 @@ COMMENT ON FUNCTION enforce_property_images_limit IS 'Enforces business rule: ma
 -- -----------------------------------------------------
 -- Function: handle_new_user
 -- Creates a profile when a new user signs up
+-- Updated to handle Google OAuth metadata correctly
 -- -----------------------------------------------------
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, full_name)
+  INSERT INTO profiles (id, full_name, phone, avatar_url)
   VALUES (
     NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', '')
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NEW.raw_user_meta_data->>'name',      -- Google uses 'name'
+      split_part(NEW.email, '@', 1)         -- Fallback to email username
+    ),
+    NEW.raw_user_meta_data->>'phone',
+    COALESCE(
+      NEW.raw_user_meta_data->>'avatar_url',
+      NEW.raw_user_meta_data->>'picture'    -- Google uses 'picture'
+    )
   );
   RETURN NEW;
+EXCEPTION
+  WHEN unique_violation THEN
+    -- Profile already exists, update it instead
+    UPDATE profiles
+    SET
+      full_name = COALESCE(
+        NEW.raw_user_meta_data->>'name',
+        NEW.raw_user_meta_data->>'full_name',
+        profiles.full_name
+      ),
+      avatar_url = COALESCE(
+        NEW.raw_user_meta_data->>'picture',
+        NEW.raw_user_meta_data->>'avatar_url',
+        profiles.avatar_url
+      ),
+      updated_at = now()
+    WHERE id = NEW.id;
+    RETURN NEW;
+  WHEN OTHERS THEN
+    RAISE WARNING 'Error creating profile for user %: %', NEW.id, SQLERRM;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-COMMENT ON FUNCTION handle_new_user IS 'Auto-creates profile when new user signs up';
+COMMENT ON FUNCTION handle_new_user IS 'Auto-creates profile with Google OAuth compatibility (uses picture and name fields)';
 
 -- -----------------------------------------------------
 -- Function: auto_generate_slug

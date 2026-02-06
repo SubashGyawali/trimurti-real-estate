@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/components/property/price-display";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 interface MapPopupProps {
   property: PropertyWithImages;
   className?: string;
+  onClose?: () => void;
 }
 
 const propertyTypeLabels: Record<string, string> = {
@@ -29,7 +30,7 @@ const furnishingLabels: Record<string, string> = {
   fully_furnished: "Furnished",
 };
 
-export function MapPopup({ property, className }: MapPopupProps) {
+export function MapPopup({ property, className, onClose }: MapPopupProps) {
   const primaryImage = property.property_images?.find((img) => img.is_primary);
   const firstImage = property.property_images?.[0];
   const displayImage = primaryImage || firstImage;
@@ -38,16 +39,33 @@ export function MapPopup({ property, className }: MapPopupProps) {
   const furnishingLabel = furnishingLabels[property.furnishing] || property.furnishing;
 
   return (
-    <div className={cn("w-[220px] overflow-hidden", className)}>
+    <div
+      className={cn(
+        "w-[240px] overflow-hidden rounded-xl bg-background shadow-xl border animate-in fade-in zoom-in-95 duration-200",
+        className
+      )}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close button */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+          aria-label="Close"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
+
       {/* Image */}
-      <div className="relative h-[120px] w-full bg-muted">
+      <div className="relative h-[130px] w-full bg-muted">
         {displayImage ? (
           <Image
             src={displayImage.image_url}
             alt={property.title}
             fill
             className="object-cover"
-            sizes="220px"
+            sizes="240px"
           />
         ) : (
           <div className="flex h-full items-center justify-center">

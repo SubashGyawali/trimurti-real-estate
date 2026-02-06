@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { deleteMultipleImages } from '@/lib/cloudinary/upload';
 
 export async function GET(
     request: Request,
@@ -109,14 +110,22 @@ export async function DELETE(
     const { id } = await params;
     const supabase = await createClient();
 
-    // Cascading delete in Supabase Schema (ON DELETE SET NULL/CASCADE) handles relations?
-    // Schema: 
-    // property_images -> ON DELETE CASCADE.
-    // inquiries -> ON DELETE SET NULL.
-    // property_visits -> ON DELETE CASCADE.
-    // user_favorites -> ON DELETE CASCADE.
-    // So simple delete on properties is sufficient!
+    // First, fetch the property images to get URLs for Cloudinary cleanup
+    const { data: images, error: fetchError } = await supabase
+        .from('property_images')
+        .select('image_url')
+        .eq('property_id', id) as { data: { image_url: string }[] | null; error: any };
 
+    if (fetchError) {
+        console.error('Failed to fetch images for cleanup:', fetchError);
+        // Continue with deletion even if we can't clean up storage
+    }
+
+    // Cascading delete in Supabase Schema (ON DELETE SET NULL/CASCADE) handles relations:
+    // property_images -> ON DELETE CASCADE
+    // inquiries -> ON DELETE SET NULL
+    // property_visits -> ON DELETE CASCADE
+    // user_favorites -> ON DELETE CASCADE
     const { error } = await supabase
         .from('properties')
         .delete()
@@ -124,6 +133,17 @@ export async function DELETE(
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Clean up Cloudinary storage (best effort, don't fail if this errors)
+    if (images && images.length > 0) {
+        const imageUrls = images.map(img => img.image_url);
+        try {
+            await deleteMultipleImages(imageUrls);
+        } catch (cleanupError) {
+            console.error('Failed to clean up Cloudinary images:', cleanupError);
+            // Don't fail the request - property is already deleted
+        }
     }
 
     return NextResponse.json({ message: 'Property deleted successfully' });
