@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useEffect, useCallback, useState } from "react";
-import { Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import { Map, AdvancedMarker, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { MAP_CONFIG } from "@/lib/map-config";
 import {
   groupPropertiesByLocation,
@@ -27,9 +27,10 @@ interface PropertyMapProps {
  */
 function FitBounds({ properties }: { properties: PropertyWithImages[] }) {
   const map = useMap();
+  const coreLibrary = useMapsLibrary("core");
 
   useEffect(() => {
-    if (!map || properties.length === 0) return;
+    if (!map || !coreLibrary || properties.length === 0) return;
 
     const validProperties = properties.filter(
       (p) => p.location_lat !== null && p.location_lng !== null
@@ -46,12 +47,12 @@ function FitBounds({ properties }: { properties: PropertyWithImages[] }) {
       return;
     }
 
-    const bounds = new google.maps.LatLngBounds();
+    const bounds = new coreLibrary.LatLngBounds();
     validProperties.forEach((p) => {
       bounds.extend({ lat: p.location_lat!, lng: p.location_lng! });
     });
     map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
-  }, [properties, map]);
+  }, [properties, map, coreLibrary]);
 
   return null;
 }
