@@ -53,10 +53,13 @@ export function HeroSectionV2() {
   const [listingType, setListingType] = useState<"rent" | "sale">("rent");
   const [propertyType, setPropertyType] = useState<string>("");
 
-  // Image carousel state - random initial index
-  const [currentImageIndex, setCurrentImageIndex] = useState(() =>
-    Math.floor(Math.random() * buildingImages.length)
-  );
+  // Image carousel state - start with index 0 to avoid hydration mismatch
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Set random initial image on client mount only (prevents hydration mismatch)
+  useEffect(() => {
+    setCurrentImageIndex(Math.floor(Math.random() * buildingImages.length));
+  }, []);
 
   // Auto-cycle through images every 10 seconds
   useEffect(() => {
