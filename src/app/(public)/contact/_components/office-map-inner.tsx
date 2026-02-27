@@ -18,7 +18,7 @@ export function OfficeMapInner({ location }: OfficeMapInnerProps) {
       gestureHandling="cooperative"
       disableDefaultUI={true}
       zoomControl={true}
-      mapId="trimurti-office-map"
+      mapId="b75c140913050da25b38eef4"
       style={{ height: "300px", width: "100%" }}
       className="z-0 rounded-2xl"
     >

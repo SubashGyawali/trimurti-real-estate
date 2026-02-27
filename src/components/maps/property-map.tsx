@@ -159,7 +159,7 @@ export function PropertyMap({
         gestureHandling="greedy"
         disableDefaultUI={true}
         zoomControl={true}
-        mapId="trimurti-property-map"
+        mapId="b75c140913050da255ae925f"
         className="h-full w-full rounded-lg"
         style={{ minHeight: "400px" }}
         onClick={handleMapClick}
