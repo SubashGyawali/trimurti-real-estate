@@ -83,7 +83,7 @@ function LocationPickerInner({
   );
 
   const handleDragEnd = useCallback(
-    (e: google.maps.MapMouseEvent) => {
+    (e: { latLng: { lat: () => number; lng: () => number } | null }) => {
       const latLng = e.latLng;
       if (latLng) {
         const position = { lat: latLng.lat(), lng: latLng.lng() };
