@@ -1,5 +1,6 @@
 // Map Components
 export { PropertyMapContainer } from "./map-container";
+export { LocationPicker } from "./location-picker";
 export { MapSkeleton } from "./map-skeleton";
 export { MapPopup } from "./map-popup";
 export { PriceMarker, OfficeMarkerPin } from "./property-marker";

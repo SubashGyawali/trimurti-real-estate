@@ -32,6 +32,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Separator } from '@/components/ui/separator';
 
 import { ImageUploader } from './image-uploader';
+import { LocationPicker } from '@/components/maps/location-picker';
+import type { LatLng } from '@/components/maps/location-picker';
 import { Building, PropertyImage, BuildingType, PropertyType, ListingType, FurnishingType } from '@/types/database';
 
 // Schema Definition
@@ -143,6 +145,8 @@ export function PropertyForm({ initialData, buildings, onSubmit, isEdit = false 
 
     const watchBuildingId = form.watch('building_id');
     const watchListingType = form.watch('listing_type');
+    const watchLocationLat = form.watch('location_lat');
+    const watchLocationLng = form.watch('location_lng');
 
     // Auto-fill location when building is selected
     useEffect(() => {
@@ -529,40 +533,24 @@ export function PropertyForm({ initialData, buildings, onSubmit, isEdit = false 
                 <Card>
                     <CardHeader>
                         <CardTitle>Location</CardTitle>
+                        <CardDescription>
+                            {watchBuildingId
+                                ? 'Location set from selected building. Drag the pin to fine-tune.'
+                                : 'Click the map or drag the pin to set the property location.'}
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent className="grid gap-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="location_lat"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Latitude</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" step="any" {...field} value={field.value ?? ''} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="location_lng"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Longitude</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" step="any" {...field} value={field.value ?? ''} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="text-[0.8rem] text-muted-foreground mt-2">
-                            <MapPin className="inline h-4 w-4 mr-1" />
-                            Coordinates will be auto-filled if building is selected. You can manually check them on Google Maps.
-                        </div>
+                    <CardContent>
+                        <LocationPicker
+                            value={
+                                watchLocationLat != null && watchLocationLng != null
+                                    ? { lat: watchLocationLat, lng: watchLocationLng }
+                                    : null
+                            }
+                            onChange={(position: LatLng) => {
+                                form.setValue('location_lat', position.lat, { shouldDirty: true });
+                                form.setValue('location_lng', position.lng, { shouldDirty: true });
+                            }}
+                        />
                     </CardContent>
                 </Card>
 

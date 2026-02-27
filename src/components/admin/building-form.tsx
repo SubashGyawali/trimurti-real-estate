@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -26,6 +25,8 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
+import { LocationPicker } from '@/components/maps/location-picker';
+import type { LatLng } from '@/components/maps/location-picker';
 import type { Building, BuildingType } from '@/types/database';
 
 // Simple schema - using strings for optional number fields to avoid form issues
@@ -68,6 +69,8 @@ export function BuildingForm({ initialData, onSubmit, isEdit = false }: Building
     });
 
     const { isSubmitting } = form.formState;
+    const watchLat = form.watch('location_lat');
+    const watchLng = form.watch('location_lng');
 
     const handleSubmit = async (data: BuildingFormValues) => {
         // Convert string values to proper types for API
@@ -211,55 +214,21 @@ export function BuildingForm({ initialData, onSubmit, isEdit = false }: Building
                             Location
                         </CardTitle>
                         <CardDescription>
-                            GPS coordinates for map display (optional)
+                            Click the map or drag the pin to set the building location
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <FormField
-                                control={form.control}
-                                name="location_lat"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Latitude</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                step="any"
-                                                placeholder="e.g., 19.2095"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Kandivali West is around 19.20
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="location_lng"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Longitude</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                step="any"
-                                                placeholder="e.g., 72.8347"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Kandivali West is around 72.83
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <LocationPicker
+                            value={(() => {
+                                const lat = parseFloat(watchLat || '');
+                                const lng = parseFloat(watchLng || '');
+                                return !isNaN(lat) && !isNaN(lng) ? { lat, lng } : null;
+                            })()}
+                            onChange={(position: LatLng) => {
+                                form.setValue('location_lat', position.lat.toString(), { shouldDirty: true });
+                                form.setValue('location_lng', position.lng.toString(), { shouldDirty: true });
+                            }}
+                        />
                     </CardContent>
                 </Card>
 
