@@ -248,13 +248,13 @@ export const teamMembers: TeamMember[] = [
   {
     id: "1",
     name: "Mr. Niraj Koirala",
-    title: "Founder & Principal Broker",
+    title: "Proprietor & Principal Broker",
     image: "/images/Niraj Picture.jpg",
     experience: "20+ years in Kandivali real estate",
     phone: "+91 98194 46163",
     whatsapp: "919819446163",
     email: "niraj@trimurtirealestate.com",
-    bio: "A trusted name in Kandivali West real estate, Mr. Niraj has helped over 500 families find their dream homes in MHADA complexes.",
+    bio: "A trusted name in Kandivali West, Mr. Niraj has guided 500+ families through MHADA sales, rentals, and resale decisions.",
     socialLinks: {
       facebook: "https://facebook.com/trimurtirealestate",
       instagram: "https://instagram.com/trimurtirealestate",
@@ -271,7 +271,7 @@ export const teamMembers: TeamMember[] = [
     phone: "+91 98194 46163",
     whatsapp: "919819446163",
     email: "anita@trimurtirealestate.com",
-    bio: "Specializing in rental properties and family relocations in the Kandivali area.",
+    bio: "Helps families shortlist practical rental options and relocate smoothly within Kandivali West.",
   },
   {
     id: "3",
@@ -284,7 +284,7 @@ export const teamMembers: TeamMember[] = [
     phone: "+91 98194 46163",
     whatsapp: "919819446163",
     email: "rahul@trimurtirealestate.com",
-    bio: "Expert in MHADA property transfers, legal documentation, and registration procedures.",
+    bio: "Handles MHADA transfers, registration, and documentation with a steady, detail-first process.",
   },
 ];
 

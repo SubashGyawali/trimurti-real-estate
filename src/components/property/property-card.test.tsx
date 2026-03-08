@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import { PropertyCard } from './property-card'
 import type { PropertyWithImages } from '@/types/database'
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
