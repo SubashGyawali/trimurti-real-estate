@@ -44,6 +44,10 @@ export interface TeamMember {
     instagram?: string;
     linkedin?: string;
   };
+  isFounder?: boolean;
+  founderBio?: string;
+  specializations?: string[];
+  stats?: Array<{ value: number; suffix: string; label: string }>;
 }
 
 /**

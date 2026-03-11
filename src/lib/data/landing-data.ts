@@ -255,6 +255,20 @@ export const teamMembers: TeamMember[] = [
     whatsapp: "919819446163",
     email: "niraj@trimurtirealestate.com",
     bio: "A trusted name in Kandivali West, Mr. Niraj has guided 500+ families through MHADA sales, rentals, and resale decisions.",
+    isFounder: true,
+    founderBio:
+      "Since 2004, Mr. Niraj Koirala has been the go-to real estate expert in Kandivali West. With an intimate knowledge of every building, every floor, and every corner of the MHADA complex, he has built Trimurti Real Estate into the most trusted property agency in the area. His commitment to transparency, honest pricing, and personal attention has helped over 500 families settle into their dream homes.",
+    specializations: [
+      "MHADA Property Resales",
+      "Property Valuation",
+      "Legal Documentation",
+      "Rental Management",
+    ],
+    stats: [
+      { value: 20, suffix: "+", label: "Years Experience" },
+      { value: 500, suffix: "+", label: "Families Helped" },
+      { value: 53, suffix: "", label: "Buildings Covered" },
+    ],
     socialLinks: {
       facebook: "https://facebook.com/trimurtirealestate",
       instagram: "https://instagram.com/trimurtirealestate",
@@ -272,6 +286,7 @@ export const teamMembers: TeamMember[] = [
     whatsapp: "919819446163",
     email: "anita@trimurtirealestate.com",
     bio: "Helps families shortlist practical rental options and relocate smoothly within Kandivali West.",
+    specializations: ["Rental Properties", "Family Relocations", "Tenant Screening"],
   },
   {
     id: "3",
@@ -285,6 +300,7 @@ export const teamMembers: TeamMember[] = [
     whatsapp: "919819446163",
     email: "rahul@trimurtirealestate.com",
     bio: "Handles MHADA transfers, registration, and documentation with a steady, detail-first process.",
+    specializations: ["MHADA Transfers", "Legal Verification", "Registration Process"],
   },
 ];
 
