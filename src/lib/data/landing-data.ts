@@ -276,31 +276,27 @@ export const teamMembers: TeamMember[] = [
   },
   {
     id: "2",
-    name: "Mrs. Anita Koirala",
+    name: "Mr. Devashish Bhattacharya",
     title: "Property Consultant",
-    // Unsplash: professional woman portrait
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
-    experience: "15+ years experience",
-    phone: "+91 98194 46163",
-    whatsapp: "919819446163",
-    email: "anita@trimurtirealestate.com",
+    image: "/images/Devashish Bhattacharya.png",
+    experience: "10 years experience",
+    phone: "+91 70651 30907",
+    whatsapp: "917065130907",
+    email: "devashish@trimurtirealestate.com",
     bio: "Helps families shortlist practical rental options and relocate smoothly within Kandivali West.",
     specializations: ["Rental Properties", "Family Relocations", "Tenant Screening"],
   },
   {
     id: "3",
-    name: "Mr. Rahul Sharma",
-    title: "Documentation Specialist",
-    // Unsplash: professional man portrait
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80",
-    experience: "10+ years experience",
-    phone: "+91 98194 46163",
-    whatsapp: "919819446163",
-    email: "rahul@trimurtirealestate.com",
-    bio: "Handles MHADA transfers, registration, and documentation with a steady, detail-first process.",
-    specializations: ["MHADA Transfers", "Legal Verification", "Registration Process"],
+    name: "Mr. Subash Gyawali",
+    title: "Media Manager",
+    image: "/images/Subash.jpeg",
+    experience: "6 years experience",
+    phone: "+91 85912 27626",
+    whatsapp: "918591227626",
+    email: "subash@trimurtirealestate.com",
+    bio: "Manages digital presence, property photography, and media outreach to showcase Trimurti's listings effectively.",
+    specializations: ["Digital Marketing", "Property Photography", "Social Media"],
   },
 ];
 
