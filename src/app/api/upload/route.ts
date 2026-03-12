@@ -1,30 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { uploadPropertyImage } from '@/lib/cloudinary/upload';
+import { verifyAdmin } from '@/lib/supabase/verify-admin';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-
-type AuthResult =
-  | { error: string; status: number }
-  | { user: { id: string; email?: string }; profile: { is_admin: boolean } };
-
-async function verifyAdmin(supabase: SupabaseClient): Promise<AuthResult> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Unauthorized', status: 401 };
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile?.is_admin) return { error: 'Forbidden', status: 403 };
-  return { user, profile };
-}
 
 export async function POST(request: Request) {
   try {

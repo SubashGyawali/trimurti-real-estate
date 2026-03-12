@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { UserDashboardWrapper } from "@/components/layout/user-dashboard-wrapper";
-import { env } from "@/lib/env";
 
 export default async function UserLayout({
   children,
@@ -27,10 +26,8 @@ export default async function UserLayout({
     .eq("id", user.id)
     .single() as { data: any };
 
-  // Calculate admin status: check profile.is_admin OR ADMIN_EMAIL match
-  const isProfileAdmin = !!profile?.is_admin;
-  const isAdminEmail = !!(env.NEXT_PUBLIC_ADMIN_EMAIL && user.email === env.NEXT_PUBLIC_ADMIN_EMAIL);
-  const isAdmin = isProfileAdmin || isAdminEmail;
+  // Calculate admin status from database flag only
+  const isAdmin = !!profile?.is_admin;
 
   return (
     <UserDashboardWrapper

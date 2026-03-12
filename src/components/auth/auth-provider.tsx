@@ -121,14 +121,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [supabase, fetchProfile]);
 
-  // Calculate admin status: check profile.is_admin or NEXT_PUBLIC_ADMIN_EMAIL env var
   const isAdmin = useMemo(() => {
-    const isProfileAdmin = profile?.is_admin ?? false;
-    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-    const isEnvAdmin = !!(adminEmail && user?.email?.toLowerCase() === adminEmail.toLowerCase());
-
-    return isProfileAdmin || isEnvAdmin;
-  }, [profile, user]);
+    return profile?.is_admin ?? false;
+  }, [profile]);
 
   const value: AuthContextValue = {
     user,

@@ -96,7 +96,7 @@ export async function updateSession(request: NextRequest) {
         .eq("id", user.id)
         .single();
 
-      const adminEmail = env.NEXT_PUBLIC_ADMIN_EMAIL;
+      const adminEmail = process.env.ADMIN_EMAIL;
       const isProfileAdmin = !!profileData?.is_admin;
       const isEnvAdmin = adminEmail && user.email?.toLowerCase() === adminEmail.toLowerCase();
 
@@ -111,7 +111,7 @@ export async function updateSession(request: NextRequest) {
       }
     } catch (err) {
       // On error, fall back to email check
-      const adminEmail = env.NEXT_PUBLIC_ADMIN_EMAIL;
+      const adminEmail = process.env.ADMIN_EMAIL;
       const isEnvAdmin = adminEmail && user.email?.toLowerCase() === adminEmail.toLowerCase();
       if (!isEnvAdmin) {
         const url = request.nextUrl.clone();

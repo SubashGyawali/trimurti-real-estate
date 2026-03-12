@@ -2,20 +2,25 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const next = requestUrl.searchParams.get("next") ?? "/";
+
+  // Validate redirect path to prevent open redirects
+  const safePath = next.startsWith("/") && !next.startsWith("//") ? next : "/";
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Successful authentication - redirect to the intended page
-      return NextResponse.redirect(`${origin}${next}`);
+      const redirectUrl = new URL(safePath, requestUrl.origin);
+      return NextResponse.redirect(redirectUrl);
     }
   }
 
   // Return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+  const loginUrl = new URL("/login", requestUrl.origin);
+  loginUrl.searchParams.set("error", "auth_callback_error");
+  return NextResponse.redirect(loginUrl);
 }

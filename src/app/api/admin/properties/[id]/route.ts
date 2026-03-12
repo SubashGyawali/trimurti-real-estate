@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { deleteMultipleImages } from '@/lib/cloudinary/upload';
+import { verifyAdmin } from '@/lib/supabase/verify-admin';
 
 export async function GET(
     request: Request,
@@ -8,6 +9,11 @@ export async function GET(
 ) {
     const { id } = await params;
     const supabase = await createClient();
+
+    const authCheck = await verifyAdmin(supabase);
+    if ('error' in authCheck) {
+        return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
+    }
 
     const { data, error } = await supabase
         .from('properties')
@@ -42,6 +48,12 @@ export async function PUT(
 ) {
     const { id } = await params;
     const supabase = await createClient();
+
+    const authCheck = await verifyAdmin(supabase);
+    if ('error' in authCheck) {
+        return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
+    }
+
     const body = await request.json();
 
     const { images, ...propertyData } = body;
@@ -109,6 +121,11 @@ export async function DELETE(
 ) {
     const { id } = await params;
     const supabase = await createClient();
+
+    const authCheck = await verifyAdmin(supabase);
+    if ('error' in authCheck) {
+        return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
+    }
 
     // First, fetch the property images to get URLs for Cloudinary cleanup
     const { data: images, error: fetchError } = await supabase

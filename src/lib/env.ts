@@ -11,8 +11,8 @@ const envSchema = z.object({
   // Resend (for emails)
   RESEND_API_KEY: z.string().min(1).optional(),
 
-  // Admin email used for simple admin check
-  NEXT_PUBLIC_ADMIN_EMAIL: z.string().email().optional(),
+  // Admin email used for simple admin check (server-only, not exposed to client)
+  ADMIN_EMAIL: z.string().email().optional(),
 
   // Node environment
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),

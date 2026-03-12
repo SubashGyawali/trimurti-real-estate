@@ -111,21 +111,13 @@ export function useAuth(): UseAuthReturn {
     };
   }, [supabase, fetchProfile]);
 
-  // Debug logging
-  console.log("Auth Debug:", {
-    userEmail: user?.email,
-    isAdminProfile: profile?.is_admin,
-    envAdmin: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
-    isHardcoded: user?.email?.toLowerCase() === "saurau.gyawali.sg@gmail.com"
-  });
-
   return {
     user,
     profile,
     session,
     isLoading,
     isAuthenticated: !!user,
-    isAdmin: profile?.is_admin ?? ((user?.email?.toLowerCase() === "saurau.gyawali.sg@gmail.com") || (user?.email?.toLowerCase() === process.env.NEXT_PUBLIC_ADMIN_EMAIL?.toLowerCase())) ?? false,
+    isAdmin: profile?.is_admin ?? false,
     signOut: handleSignOut,
     refreshProfile,
   };
