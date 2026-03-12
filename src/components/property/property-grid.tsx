@@ -110,8 +110,8 @@ const PropertyCardWrapper = forwardRef<HTMLDivElement, PropertyCardWrapperProps>
         }}
         transition={{ duration: 0.2 }}
         className={cn(
-          "cursor-pointer rounded-lg transition-all duration-200",
-          isHighlighted && "ring-2 ring-primary ring-offset-2"
+          "cursor-pointer rounded-xl transition-shadow duration-200",
+          isHighlighted && "ring-2 ring-primary"
         )}
         onClick={onClick}
       >

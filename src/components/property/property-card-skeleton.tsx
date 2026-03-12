@@ -9,7 +9,7 @@ interface PropertyCardSkeletonProps {
 
 export function PropertyCardSkeleton({ className }: PropertyCardSkeletonProps) {
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card className={cn("overflow-hidden rounded-xl", className)}>
       {/* Image skeleton */}
       <AspectRatio ratio={4 / 3}>
         <Skeleton className="h-full w-full" />
@@ -50,7 +50,7 @@ export function PropertyCardSkeletonGrid({
   return (
     <div
       className={cn(
-        "grid gap-6 sm:grid-cols-2 lg:grid-cols-3",
+        "grid gap-6 sm:grid-cols-2",
         className
       )}
     >

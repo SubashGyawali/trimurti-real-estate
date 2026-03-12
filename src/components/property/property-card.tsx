@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   MessageCircle,
   Calendar,
@@ -35,8 +34,6 @@ export function PropertyCard({
   showActions = true,
   className,
 }: PropertyCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
   // Extract building name if available (from joined query data)
   const buildingName =
     "building" in property &&
@@ -77,12 +74,6 @@ export function PropertyCard({
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
       <Card
         className={cn(
           "group overflow-hidden rounded-xl border border-gray-100",
@@ -181,15 +172,11 @@ export function PropertyCard({
             />
 
             {/* Property Details */}
-            <motion.div
-              initial={false}
-              animate={{
-                opacity: isHovered ? 1 : 0.8,
-                height: "auto",
-              }}
+            <div
               className={cn(
                 "flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground",
-                "md:opacity-0 md:group-hover:opacity-100 md:transition-opacity"
+                "transition-opacity duration-200",
+                "md:opacity-0 md:group-hover:opacity-100"
               )}
             >
               {/* Property Type & Area */}
@@ -215,7 +202,7 @@ export function PropertyCard({
                   </span>
                 </div>
               )}
-            </motion.div>
+            </div>
 
             {/* Furnishing Badge */}
             <div className="mt-3">
@@ -224,7 +211,6 @@ export function PropertyCard({
           </CardContent>
         </Link>
       </Card>
-    </motion.div>
   );
 }
 

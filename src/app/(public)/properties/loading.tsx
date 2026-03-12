@@ -20,11 +20,11 @@ export default function PropertiesLoading() {
         <Skeleton className="h-5 w-32" />
       </div>
 
-      {/* Two column layout skeleton */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_450px]">
-        {/* Property grid skeleton */}
-        <div>
-          <PropertyCardSkeletonGrid count={6} className="sm:grid-cols-2" />
+      {/* Three column layout skeleton */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Property grid skeleton - spans 2 columns */}
+        <div className="lg:col-span-2">
+          <PropertyCardSkeletonGrid count={6} />
         </div>
 
         {/* Map skeleton */}

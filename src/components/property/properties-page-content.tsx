@@ -105,9 +105,9 @@ export function PropertiesPageContent({
         />
       ) : (
         /* Two-column layout */
-        <div className="grid gap-6 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_450px]">
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* Property Grid - Desktop always visible, Mobile: list view only */}
-          <div className={cn(mobileView === "map" && "hidden md:block")}>
+          <div className={cn("lg:col-span-2", mobileView === "map" && "hidden md:block")}>
             <PropertyGrid
               properties={initialProperties}
               totalCount={totalCount}
