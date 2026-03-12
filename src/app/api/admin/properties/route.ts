@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
 import { propertyCreateSchema } from '@/lib/validations/admin';
-import type { PropertyWithImages } from '@/types';
+import type { PropertyWithImages, Property } from '@/types';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 export async function GET() {
@@ -64,10 +64,10 @@ export async function POST(request: Request) {
         .from('properties')
         .insert(propertyData as never)
         .select()
-        .single();
+        .single() as { data: Property | null; error: PostgrestError | null };
 
-    if (propertyError) {
-        return NextResponse.json({ error: propertyError.message }, { status: 500 });
+    if (propertyError || !property) {
+        return NextResponse.json({ error: propertyError?.message ?? 'Failed to create property' }, { status: 500 });
     }
 
     // 2. Create Images if any

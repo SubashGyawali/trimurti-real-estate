@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
 import { buildingCreateSchema } from '@/lib/validations/admin';
 import type { Building } from '@/types';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 export async function GET() {
     const supabase = await createClient();
@@ -61,10 +62,10 @@ export async function POST(request: Request) {
         .from('buildings')
         .insert(parsed.data as never)
         .select()
-        .single();
+        .single() as { data: Building | null; error: PostgrestError | null };
 
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error || !building) {
+        return NextResponse.json({ error: error?.message ?? 'Failed to create building' }, { status: 500 });
     }
 
     return NextResponse.json(building, { status: 201 });
