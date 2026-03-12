@@ -18,6 +18,11 @@ export async function verifyAdmin(
     .eq("id", user.id)
     .single();
 
-  if (!profile?.is_admin) return { error: "Forbidden", status: 403 };
-  return { user, profile };
+  const isProfileAdmin = !!profile?.is_admin;
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const isEnvAdmin =
+    !!adminEmail && user.email?.toLowerCase() === adminEmail.toLowerCase();
+
+  if (!isProfileAdmin && !isEnvAdmin) return { error: "Forbidden", status: 403 };
+  return { user, profile: { is_admin: true } };
 }

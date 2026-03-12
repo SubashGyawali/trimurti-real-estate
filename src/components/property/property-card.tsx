@@ -37,6 +37,14 @@ export function PropertyCard({
 }: PropertyCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
+  // Extract building name if available (from joined query data)
+  const buildingName =
+    "building" in property &&
+    property.building &&
+    typeof (property.building as { name?: string }).name === "string"
+      ? (property.building as { name: string }).name
+      : null;
+
   // Sort images by display_order, primary first
   const sortedImages = useMemo(() => {
     if (!property.property_images || property.property_images.length === 0) {
@@ -153,11 +161,10 @@ export function PropertyCard({
 
           {/* Content Section */}
           <CardContent className="p-4">
-            {/* Building name - if available */}
-            {property.building_id && (
+            {/* Building name - displayed when building data is available from a joined query */}
+            {buildingName && (
               <p className="mb-1 text-xs text-muted-foreground">
-                {/* Building name would come from join - showing placeholder */}
-                MHADA Complex
+                {buildingName}
               </p>
             )}
 

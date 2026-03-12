@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
+import { propertyCreateSchema } from '@/lib/validations/admin';
+import type { PropertyWithImages } from '@/types';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 export async function GET() {
     const supabase = await createClient();
@@ -22,14 +25,15 @@ export async function GET() {
         display_order
       )
     `)
-        .order('created_at', { ascending: false }) as { data: any[] | null; error: any };
+        .order('created_at', { ascending: false }) as {
+        data: PropertyWithImages[] | null;
+        error: PostgrestError | null;
+    };
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Optimize: Maybe filter images to only primary for list view? 
-    // But for now, returning all is fine, client can pick primary.
     return NextResponse.json(data);
 }
 
@@ -43,14 +47,24 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { images, ...propertyData } = body;
+
+    // Validate request body
+    const parsed = propertyCreateSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+            { status: 400 }
+        );
+    }
+
+    const { images, ...propertyData } = parsed.data;
 
     // 1. Create Property
     const { data: property, error: propertyError } = await supabase
         .from('properties')
-        .insert(propertyData)
+        .insert(propertyData as never)
         .select()
-        .single() as { data: any; error: any };
+        .single();
 
     if (propertyError) {
         return NextResponse.json({ error: propertyError.message }, { status: 500 });
@@ -58,26 +72,23 @@ export async function POST(request: Request) {
 
     // 2. Create Images if any
     if (images && images.length > 0) {
-        const imagesToInsert = images.map((img: any, index: number) => ({
+        const imagesToInsert = images.map((img, index) => ({
             property_id: property.id,
             image_url: img.image_url,
             is_primary: img.is_primary,
-            display_order: index, // Ensure order matches array order
+            display_order: index,
         }));
 
         const { error: imagesError } = await supabase
             .from('property_images')
-            .insert(imagesToInsert);
+            .insert(imagesToInsert as never);
 
         if (imagesError) {
-            // In a real app, we might want to rollback the property creation here
-            // But Supabase doesn't support easy multi-table transactions via JS client yet
-            // We'll return error but the property exists without images.
             return NextResponse.json({
                 property,
                 warning: 'Property created but images failed',
                 error: imagesError.message
-            }, { status: 201 }); // 201 because property WAS created
+            }, { status: 201 });
         }
     }
 

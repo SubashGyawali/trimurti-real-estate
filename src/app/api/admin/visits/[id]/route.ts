@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
+import { visitUpdateSchema } from '@/lib/validations/admin';
+import type { PropertyVisitWithProperty } from '@/types';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -27,7 +30,7 @@ export async function GET(request: Request, { params }: RouteParams) {
             )
         `)
         .eq('id', id)
-        .single() as { data: any; error: any };
+        .single() as { data: PropertyVisitWithProperty | null; error: PostgrestError | null };
 
     if (error) {
         if (error.code === 'PGRST116') {
@@ -50,22 +53,25 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const { status, preferred_date, preferred_time } = body;
 
-    // Validate status if provided
-    if (status && !['pending', 'confirmed', 'completed', 'cancelled'].includes(status)) {
-        return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    // Validate request body
+    const parsed = visitUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+            { status: 400 }
+        );
     }
 
-    // Build update object
-    const updateData: Record<string, any> = {};
-    if (status) updateData.status = status;
-    if (preferred_date !== undefined) updateData.preferred_date = preferred_date;
-    if (preferred_time !== undefined) updateData.preferred_time = preferred_time;
+    // Build update object from validated data
+    const updateData: { status?: string; preferred_date?: string | null; preferred_time?: string | null } = {};
+    if (parsed.data.status) updateData.status = parsed.data.status;
+    if (parsed.data.preferred_date !== undefined) updateData.preferred_date = parsed.data.preferred_date;
+    if (parsed.data.preferred_time !== undefined) updateData.preferred_time = parsed.data.preferred_time;
 
-    const { data: visit, error } = await (supabase
-        .from('property_visits') as any)
-        .update(updateData)
+    const { data: visit, error } = await supabase
+        .from('property_visits')
+        .update(updateData as never)
         .eq('id', id)
         .select(`
             *,

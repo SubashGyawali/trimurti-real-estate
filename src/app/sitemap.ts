@@ -1,16 +1,19 @@
 import type { MetadataRoute } from 'next';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { env } from '@/lib/env';
 
-// Use direct Supabase client for sitemap (no cookies needed for public data)
+// Use direct Supabase client for sitemap — no cookies/request context is
+// available during sitemap generation, so the prescribed server client
+// (which relies on cookies()) cannot be used here.
 function createPublicClient() {
   return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://trimurtirealestate.com';
+  const baseUrl = env.NEXT_PUBLIC_SITE_URL || 'https://trimurtirealestate.com';
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

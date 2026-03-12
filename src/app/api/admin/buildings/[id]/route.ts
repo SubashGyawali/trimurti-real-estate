@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
+import { buildingUpdateSchema } from '@/lib/validations/admin';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -44,9 +45,18 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     const body = await request.json();
 
-    const { data: building, error } = await (supabase
-        .from('buildings') as any)
-        .update(body)
+    // Validate request body
+    const parsed = buildingUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+            { status: 400 }
+        );
+    }
+
+    const { data: building, error } = await supabase
+        .from('buildings')
+        .update(parsed.data as never)
         .eq('id', id)
         .select()
         .single();

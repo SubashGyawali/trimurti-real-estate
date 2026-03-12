@@ -101,12 +101,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   const typedProperty = property as unknown as PropertyWithDetails;
 
-  // Increment views count (fire-and-forget)
-  // Using type assertion to work around Supabase generic inference issue
-  void (supabase
+  // Increment views count (fire-and-forget, non-blocking)
+  // Note: uses read-then-write which can lose increments under concurrency.
+  // For exact counts, use a Supabase RPC with SQL: views_count = views_count + 1
+  void supabase
     .from("properties")
     .update({ views_count: (typedProperty.views_count || 0) + 1 } as never)
-    .eq("id", typedProperty.id));
+    .eq("id", typedProperty.id);
 
   // Fetch similar properties
   const { data: similarProperties } = await supabase

@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
+import { inquiryUpdateSchema } from '@/lib/validations/admin';
+import type { InquiryWithProperty } from '@/types';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -27,7 +30,7 @@ export async function GET(request: Request, { params }: RouteParams) {
             )
         `)
         .eq('id', id)
-        .single() as { data: any; error: any };
+        .single() as { data: InquiryWithProperty | null; error: PostgrestError | null };
 
     if (error) {
         if (error.code === 'PGRST116') {
@@ -50,16 +53,19 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const { status } = body;
 
-    // Validate status
-    if (!status || !['new', 'contacted', 'closed'].includes(status)) {
-        return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    // Validate request body
+    const parsed = inquiryUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+            { status: 400 }
+        );
     }
 
-    const { data: inquiry, error } = await (supabase
-        .from('inquiries') as any)
-        .update({ status })
+    const { data: inquiry, error } = await supabase
+        .from('inquiries')
+        .update(parsed.data as never)
         .eq('id', id)
         .select()
         .single();

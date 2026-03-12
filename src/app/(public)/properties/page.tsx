@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { parseFiltersFromParams } from "@/lib/filters";
 import { PropertiesPageContent } from "@/components/property";
@@ -61,13 +62,15 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <PropertiesPageContent
-      initialProperties={(propertiesResult.data as PropertyWithImages[]) || []}
-      totalCount={propertiesResult.count || 0}
-      buildings={(buildingsResult.data as Building[]) || []}
-      currentPage={page}
-      pageSize={limit}
-    />
+    <Suspense>
+      <PropertiesPageContent
+        initialProperties={(propertiesResult.data as PropertyWithImages[]) || []}
+        totalCount={propertiesResult.count || 0}
+        buildings={(buildingsResult.data as Building[]) || []}
+        currentPage={page}
+        pageSize={limit}
+      />
+    </Suspense>
   );
 }
 

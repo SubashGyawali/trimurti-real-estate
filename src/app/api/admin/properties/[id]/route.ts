@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { deleteMultipleImages } from '@/lib/cloudinary/upload';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
+import { propertyUpdateSchema } from '@/lib/validations/admin';
+import type { PropertyWithImages, PropertyImage } from '@/types';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 export async function GET(
     request: Request,
@@ -27,16 +30,16 @@ export async function GET(
       )
     `)
         .eq('id', id)
-        .single() as { data: any; error: any };
+        .single() as { data: PropertyWithImages | null; error: PostgrestError | null };
 
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 404 });
+    if (error || !data) {
+        return NextResponse.json({ error: error?.message ?? 'Property not found' }, { status: 404 });
     }
 
-    // Sort images (though DB doesn't guarantee order without order clause in subquery, 
+    // Sort images (though DB doesn't guarantee order without order clause in subquery,
     // but Supabase JS sometimes handles it. Better to sort in JS to be safe)
     if (data.property_images) {
-        data.property_images.sort((a: any, b: any) => a.display_order - b.display_order);
+        data.property_images.sort((a: PropertyImage, b: PropertyImage) => a.display_order - b.display_order);
     }
 
     return NextResponse.json(data);
@@ -56,12 +59,21 @@ export async function PUT(
 
     const body = await request.json();
 
-    const { images, ...propertyData } = body;
+    // Validate request body
+    const parsed = propertyUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+            { status: 400 }
+        );
+    }
 
-    // 1. Update Property
-    const { error: propertyError } = await (supabase
-        .from('properties') as any)
-        .update(propertyData)
+    const { images, ...propertyData } = parsed.data;
+
+    // 1. Update Property (cast validated data for Supabase compatibility)
+    const { error: propertyError } = await supabase
+        .from('properties')
+        .update(propertyData as never)
         .eq('id', id);
 
     if (propertyError) {
@@ -95,7 +107,7 @@ export async function PUT(
 
         // Then insert new
         if (images.length > 0) {
-            const imagesToInsert = images.map((img: any, index: number) => ({
+            const imagesToInsert = images.map((img: { image_url: string; is_primary: boolean; display_order?: number }, index: number) => ({
                 property_id: id,
                 image_url: img.image_url,
                 is_primary: img.is_primary,
@@ -104,7 +116,7 @@ export async function PUT(
 
             const { error: insertError } = await supabase
                 .from('property_images')
-                .insert(imagesToInsert);
+                .insert(imagesToInsert as never);
 
             if (insertError) {
                 return NextResponse.json({ error: 'Failed to insert new images' }, { status: 500 });
@@ -131,7 +143,7 @@ export async function DELETE(
     const { data: images, error: fetchError } = await supabase
         .from('property_images')
         .select('image_url')
-        .eq('property_id', id) as { data: { image_url: string }[] | null; error: any };
+        .eq('property_id', id) as { data: { image_url: string }[] | null; error: PostgrestError | null };
 
     if (fetchError) {
         console.error('Failed to fetch images for cleanup:', fetchError);

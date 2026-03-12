@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/supabase/verify-admin';
+import { buildingCreateSchema } from '@/lib/validations/admin';
+import type { Building } from '@/types';
 
 export async function GET() {
     const supabase = await createClient();
@@ -25,7 +27,8 @@ export async function GET() {
     }
 
     // Transform the count from array to number
-    const buildingsWithCount = (data || []).map((building: any) => ({
+    // Cast includes the `properties` relation field added by the select query
+    const buildingsWithCount = ((data || []) as (Building & { properties: { count: number }[] })[]).map((building) => ({
         ...building,
         property_count: building.properties?.[0]?.count ?? 0
     }));
@@ -44,10 +47,19 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
+    // Validate request body
+    const parsed = buildingCreateSchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
+            { status: 400 }
+        );
+    }
+
     // Create building
     const { data: building, error } = await supabase
         .from('buildings')
-        .insert(body)
+        .insert(parsed.data as never)
         .select()
         .single();
 

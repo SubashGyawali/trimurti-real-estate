@@ -9,18 +9,12 @@ async function fetchStats() {
     .from("properties")
     .select("id", { count: "exact", head: true });
 
-  // Active listings (try common column names)
-  let activeListings = 0;
-  try {
-    const { count } = await supabase
-      .from("properties")
-      .select("id", { count: "exact" })
-      .eq("status", "active");
-    activeListings = count ?? 0;
-  } catch {
-    // fallback to total if no status column
-    activeListings = totalProperties ?? 0;
-  }
+  // Active listings
+  const { count: activeCount } = await supabase
+    .from("properties")
+    .select("id", { count: "exact", head: true })
+    .eq("is_active", true);
+  const activeListings = activeCount ?? 0;
 
   // This month's inquiries
   const start = new Date();

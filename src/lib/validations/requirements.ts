@@ -69,7 +69,7 @@ export const step1Schema = z.object({
 });
 
 export const step2Schema = z.object({
-  listing_type: z.enum(["sale", "rent"] as any),
+  listing_type: z.enum(["sale", "rent"] as const),
   property_types: z
     .array(z.enum(["1rk", "1bhk", "2bhk", "3bhk", "shop", "office"]))
     .min(1, "Please select at least one property type"),
@@ -119,7 +119,7 @@ export const requirementsFormSchema = z.object({
     .or(z.literal("")),
 
   // Step 2
-  listing_type: z.enum(["sale", "rent"] as any),
+  listing_type: z.enum(["sale", "rent"] as const),
   property_types: z
     .array(z.enum(["1rk", "1bhk", "2bhk", "3bhk", "shop", "office"]))
     .min(1, "Please select at least one property type"),

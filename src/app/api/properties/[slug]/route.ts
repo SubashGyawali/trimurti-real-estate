@@ -58,16 +58,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Property not found' }, { status: 404 });
     }
 
-    // Increment views count (non-blocking)
-    supabase
+    // Increment views count (non-blocking, fire-and-forget)
+    // Note: uses read-then-write which can lose increments under concurrency.
+    // For exact counts, use a Supabase RPC with SQL: views_count = views_count + 1
+    void supabase
       .from('properties')
       .update({ views_count: (data.views_count || 0) + 1 } as never)
-      .eq('id', data.id)
-      .then(({ error: updateError }) => {
-        if (updateError) {
-          console.error('Error incrementing views:', updateError);
-        }
-      });
+      .eq('id', data.id);
 
     // Sort images by display_order
     if (data.property_images) {

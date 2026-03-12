@@ -23,7 +23,7 @@ export const contactFormSchema = z.object({
     .email("Please enter a valid email address")
     .optional()
     .or(z.literal("")),
-  subject: z.enum(["general", "buying", "renting", "selling", "other"] as any),
+  subject: z.enum(["general", "buying", "renting", "selling", "other"] as const),
   message: z
     .string()
     .max(500, "Message must be less than 500 characters")
