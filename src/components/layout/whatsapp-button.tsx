@@ -32,7 +32,7 @@ export function WhatsAppButton({
       onClick={handleClick}
       style={{ animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
       className={cn(
-        "fixed bottom-6 right-6 z-50",
+        "hidden md:flex fixed bottom-6 right-6 z-50",
         "flex h-14 w-14 items-center justify-center",
         "rounded-full bg-[#25D366] text-white shadow-lg",
         "transition-all duration-300 ease-in-out",

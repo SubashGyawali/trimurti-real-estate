@@ -86,7 +86,7 @@ export function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center justify-self-start">
               <motion.span
-                className="text-xl font-bold text-white md:text-2xl"
+                className="whitespace-nowrap text-base font-bold text-white sm:text-xl md:text-2xl"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >

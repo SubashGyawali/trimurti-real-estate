@@ -82,7 +82,7 @@ export function PropertyHeader({ property }: PropertyHeaderProps) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:gap-3">
         <Button
           className="bg-[#25D366] hover:bg-[#20BD5A]"
           onClick={handleWhatsApp}
@@ -95,8 +95,9 @@ export function PropertyHeader({ property }: PropertyHeaderProps) {
           Schedule Visit
         </Button>
         <FavoriteButton propertyId={property.id} variant="button" />
-        <Button variant="ghost" size="icon" onClick={handleShare}>
-          <Share2 className="h-4 w-4" />
+        <Button variant="outline" onClick={handleShare}>
+          <Share2 className="mr-2 h-4 w-4" />
+          Share
         </Button>
       </div>
     </div>
