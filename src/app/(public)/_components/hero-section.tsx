@@ -50,7 +50,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[hsl(var(--brand-blue))] via-[hsl(213,54%,20%)] to-[hsl(217,54%,15%)]">
+    <section className="relative -mt-16 min-h-screen overflow-hidden bg-gradient-to-br from-[hsl(var(--brand-blue))] via-[hsl(213,54%,20%)] to-[hsl(217,54%,15%)] md:-mt-20">
       {/* Animated background patterns */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Grid pattern */}
@@ -85,7 +85,7 @@ export function HeroSection() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute -left-20 bottom-40 h-80 w-80 rounded-full bg-[hsl(var(--accent))]/10 blur-3xl"
+          className="absolute -left-20 bottom-40 h-80 w-80 rounded-full bg-[hsl(var(--brand-gold))]/10 blur-3xl"
         />
         {/* Geometric shapes */}
         <motion.div

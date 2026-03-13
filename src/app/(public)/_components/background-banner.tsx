@@ -72,8 +72,8 @@ export function BackgroundBanner() {
               asChild
               size="lg"
               className={cn(
-                "gap-2 bg-[hsl(var(--accent))] px-8 text-white",
-                "hover:bg-[hsl(var(--accent))]/90",
+                "gap-2 bg-[hsl(var(--brand-gold))] px-8 text-white",
+                "hover:bg-[hsl(var(--brand-gold))]/90",
                 "shadow-lg shadow-black/20"
               )}
             >

@@ -87,7 +87,7 @@ export function HeroSectionV2() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative -mt-16 min-h-screen overflow-hidden md:-mt-20">
       {/* Background Images Container with Cross-Fade */}
       <div className="absolute inset-0">
         <AnimatePresence initial={false}>
@@ -160,7 +160,7 @@ export function HeroSectionV2() {
           >
             {heroContent.title}
             <br />
-            <span className="text-[hsl(var(--accent))]">
+            <span className="text-[hsl(var(--brand-gold))]">
               {heroContent.highlightedText}
             </span>
           </motion.h1>
@@ -180,7 +180,7 @@ export function HeroSectionV2() {
           >
             <Button
               size="lg"
-              className="gap-2 bg-[hsl(var(--accent))] px-8 text-white hover:bg-[hsl(var(--accent))]/90"
+              className="gap-2 bg-[hsl(var(--brand-gold))] px-8 text-white hover:bg-[hsl(var(--brand-gold))]/90"
               onClick={() => router.push(heroContent.primaryCta.href)}
             >
               {heroContent.primaryCta.text}
