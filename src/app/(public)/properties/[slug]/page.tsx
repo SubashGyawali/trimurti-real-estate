@@ -149,7 +149,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           {/* Left Column - Main Content */}
-          <div className="space-y-8">
+          <div className="min-w-0 space-y-8">
             {/* Image Gallery */}
             <PropertyGallery
               images={typedProperty.property_images}
