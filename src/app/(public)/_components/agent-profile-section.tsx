@@ -112,7 +112,7 @@ function FounderSpotlight({
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="relative lg:col-span-2"
           >
-            <div className="relative aspect-[4/3] lg:aspect-auto lg:h-full min-h-[300px]">
+            <div className="relative aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[300px]">
               <Image
                 src={member.image}
                 alt={`${member.name} - ${member.title}`}
@@ -132,7 +132,7 @@ function FounderSpotlight({
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
             transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-            className="flex flex-col justify-center p-8 md:p-10 lg:col-span-3 lg:p-12"
+            className="flex flex-col justify-center p-5 sm:p-8 md:p-10 lg:col-span-3 lg:p-12"
           >
             {/* Badge */}
             <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-[hsl(var(--brand-gold))]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[hsl(var(--brand-gold))]">
@@ -151,17 +151,17 @@ function FounderSpotlight({
             </p>
 
             {/* Extended Bio */}
-            <p className="mt-5 leading-relaxed text-muted-foreground">
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-base">
               {member.founderBio || member.bio}
             </p>
 
             {/* Specializations */}
             {member.specializations && (
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-1.5 sm:mt-5 sm:gap-2">
                 {member.specializations.map((spec) => (
                   <span
                     key={spec}
-                    className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary"
+                    className="rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary sm:px-3 sm:py-1 sm:text-xs"
                   >
                     {spec}
                   </span>
@@ -171,7 +171,7 @@ function FounderSpotlight({
 
             {/* Stats Row */}
             {member.stats && (
-              <div className="mt-8 grid grid-cols-3 gap-4 border-t border-gray-100 pt-8">
+              <div className="mt-5 grid grid-cols-3 gap-2 border-t border-gray-100 pt-5 sm:mt-8 sm:gap-4 sm:pt-8">
                 {member.stats.map((stat, index) => (
                   <FounderStat
                     key={stat.label}
@@ -184,15 +184,16 @@ function FounderSpotlight({
             )}
 
             {/* Action Buttons */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
               <Button
+                size="sm"
                 className="gap-2 bg-[#25D366] text-white hover:bg-[#20BD5A]"
                 onClick={handleWhatsAppClick}
               >
                 <MessageCircle className="h-4 w-4" />
                 WhatsApp
               </Button>
-              <Button variant="outline" className="gap-2" asChild>
+              <Button variant="outline" size="sm" className="gap-2" asChild>
                 <Link href={`tel:${member.phone.replace(/\s/g, "")}`}>
                   <Phone className="h-4 w-4" />
                   {member.phone}
@@ -201,6 +202,7 @@ function FounderSpotlight({
               {member.email && (
                 <Button
                   variant="ghost"
+                  size="sm"
                   className="gap-2 text-muted-foreground"
                   asChild
                 >
@@ -255,11 +257,11 @@ function FounderStat({
       transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
       className="text-center"
     >
-      <div className="font-plus-jakarta text-2xl font-bold text-primary md:text-3xl">
+      <div className="font-plus-jakarta text-xl font-bold text-primary sm:text-2xl md:text-3xl">
         {count}
         {stat.suffix}
       </div>
-      <div className="mt-1 text-xs text-muted-foreground">{stat.label}</div>
+      <div className="mt-1 text-[10px] text-muted-foreground sm:text-xs">{stat.label}</div>
     </motion.div>
   );
 }

@@ -97,14 +97,14 @@ export default async function HomePage() {
       {/* Featured property listings from database */}
       <FeaturedProperties properties={featuredProperties || []} />
 
+      {/* Team member profiles */}
+      <AgentProfileSection />
+
       {/* Feature tiles highlighting value propositions */}
       <FeaturesSection />
 
       {/* Full-width CTA banner with background image */}
       <BackgroundBanner />
-
-      {/* Team member profiles */}
-      <AgentProfileSection />
 
       {/* Customer testimonials carousel */}
       <TestimonialsSection />

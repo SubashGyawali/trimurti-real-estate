@@ -68,7 +68,7 @@ export function TrustBadgesSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="relative bg-white py-16 md:py-20">
+    <section className="relative bg-white py-8 sm:py-16 md:py-20">
       {/* Subtle top shadow for depth */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
@@ -80,8 +80,8 @@ export function TrustBadgesSection() {
           animate={isInView ? "visible" : "hidden"}
           className="mx-auto max-w-4xl"
         >
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+          {/* Stats Grid - always 3 columns */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-8">
             {trustStats.map((stat, index) => (
               <motion.div
                 key={stat.id}
@@ -93,39 +93,39 @@ export function TrustBadgesSection() {
                     "sm:after:absolute sm:after:-right-4 sm:after:top-1/2 sm:after:h-16 sm:after:-translate-y-1/2 sm:after:w-px sm:after:bg-border"
                 )}
               >
-                {/* Icon */}
+                {/* Icon - hidden on mobile for compactness */}
                 {stat.icon && (
                   <div
                     className={cn(
-                      "mb-4 flex h-14 w-14 items-center justify-center rounded-full",
+                      "mb-2 flex h-10 w-10 items-center justify-center rounded-full sm:mb-4 sm:h-14 sm:w-14",
                       "bg-primary/10 text-primary",
                       "transition-transform duration-300 group-hover:scale-110"
                     )}
                   >
-                    <stat.icon className="h-6 w-6" />
+                    <stat.icon className="h-4 w-4 sm:h-6 sm:w-6" />
                   </div>
                 )}
 
                 {/* Counter */}
-                <div className="flex items-baseline gap-1">
+                <div className="flex items-baseline gap-0.5 sm:gap-1">
                   <AnimatedCounter
                     end={stat.end}
                     duration={2000 + index * 200}
-                    className="font-plus-jakarta text-4xl font-bold text-foreground md:text-5xl"
+                    className="font-plus-jakarta text-2xl font-bold text-foreground sm:text-4xl md:text-5xl"
                   />
-                  <span className="font-plus-jakarta text-3xl font-bold text-primary md:text-4xl">
+                  <span className="font-plus-jakarta text-xl font-bold text-primary sm:text-3xl md:text-4xl">
                     {stat.suffix}
                   </span>
                 </div>
 
                 {/* Label */}
-                <p className="mt-2 text-base font-medium text-muted-foreground">
+                <p className="mt-1 text-xs font-medium text-muted-foreground sm:mt-2 sm:text-base">
                   {stat.label}
                 </p>
 
-                {/* Description - visible on hover */}
+                {/* Description - visible on hover, hidden on mobile */}
                 {stat.description && (
-                  <p className="mt-1 text-sm text-muted-foreground/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <p className="mt-1 hidden text-sm text-muted-foreground/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:block">
                     {stat.description}
                   </p>
                 )}
