@@ -108,7 +108,7 @@ export default function RootLayout({
         <OrganizationJsonLd />
         <WebsiteJsonLd />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} overflow-x-hidden`}>
         <AuthProvider>
           <MainLayout>{children}</MainLayout>
           <Toaster position="top-right" richColors />
