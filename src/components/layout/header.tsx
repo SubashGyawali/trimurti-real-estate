@@ -1,20 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import {
-  Menu,
-  Phone,
-  MessageCircle,
-  User,
-  LogOut,
   Heart,
+  LogOut,
+  Menu,
+  MessageCircle,
+  Phone,
   Shield,
+  User,
 } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,11 +28,6 @@ import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/components/auth/auth-provider";
 import { useScrollState } from "@/hooks/use-scroll-state";
 
-// Dynamic import LiquidGlass to avoid SSR issues (WebGL)
-const LiquidGlass = dynamic(() => import("liquid-glass-react"), {
-  ssr: false,
-});
-
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/properties", label: "Properties" },
@@ -48,21 +41,13 @@ const WHATSAPP_NUMBER = "919819446163";
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isCompact } = useScrollState(50);
+  const { isCompact: isScrolled } = useScrollState(50);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [glassError, setGlassError] = useState(false);
   const { user, isAuthenticated, isLoading, isAdmin, profile, signOut } =
     useAuthContext();
 
-  // Detect desktop for LiquidGlass (WebGL is desktop-focused)
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
-    setIsDesktop(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  // Grid glass header is always dark on desktop, so always use light text
+  const useLightDesktopText = true;
 
   const handleSignOut = async () => {
     try {
@@ -91,264 +76,187 @@ export function Header() {
     return parts[0][0].toUpperCase();
   };
 
-  const showCompact = isCompact && isDesktop;
-
-  const navContent = (
-    <div
-      className={cn(
-        "flex items-center justify-between transition-all duration-300",
-        showCompact ? "h-12 px-6" : "h-16 px-4 md:h-20"
-      )}
-    >
-      {/* Logo */}
-      <Link href="/" className="flex items-center">
-        <span
-          className={cn(
-            "whitespace-nowrap font-bold text-white transition-all duration-300",
-            showCompact ? "text-sm" : "text-base sm:text-xl md:text-2xl"
-          )}
-        >
-          Trimurti{" "}
-          <span className="text-[hsl(var(--brand-gold))]">
-            {showCompact ? "RE" : "Real Estate"}
-          </span>
-        </span>
-      </Link>
-
-      {/* Desktop Navigation */}
-      <nav className="hidden items-center gap-0.5 md:flex">
-        {navLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              "rounded-full px-3 py-1.5 font-medium transition-colors",
-              showCompact ? "text-xs" : "text-sm",
-              pathname === link.href
-                ? "text-[hsl(var(--brand-gold))]"
-                : "text-white/90 hover:text-white hover:bg-white/10"
-            )}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
-
-      {/* Right Actions */}
-      <div className="flex items-center gap-2">
-        {/* Phone - Desktop only, hidden in compact */}
-        {!showCompact && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hidden text-white hover:bg-white/10 hover:text-white lg:flex"
-            asChild
-          >
-            <a href={`tel:${PHONE_NUMBER.replace(/\s/g, "")}`}>
-              <Phone className="mr-2 h-4 w-4" />
-              {PHONE_NUMBER}
-            </a>
-          </Button>
-        )}
-
-        {/* WhatsApp Button - Desktop only */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "hidden rounded-full bg-[#25D366] text-white hover:bg-[#20BD5A] md:flex",
-            showCompact ? "h-7 w-7" : "h-9 w-9"
-          )}
-          onClick={handleWhatsAppClick}
-          aria-label="Contact via WhatsApp"
-        >
-          <MessageCircle className={showCompact ? "h-3.5 w-3.5" : "h-5 w-5"} />
-        </Button>
-
-        {/* User Menu - Desktop */}
-        <div className="hidden md:block">
-          {isLoading ? (
-            <Skeleton
-              className={cn(
-                "bg-white/20",
-                showCompact ? "h-7 w-16" : "h-9 w-24"
-              )}
-            />
-          ) : isAuthenticated ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "rounded-full p-0 hover:bg-white/10",
-                    showCompact ? "h-7 w-7" : "h-9 w-9"
-                  )}
-                >
-                  <Avatar
-                    className={cn(
-                      "border-2 border-white/30",
-                      showCompact ? "h-7 w-7" : "h-9 w-9"
-                    )}
-                  >
-                    {(profile?.avatar_url ||
-                      user?.user_metadata?.avatar_url) && (
-                      <AvatarImage
-                        src={
-                          profile?.avatar_url || user?.user_metadata?.avatar_url
-                        }
-                        alt={profile?.full_name || "User avatar"}
-                        className="object-cover"
-                      />
-                    )}
-                    <AvatarFallback className="bg-white/20 text-sm font-medium text-white">
-                      {getInitials(profile?.full_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    My Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/favorites" className="flex items-center">
-                    <Heart className="mr-2 h-4 w-4" />
-                    Saved Properties
-                  </Link>
-                </DropdownMenuItem>
-                {isAdmin && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin" className="flex items-center">
-                        <Shield className="mr-2 h-4 w-4" />
-                        Admin Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button
-              variant="outline"
-              size={showCompact ? "sm" : "sm"}
-              className={cn(
-                "border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white",
-                showCompact && "h-7 px-3 text-xs"
-              )}
-              asChild
-            >
-              <Link href="/login">
-                <User
-                  className={cn(
-                    "mr-1.5",
-                    showCompact ? "h-3 w-3" : "h-4 w-4"
-                  )}
-                />
-                Login
-              </Link>
-            </Button>
-          )}
-        </div>
-
-        {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-white hover:bg-white/10 hover:text-white md:hidden"
-          onClick={() => setIsMobileNavOpen(true)}
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6" />
-        </Button>
-      </div>
-    </div>
-  );
+  const desktopTextClass = useLightDesktopText ? "lg:text-white" : "lg:text-foreground";
+  const desktopMutedTextClass = useLightDesktopText
+    ? "text-white/80 hover:text-white"
+    : "text-foreground/70 hover:text-foreground";
+  const desktopActiveTextClass = useLightDesktopText
+    ? "text-[hsl(var(--brand-gold))]"
+    : "text-primary";
+  const desktopOutlineButtonClass = useLightDesktopText
+    ? "border-white/25 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+    : "border-border/60 bg-background/70 text-foreground hover:bg-background hover:text-foreground";
+  const desktopGhostButtonClass = useLightDesktopText
+    ? "text-white hover:bg-white/10 hover:text-white"
+    : "text-foreground hover:bg-foreground/5 hover:text-foreground";
+  const avatarBorderClass = useLightDesktopText
+    ? "border-white/30"
+    : "border-border/60";
 
   return (
     <>
-      <header className="fixed top-0 z-40 w-full">
-        {/* Full-width background — visible in expanded state */}
-        <motion.div
-          className="pointer-events-none absolute inset-0 bg-primary"
-          animate={{ opacity: showCompact ? 0 : 1 }}
-          transition={{ duration: 0.35 }}
-        />
+      <header>
+        <nav className="fixed top-0 z-50 w-full px-2">
+          <div
+            className={cn(
+              "mx-auto mt-2 rounded-2xl border border-border/40 bg-background/80 px-4 shadow-lg shadow-black/5 backdrop-blur-lg transition-all duration-300 sm:px-6 lg:mt-3 lg:max-w-5xl lg:rounded-full lg:border-white/10 lg:px-8 lg:shadow-none header-grid-glass",
+              isScrolled &&
+                "lg:max-w-4xl lg:rounded-full lg:border-white/15 lg:px-5 lg:shadow-2xl lg:shadow-black/15 header-grid-glass-scrolled"
+            )}
+          >
+            <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+              <div className="flex w-full items-center justify-between lg:w-auto">
+                <Link href="/" aria-label="home" className="flex items-center">
+                  <span
+                    className={cn(
+                      "whitespace-nowrap text-lg font-bold tracking-tight text-foreground transition-colors sm:text-xl",
+                      desktopTextClass
+                    )}
+                  >
+                    Trimurti{" "}
+                    <span className="text-[hsl(var(--brand-gold))]">
+                      Real Estate
+                    </span>
+                  </span>
+                </Link>
 
-        {/* Nav container — morphs between full-width and compact pill */}
-        <motion.div
-          className="relative"
-          animate={
-            showCompact
-              ? {
-                  maxWidth: "52rem",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                  marginTop: "0.75rem",
-                  borderRadius: "9999px",
-                }
-              : {
-                  maxWidth: "100%",
-                  marginLeft: "0px",
-                  marginRight: "0px",
-                  marginTop: "0px",
-                  borderRadius: "0px",
-                }
-          }
-          transition={{
-            duration: 0.4,
-            ease: [0.25, 0.1, 0.25, 1],
-          }}
-        >
-          {showCompact ? (
-            // Compact: Liquid glass pill — sized container for LiquidGlass centering
-            !glassError ? (
-              <div className="relative flex items-center justify-center" style={{ height: "3.5rem" }}>
-                <LiquidGlass
-                  displacementScale={40}
-                  blurAmount={0.6}
-                  saturation={140}
-                  elasticity={0.15}
-                  cornerRadius={999}
-                  className="w-full"
-                  padding="0"
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    background: "rgba(30, 58, 95, 0.45)",
-                  }}
+                <button
+                  onClick={() => setIsMobileNavOpen(true)}
+                  aria-label="Open menu"
+                  className="relative z-20 -mr-2 rounded-full p-2 text-foreground transition-colors hover:bg-foreground/5 lg:hidden"
                 >
-                  {navContent}
-                </LiquidGlass>
+                  <Menu className="size-6" />
+                </button>
               </div>
-            ) : (
-              // Fallback for non-WebGL browsers
-              <div className="glass-fallback rounded-full shadow-lg">
-                {navContent}
+
+              <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+                <ul className="flex items-center gap-8 text-sm">
+                  {navLinks.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={cn(
+                          "block font-medium transition-colors duration-150",
+                          pathname === link.href
+                            ? desktopActiveTextClass
+                            : desktopMutedTextClass
+                        )}
+                      >
+                        <span>{link.label}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )
-          ) : (
-            // Expanded: Full-width with container
-            <div className="container mx-auto">{navContent}</div>
-          )}
-        </motion.div>
+
+              <div className="hidden w-full items-center justify-end gap-2 lg:flex lg:w-auto">
+                {!isScrolled && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn("gap-2", desktopOutlineButtonClass)}
+                    asChild
+                  >
+                    <a href={`tel:${PHONE_NUMBER.replace(/\s/g, "")}`}>
+                      <Phone className="h-4 w-4" />
+                      {PHONE_NUMBER}
+                    </a>
+                  </Button>
+                )}
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-[#25D366] text-white hover:bg-[#20BD5A] hover:text-white"
+                  onClick={handleWhatsAppClick}
+                  aria-label="Contact via WhatsApp"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+
+                {isLoading ? (
+                  <Skeleton className="h-9 w-24 bg-foreground/10" />
+                ) : isAuthenticated ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          "rounded-full p-0",
+                          desktopGhostButtonClass
+                        )}
+                      >
+                        <Avatar className={cn("h-9 w-9 border-2", avatarBorderClass)}>
+                          {(profile?.avatar_url ||
+                            user?.user_metadata?.avatar_url) && (
+                            <AvatarImage
+                              src={
+                                profile?.avatar_url || user?.user_metadata?.avatar_url
+                              }
+                              alt={profile?.full_name || "User avatar"}
+                              className="object-cover"
+                            />
+                          )}
+                          <AvatarFallback className="bg-white/20 text-sm font-medium text-white">
+                            {getInitials(profile?.full_name)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile" className="flex items-center">
+                          <User className="mr-2 h-4 w-4" />
+                          My Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/favorites" className="flex items-center">
+                          <Heart className="mr-2 h-4 w-4" />
+                          Saved Properties
+                        </Link>
+                      </DropdownMenuItem>
+                      {isAdmin && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin" className="flex items-center">
+                              <Shield className="mr-2 h-4 w-4" />
+                              Admin Dashboard
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={handleSignOut}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={desktopOutlineButtonClass}
+                    asChild
+                  >
+                    <Link href="/login">
+                      <User className="mr-1.5 h-4 w-4" />
+                      Login
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </nav>
       </header>
 
-      {/* Mobile Navigation */}
       <MobileNav
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
