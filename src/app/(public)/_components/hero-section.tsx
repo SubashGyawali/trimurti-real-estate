@@ -7,7 +7,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import LiquidGlass from "liquid-glass-react";
 import { Search, Building, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -114,15 +113,14 @@ export function HeroSection() {
         </AnimatePresence>
 
         {/* ============CHUNK 1============ */}
+
+        {/* Dark gradient overlay — heavy on left for text readability, transparent on right to show images */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628]/90 via-[#0a1628]/70 to-[#0a1628]/20" />
+        {/* Bottom gradient for scroll indicator readability */}
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a1628]/60 to-transparent" />
       </div>
 
       {/* Content Container */}
-
-
-
-
-
-      
         <div className="container relative z-10 mx-auto flex min-h-screen flex-col justify-center px-4 py-20 lg:py-24">
           <motion.div
             variants={staggerContainer}
@@ -143,7 +141,7 @@ export function HeroSection() {
             {/* Headline */}
             <motion.h1
               variants={fadeInUp}
-              className="font-plus-jakarta text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
+              className="font-plus-jakarta text-4xl font-bold leading-tight text-white drop-shadow-lg sm:text-5xl md:text-6xl lg:text-7xl"
             >
               {heroContent.title}
               <br />
@@ -155,7 +153,7 @@ export function HeroSection() {
             {/* Subtitle */}
             <motion.p
               variants={fadeInUp}
-              className="mt-6 max-w-xl text-lg text-white/80 sm:text-xl"
+              className="mt-6 max-w-xl text-lg text-white/85 drop-shadow-md sm:text-xl"
             >
               {heroContent.subtitle}
             </motion.p>
