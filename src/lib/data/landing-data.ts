@@ -27,7 +27,7 @@ import type {
 export const heroContent: HeroContent = {
   badge: "Trusted Real Estate Partner Since 2004",
   title: "Find Your Dream Home in Mumbai,",
-  highlightedText: "Kandivali and Malad West",
+  highlightedText: "Kandivali & Malad West",
   subtitle:
     "20+ years of trusted real estate service in the Heart of Mumbai. Your dream home is just a search away.",
   primaryCta: {

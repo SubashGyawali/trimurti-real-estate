@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
 import {
-  HeroSectionV2,
+  HeroSection,
   TrustBadgesSection,
   FeaturesSection,
   BackgroundBanner,
@@ -91,7 +91,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero with background image, search bar, and CTAs */}
-      <HeroSectionV2 />
+      <HeroSection />
 
       {/* Trust badges with animated stats */}
       <TrustBadgesSection />

@@ -41,12 +41,16 @@ const WHATSAPP_NUMBER = "919819446163";
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isCompact: isScrolled } = useScrollState(50);
+  const { isCompact: isScrolled } = useScrollState(800);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { user, isAuthenticated, isLoading, isAdmin, profile, signOut } =
     useAuthContext();
 
-  // Grid glass header is always dark on desktop, so always use light text
+  const isLandingPage = pathname === "/";
+  // Full-wide header only on landing page before scroll; pill shape everywhere else
+  const isPillShape = !isLandingPage || isScrolled;
+
+  // Grid glass header always has a dark blue base, so always use light text on desktop
   const useLightDesktopText = true;
 
   const handleSignOut = async () => {
@@ -96,12 +100,13 @@ export function Header() {
   return (
     <>
       <header>
-        <nav className="fixed top-0 z-50 w-full px-2">
+        <nav className={cn("fixed top-0 z-50 w-full", isPillShape ? "px-2" : "px-0 lg:px-0")}>
           <div
             className={cn(
-              "mx-auto mt-2 rounded-2xl border border-border/40 bg-background/80 px-4 shadow-lg shadow-black/5 backdrop-blur-lg transition-all duration-300 sm:px-6 lg:mt-3 lg:max-w-5xl lg:rounded-full lg:border-white/10 lg:px-8 lg:shadow-none header-grid-glass",
-              isScrolled &&
-                "lg:max-w-4xl lg:rounded-full lg:border-white/15 lg:px-5 lg:shadow-2xl lg:shadow-black/15 header-grid-glass-scrolled"
+              "mx-auto mt-2 rounded-2xl border border-border/40 bg-background/80 px-4 shadow-lg shadow-black/5 backdrop-blur-lg transition-all duration-500 ease-in-out sm:px-6 header-grid-glass",
+              !isPillShape
+                ? "lg:mt-0 lg:w-full lg:max-w-[100%] lg:rounded-none lg:border-white/15 lg:px-12"
+                : "lg:mt-3 lg:max-w-4xl lg:rounded-[2rem] lg:border-white/30 lg:px-5 header-grid-glass-scrolled"
             )}
           >
             <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
