@@ -38,11 +38,11 @@ export const buildingImages: BuildingImage[] = [
   },
   {
     src: "/Building Images/IMG_8143.JPG",
-    alt: "MHADA residential building exterior",
+    alt: "Residential building exterior in Kandivali West",
   },
   {
     src: "/Building Images/IMG_8146.JPG",
-    alt: "Apartment building in MHADA Complex",
+    alt: "Apartment building in Kandivali West",
   },
   {
     src: "/Building Images/IMG_8174.JPG",
@@ -54,15 +54,15 @@ export const buildingImages: BuildingImage[] = [
   },
   {
     src: "/Building Images/Mhada 30.JPG",
-    alt: "MHADA Building 30 in Kandivali",
+    alt: "Residential building in Kandivali",
   },
   {
     src: "/Building Images/Mhada 55, 56.JPG",
-    alt: "MHADA Buildings 55 and 56",
+    alt: "Residential buildings in Kandivali West",
   },
   {
     src: "/Building Images/Mhada 55.JPG",
-    alt: "MHADA Building 55 exterior view",
+    alt: "Building exterior view in Kandivali West",
   },
   {
     src: "/Building Images/Pancharatna.JPG",

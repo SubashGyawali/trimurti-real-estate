@@ -19,7 +19,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROPERTY_TYPE_OPTIONS } from "@/types/forms";
 import { heroContent } from "@/lib/data/landing-data";
-import type { BuildingImage } from "@/lib/data/building-images";
+import { buildingImages, getNextRandomIndex } from "@/lib/data/building-images";
 import { cn } from "@/lib/utils";
 
 // Animation variants
@@ -72,56 +72,24 @@ export function HeroSection() {
   }, []);
 
 
-  // Dynamic image list fetched from the /public/Building Images/ directory
-  const [images, setImages] = useState<BuildingImage[]>([]);
+  // Image carousel state - start with index 0 to avoid hydration mismatch
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [imagesReady, setImagesReady] = useState(false);
 
-  // Fetch available images from the API, preload the first one, then preload the rest in background
+  // Set random initial image on client mount only (prevents hydration mismatch)
   useEffect(() => {
-    fetch("/api/building-images")
-      .then((res) => res.json())
-      .then((data: BuildingImage[]) => {
-        if (data.length === 0) return;
-        const startIndex = Math.floor(Math.random() * data.length);
-        setImages(data);
-        setCurrentImageIndex(startIndex);
-
-        // Preload the first image before showing, then preload the rest in background
-        const firstImg = new window.Image();
-        firstImg.src = data[startIndex].src;
-        firstImg.onload = () => {
-          setImagesReady(true);
-          // Preload remaining images in background
-          data.forEach((img, i) => {
-            if (i !== startIndex) {
-              const preload = new window.Image();
-              preload.src = img.src;
-            }
-          });
-        };
-        firstImg.onerror = () => setImagesReady(true);
-      })
-      .catch(() => {});
+    setCurrentImageIndex(Math.floor(Math.random() * buildingImages.length));
   }, []);
 
   // Auto-cycle through images every 10 seconds
   useEffect(() => {
-    if (images.length <= 1 || !imagesReady) return;
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => {
-        let next: number;
-        do {
-          next = Math.floor(Math.random() * images.length);
-        } while (next === prev);
-        return next;
-      });
+      setCurrentImageIndex((prevIndex) => getNextRandomIndex(prevIndex));
     }, IMAGE_CYCLE_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [images.length, imagesReady]);
+  }, []);
 
-  const currentImage = images[currentImageIndex];
+  const currentImage = buildingImages[currentImageIndex];
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -142,26 +110,24 @@ export function HeroSection() {
       {/* Background Images Container with Cross-Fade */}
       <div className="absolute inset-0">
         <AnimatePresence initial={false}>
-          {currentImage && (
-            <motion.div
-              key={currentImageIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: CROSSFADE_DURATION, ease: "easeInOut" }}
-              className="absolute inset-0"
-            >
-              <Image
-                src={currentImage.src}
-                alt={currentImage.alt}
-                fill
-                priority
-                className="object-cover object-center"
-                sizes="100vw"
-                quality={85}
-              />
-            </motion.div>
-          )}
+          <motion.div
+            key={currentImageIndex}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: CROSSFADE_DURATION, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={currentImage.src}
+              alt={currentImage.alt}
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="100vw"
+              quality={85}
+            />
+          </motion.div>
         </AnimatePresence>
 
         {/* ============CHUNK 1============ */}
@@ -364,7 +330,7 @@ export function HeroSection() {
 
       {/* Image indicator dots (optional, shows which image is active) */}
       <div className="absolute bottom-24 left-1/2 z-10 -translate-x-1/2 hidden md:flex items-center gap-1.5">
-        {images.slice(0, 5).map((_, index) => (
+        {buildingImages.slice(0, 5).map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentImageIndex(index)}
@@ -377,9 +343,9 @@ export function HeroSection() {
             aria-label={`View image ${index + 1}`}
           />
         ))}
-        {images.length > 5 && (
+        {buildingImages.length > 5 && (
           <span className="ml-1 text-xs text-white/40">
-            +{images.length - 5}
+            +{buildingImages.length - 5}
           </span>
         )}
       </div>
