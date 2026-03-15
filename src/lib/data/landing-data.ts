@@ -27,7 +27,7 @@ import type {
  */
 export const heroContent: HeroContent = {
   badge: "Kandivali West's Most Trusted — Since 2004",
-  title: "Your Next Home in",
+  title: "Your Next Home in Mumbai",
   highlightedText: "Kandivali & Malad West.",
   subtitle:
     "500+ families settled. Every deal, face-to-face. Two decades of honest real estate in Kandivali & Malad West.",
