@@ -5,6 +5,7 @@ import {
   Calendar,
   Users,
   Building2,
+  Handshake,
   MapPin,
   FileText,
   Shield,
@@ -53,7 +54,7 @@ export const trustStats: StatItem[] = [
     suffix: "+",
     label: "Years Experience",
     icon: Calendar,
-    description: "Serving Kandivali West since 2004",
+    description: "Serving Kandivali & Malad West since 2004",
   },
   {
     id: "families",
@@ -61,15 +62,15 @@ export const trustStats: StatItem[] = [
     suffix: "+",
     label: "Happy Families",
     icon: Users,
-    description: "Trusted by hundreds of families",
+    description: "Trusted across Kandivali & Malad West",
   },
   {
-    id: "buildings",
-    end: 53,
-    suffix: "",
-    label: "Buildings Covered",
-    icon: Building2,
-    description: "MHADA Complex & nearby areas",
+    id: "resale-rental",
+    end: 2,
+    suffix: "-in-1",
+    label: "Resale & Rental Experts",
+    icon: Handshake,
+    description: "Both Resale & Rental under one roof",
   },
 ];
 
@@ -99,7 +100,7 @@ export const sampleListings: FeaturedListing[] = [
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
     ],
-    building: "MHADA Tower A",
+    building: "Bhoomi Park, Kandivali West",
     isVerified: true,
     isFeatured: true,
   },
@@ -122,7 +123,7 @@ export const sampleListings: FeaturedListing[] = [
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
       "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&q=80",
     ],
-    building: "MHADA Building 15",
+    building: "Marina Enclave, Malad West",
     isVerified: true,
     isFeatured: true,
   },
@@ -139,7 +140,7 @@ export const sampleListings: FeaturedListing[] = [
     furnishing: "unfurnished",
     image:
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-    building: "MHADA Building 22",
+    building: "Dotam Complex, Kandivali West",
     isVerified: false,
     isFeatured: true,
   },
@@ -163,7 +164,7 @@ export const sampleListings: FeaturedListing[] = [
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
     ],
-    building: "MHADA Tower B",
+    building: "Evershine Nagar, Malad West",
     isVerified: true,
     isFeatured: true,
   },
@@ -182,7 +183,7 @@ export const sampleListings: FeaturedListing[] = [
     furnishing: "semi_furnished",
     image:
       "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&q=80",
-    building: "MHADA Building 8",
+    building: "Bhoomi Park, Kandivali West",
     isVerified: true,
     isFeatured: true,
   },
@@ -197,7 +198,7 @@ export const sampleListings: FeaturedListing[] = [
     furnishing: "unfurnished",
     image:
       "https://images.unsplash.com/photo-1604014237800-1c9102c219da?w=800&q=80",
-    building: "MHADA Commercial Block",
+    building: "Kandivali West Market",
     isVerified: true,
     isFeatured: true,
   },
@@ -212,7 +213,7 @@ export const features: Feature[] = [
     icon: MapPin,
     title: "Local Expertise",
     description:
-      "Deep knowledge of Kandivali West real estate market with 20+ years of experience in MHADA properties.",
+      "Deep knowledge of Kandivali & Malad West real estate market with 20+ years of hands-on experience.",
     color: "bg-blue-100 text-blue-600",
   },
   {
@@ -254,20 +255,20 @@ export const teamMembers: TeamMember[] = [
     phone: "+91 98194 46163",
     whatsapp: "919819446163",
     email: "niraj@trimurtirealestate.com",
-    bio: "A trusted name in Kandivali West, Mr. Niraj has guided 500+ families through MHADA sales, rentals, and resale decisions.",
+    bio: "A trusted name in Kandivali & Malad West, Mr. Niraj has guided 500+ families through property sales, rentals, and resale decisions.",
     isFounder: true,
     founderBio:
-      "Since 2004, Mr. Niraj Koirala has been the go-to real estate expert in Kandivali West. With an intimate knowledge of every building, every floor, and every corner of the MHADA complex, he has built Trimurti Real Estate into the most trusted property agency in the area. His commitment to transparency, honest pricing, and personal attention has helped over 500 families settle into their dream homes.",
+      "Since 2004, Mr. Niraj Koirala has been the go-to real estate expert in Kandivali & Malad West. With an intimate knowledge of every building, every floor, and every corner of the locality, he has built Trimurti Real Estate into the most trusted property agency in the area. His commitment to transparency, honest pricing, and personal attention has helped over 500 families settle into their dream homes.",
     specializations: [
-      "MHADA Property Resales",
+      "Resale & Rental Expert",
       "Property Valuation",
       "Legal Documentation",
-      "Rental Management",
+      "Kandivali & Malad West",
     ],
     stats: [
       { value: 20, suffix: "+", label: "Years Experience" },
       { value: 500, suffix: "+", label: "Families Helped" },
-      { value: 53, suffix: "", label: "Buildings Covered" },
+      { value: 2, suffix: "", label: "Prime Locations" },
     ],
     socialLinks: {
       facebook: "https://facebook.com/trimurtirealestate",
@@ -283,7 +284,7 @@ export const teamMembers: TeamMember[] = [
     phone: "+91 70651 30907",
     whatsapp: "917065130907",
     email: "devashish@trimurtirealestate.com",
-    bio: "Helps families shortlist practical rental options and relocate smoothly within Kandivali West.",
+    bio: "Helps families shortlist practical rental options and relocate smoothly within Kandivali & Malad West.",
     specializations: ["Rental Properties", "Family Relocations", "Tenant Screening"],
   },
   {
@@ -307,9 +308,9 @@ export const testimonials: Testimonial[] = [
   {
     id: "1",
     quote:
-      "Trimurti Real Estate made our home-buying journey smooth and stress-free. Mr. Niraj's deep knowledge of MHADA properties helped us find the perfect 2BHK within our budget. Highly recommended!",
+      "Trimurti Real Estate made our home-buying journey smooth and stress-free. Mr. Niraj's deep knowledge of the local market helped us find the perfect 2BHK within our budget. Highly recommended!",
     name: "Ravi & Priya Sharma",
-    location: "MHADA Tower A, Kandivali West",
+    location: "Kandivali West",
     rating: 5,
     propertyType: "2 BHK Purchase",
     date: "2024",
@@ -319,7 +320,7 @@ export const testimonials: Testimonial[] = [
     quote:
       "We were new to Mumbai and needed a rental urgently. The team at Trimurti understood our requirements perfectly and found us a lovely 1BHK near the garden within a week. The documentation was handled professionally.",
     name: "Amit Patel",
-    location: "MHADA Building 15",
+    location: "Malad West",
     rating: 5,
     propertyType: "1 BHK Rental",
     date: "2024",
@@ -329,7 +330,7 @@ export const testimonials: Testimonial[] = [
     quote:
       "After trying multiple agents, we finally found Trimurti Real Estate. Their transparency about pricing and honest advice about properties saved us from making a costly mistake. Trustworthy and reliable!",
     name: "Sunita Deshmukh",
-    location: "MHADA Building 22, Kandivali West",
+    location: "Kandivali West",
     rating: 5,
     propertyType: "2 BHK Purchase",
     date: "2023",
@@ -361,19 +362,19 @@ export const ctaBannerContent: BannerContent = {
  */
 export const faqs: FAQItem[] = [
   {
-    question: "What areas do you cover in Kandivali West?",
+    question: "What areas do you cover?",
     answer:
-      "We specialize in MHADA Complex properties including all 53 seven-storied buildings and 24-storied towers. We also cover nearby private buildings like Bhoomi Park, Marina, and Dotam.",
+      "We cover properties across Kandivali West and Malad West, including popular buildings like Bhoomi Park, Marina, Dotam, and many more residential and commercial complexes in the area.",
   },
   {
     question: "What types of properties do you deal with?",
     answer:
-      "We handle 1RK, 1BHK, 2BHK, and 3BHK residential apartments for both sale and rent. We also assist with commercial spaces like shops and offices in the MHADA area.",
+      "We handle 1RK, 1BHK, 2BHK, and 3BHK residential apartments for both sale and rent across Kandivali & Malad West. We also assist with commercial spaces like shops and offices.",
   },
   {
     question: "Do you help with property documentation?",
     answer:
-      "Yes, we provide complete assistance with property documentation including legal verification, society NOC, stamp duty, registration, and transfer procedures for MHADA properties.",
+      "Yes, we provide complete assistance with property documentation including legal verification, society NOC, stamp duty, registration, and transfer procedures.",
   },
   {
     question: "How can I schedule a property visit?",
