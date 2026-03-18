@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Trimurti Real Estate",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://trimurtirealestate.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.trimurtirealestate.com",
 
   description: {
     full: "Your trusted partner in Mumbai real estate for over 20 years. Find flats for sale and rent in Kandivali West & Malad West.",

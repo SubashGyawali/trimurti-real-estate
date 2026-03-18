@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   title:
     "Find Your Dream Home in Mumbai, Kandivali and Malad West | Trimurti Real Estate",
   description:
-    "20+ years of trusted real estate service. MHADA flats, apartments for sale and rent in Kandivali West and Malad West, Mumbai. Expert guidance, hassle-free documentation.",
+    "20+ years of trusted real estate service. Apartments & flats for sale and rent in Kandivali West and Malad West, Mumbai. Expert guidance, hassle-free documentation.",
   alternates: {
     canonical: "/",
   },
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     title:
       "Find Your Dream Home in Mumbai, Kandivali and Malad West | Trimurti Real Estate",
     description:
-      "20+ years of trusted real estate service. MHADA flats, apartments for sale and rent in Kandivali West and Malad West, Mumbai.",
+      "20+ years of trusted real estate service. Apartments & flats for sale and rent in Kandivali West and Malad West, Mumbai.",
     url: "/",
     type: "website",
     locale: "en_IN",
