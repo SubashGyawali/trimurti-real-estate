@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, Check } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { siteConfig } from "@/lib/site-config";
 import { PropertyGallery } from "@/components/property/property-gallery";
 import { PropertyDetailsGrid } from "@/components/property/property-details-grid";
 import { PropertyHeader } from "@/components/property/property-header";
@@ -52,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const primaryImage =
     property.property_images?.find((img) => img.is_primary)?.image_url ||
     property.property_images?.[0]?.image_url ||
-    "/images/property-placeholder.jpg";
+    siteConfig.images.ogDefault;
 
   const priceText = formatPrice(property.price, property.listing_type);
 
@@ -72,9 +73,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
+      site: siteConfig.social.twitter,
+      creator: siteConfig.social.twitter,
       title: property.title,
       description: property.description || priceText,
-      images: [primaryImage],
+      images: [{ url: primaryImage, alt: property.title }],
     },
   };
 }

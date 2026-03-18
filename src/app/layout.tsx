@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/auth/auth-provider";
 import { MainLayout } from "@/components/layout";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo";
 import { OfflineIndicator } from "@/components/offline-indicator";
+import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,21 +18,18 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://trimurtirealestate.com";
-const SITE_DESCRIPTION =
-  "Your trusted partner in Mumbai real estate for over 20 years. Find MHADA properties, flats for sale and rent in Kandivali West.";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: "Trimurti Real Estate | Mumbai Properties",
     template: "%s | Trimurti Real Estate",
   },
-  description: SITE_DESCRIPTION,
+  description: siteConfig.description.full,
   keywords: [
     "real estate",
     "Mumbai",
     "Kandivali West",
+    "Malad West",
     "MHADA",
     "flats for sale",
     "flats for rent",
@@ -42,10 +40,11 @@ export const metadata: Metadata = {
     "MHADA complex",
     "property dealer",
     "real estate agent Mumbai",
+    "affordable housing Mumbai",
   ],
-  authors: [{ name: "Trimurti Real Estate" }],
-  creator: "Trimurti Real Estate",
-  publisher: "Trimurti Real Estate",
+  authors: [{ name: siteConfig.name }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
   formatDetection: {
     email: false,
     telephone: false,
@@ -54,23 +53,31 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     url: "/",
-    siteName: "Trimurti Real Estate",
+    siteName: siteConfig.name,
     title: "Trimurti Real Estate | Mumbai Properties",
-    description: SITE_DESCRIPTION,
+    description: siteConfig.description.og,
     images: [
       {
-        url: "/images/og-default.png",
-        width: 1200,
-        height: 630,
-        alt: "Trimurti Real Estate - Mumbai Properties",
+        url: siteConfig.images.ogDefault,
+        width: siteConfig.images.ogWidth,
+        height: siteConfig.images.ogHeight,
+        alt: siteConfig.images.ogDefaultAlt,
+        type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
+    site: siteConfig.social.twitter,
+    creator: siteConfig.social.twitter,
     title: "Trimurti Real Estate | Mumbai Properties",
-    description: SITE_DESCRIPTION,
-    images: ["/images/og-default.png"],
+    description: siteConfig.description.og,
+    images: [
+      {
+        url: siteConfig.images.ogDefault,
+        alt: siteConfig.images.ogDefaultAlt,
+      },
+    ],
   },
   robots: {
     index: true,
@@ -91,6 +98,13 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.json",
+  alternates: {
+    canonical: "/",
+  },
+  other: {
+    "pinterest-rich-pin": "true",
+    "msapplication-TileColor": "#1e3a5f",
+  },
   verification: {
     // Add verification codes when available
     // google: "google-verification-code",

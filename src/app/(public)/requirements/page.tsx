@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { siteConfig } from "@/lib/site-config";
 import { RequirementsForm } from "@/components/forms/requirements-form";
 import type { Building } from "@/types";
 
@@ -11,6 +12,18 @@ export const metadata: Metadata = {
     title: "Tell Us Your Requirements | Trimurti Real Estate",
     description:
       "Fill out our simple form to help us find your perfect property.",
+    type: "website",
+    locale: "en_IN",
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.images.ogDefault,
+        width: siteConfig.images.ogWidth,
+        height: siteConfig.images.ogHeight,
+        alt: siteConfig.images.ogDefaultAlt,
+        type: "image/jpeg",
+      },
+    ],
   },
 };
 

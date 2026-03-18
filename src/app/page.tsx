@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/server";
+import { siteConfig } from "@/lib/site-config";
 import {
   HeroSection,
   TrustBadgesSection,
@@ -73,6 +74,18 @@ export const metadata: Metadata = {
     description:
       "20+ years of trusted real estate service. MHADA flats, apartments for sale and rent in Kandivali West and Malad West, Mumbai.",
     url: "/",
+    type: "website",
+    locale: "en_IN",
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.images.ogDefault,
+        width: siteConfig.images.ogWidth,
+        height: siteConfig.images.ogHeight,
+        alt: siteConfig.images.ogDefaultAlt,
+        type: "image/jpeg",
+      },
+    ],
   },
 };
 
