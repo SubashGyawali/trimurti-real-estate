@@ -3,8 +3,8 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://trimurtirealestate.com",
 
   description: {
-    full: "Your trusted partner in Mumbai real estate for over 20 years. Find MHADA properties, flats for sale and rent in Kandivali West.",
-    og: "20+ years of trusted real estate service. MHADA flats, apartments for sale & rent in Kandivali West & Malad West, Mumbai.",
+    full: "Your trusted partner in Mumbai real estate for over 20 years. Find flats for sale and rent in Kandivali West & Malad West.",
+    og: "20+ years of trusted real estate service. Apartments & flats for sale & rent in Kandivali West & Malad West, Mumbai.",
     short: "Trusted Mumbai Real Estate Since 2004",
   },
 

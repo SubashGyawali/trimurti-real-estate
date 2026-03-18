@@ -15,7 +15,7 @@ export function OrganizationJsonLd() {
     '@id': `${SITE_URL}/#organization`,
     name: 'Trimurti Real Estate',
     description:
-      'Your trusted partner in Mumbai real estate for over 20 years. Specializing in MHADA properties, flats for sale and rent in Kandivali West.',
+      'Your trusted partner in Mumbai real estate for over 20 years. Specializing in flats for sale and rent in Kandivali West & Malad West.',
     url: SITE_URL,
     telephone: siteConfig.contact.phone,
     email: siteConfig.contact.email,
@@ -64,7 +64,7 @@ export function LocalBusinessJsonLd() {
     '@type': 'LocalBusiness',
     '@id': `${SITE_URL}/#localbusiness`,
     name: 'Trimurti Real Estate',
-    description: 'Real estate agency specializing in MHADA properties in Kandivali West, Mumbai',
+    description: 'Real estate agency specializing in properties in Kandivali West & Malad West, Mumbai',
     url: SITE_URL,
     telephone: siteConfig.contact.phone,
     address: {
