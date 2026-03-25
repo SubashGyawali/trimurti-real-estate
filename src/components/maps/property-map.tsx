@@ -1,12 +1,18 @@
 "use client";
 
 import { useMemo, useEffect, useCallback, useState } from "react";
-import { Map, AdvancedMarker, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import {
+  Map,
+  AdvancedMarker,
+  useMap,
+  useMapsLibrary,
+} from "@vis.gl/react-google-maps";
 import { MAP_CONFIG } from "@/lib/map-config";
 import {
-  groupPropertiesByLocation,
+  prepareMapMarkers,
   findPropertyInGroups,
   type PropertyGroup,
+  type MarkerTier,
 } from "@/lib/map-utils";
 import { TransformableMarker } from "./transformable-marker";
 import type { PropertyWithImages } from "@/types";
@@ -22,9 +28,6 @@ interface PropertyMapProps {
   zoom?: number;
 }
 
-/**
- * Fits the map bounds to show all given properties.
- */
 function FitBounds({ properties }: { properties: PropertyWithImages[] }) {
   const map = useMap();
   const coreLibrary = useMapsLibrary("core");
@@ -65,34 +68,42 @@ export function PropertyMap({
   center,
   zoom,
 }: PropertyMapProps) {
-  // State for tracking active group and index within the group
   const [activeGroupKey, setActiveGroupKey] = useState<string | null>(null);
   const [activeIndexInGroup, setActiveIndexInGroup] = useState<number>(0);
+  const [hoveredGroupKey, setHoveredGroupKey] = useState<string | null>(null);
+  const [currentZoom, setCurrentZoom] = useState<number>(
+    zoom || MAP_CONFIG.defaultZoom
+  );
 
-  // Filter properties with valid coordinates and active status
   const mappableProperties = useMemo(
     () =>
       properties.filter(
         (p) =>
-          p.location_lat !== null &&
-          p.location_lng !== null &&
-          p.is_active
+          p.location_lat !== null && p.location_lng !== null && p.is_active
       ),
     [properties]
   );
 
-  // Group properties by location
-  const propertyGroups = useMemo(
-    () => groupPropertiesByLocation(mappableProperties),
-    [mappableProperties]
+  // Full pipeline: group → merge overlapping → assign tiers
+  const { groups: propertyGroups, tiers: markerTiers } = useMemo(
+    () => prepareMapMarkers(mappableProperties, currentZoom),
+    [mappableProperties, currentZoom]
   );
 
-  // Sync external selection (e.g., when clicking from property list)
+  // Reset active group if it disappeared after zoom-triggered re-grouping
   useEffect(() => {
-    if (!selectedPropertyId) {
-      return;
+    if (
+      activeGroupKey &&
+      !propertyGroups.some((g) => g.key === activeGroupKey)
+    ) {
+      setActiveGroupKey(null);
+      setActiveIndexInGroup(0);
     }
+  }, [propertyGroups, activeGroupKey]);
 
+  // Sync external selection
+  useEffect(() => {
+    if (!selectedPropertyId) return;
     const found = findPropertyInGroups(propertyGroups, selectedPropertyId);
     if (found) {
       setActiveGroupKey(found.groupKey);
@@ -100,47 +111,33 @@ export function PropertyMap({
     }
   }, [selectedPropertyId, propertyGroups]);
 
-  // Handle marker click - opens the group
   const handleMarkerClick = useCallback(
     (group: PropertyGroup) => {
       setActiveGroupKey(group.key);
       setActiveIndexInGroup(0);
-      // Notify parent of selection (first property in group)
-      if (group.properties[0]) {
-        onPropertySelect?.(group.properties[0]);
-      }
+      if (group.properties[0]) onPropertySelect?.(group.properties[0]);
     },
     [onPropertySelect]
   );
 
-  // Handle navigation within a stacked group
   const handleNavigate = useCallback(
     (group: PropertyGroup, direction: "prev" | "next") => {
-      // Calculate new index outside of setState to avoid calling onPropertySelect during render
       const currentIndex = activeIndexInGroup;
       const newIndex =
         direction === "next"
           ? Math.min(currentIndex + 1, group.properties.length - 1)
           : Math.max(currentIndex - 1, 0);
-
-      // Update state
       setActiveIndexInGroup(newIndex);
-
-      // Notify parent of the new selection (after state update)
-      if (group.properties[newIndex]) {
-        onPropertySelect?.(group.properties[newIndex]);
-      }
+      if (group.properties[newIndex]) onPropertySelect?.(group.properties[newIndex]);
     },
     [activeIndexInGroup, onPropertySelect]
   );
 
-  // Handle close - deactivates the marker
   const handleClose = useCallback(() => {
     setActiveGroupKey(null);
     setActiveIndexInGroup(0);
   }, []);
 
-  // Handle map click - closes any open marker
   const handleMapClick = useCallback(() => {
     setActiveGroupKey(null);
     setActiveIndexInGroup(0);
@@ -163,28 +160,41 @@ export function PropertyMap({
         className="h-full w-full rounded-lg"
         style={{ minHeight: "400px" }}
         onClick={handleMapClick}
+        onCameraChanged={(ev) => {
+          const z = Math.round(ev.detail.zoom);
+          if (z !== currentZoom) setCurrentZoom(z);
+        }}
       >
         <FitBounds properties={mappableProperties} />
 
         {propertyGroups.map((group) => {
           const isActive = group.key === activeGroupKey;
+          const isHovered =
+            group.key === hoveredGroupKey && !isActive;
+          const tier: MarkerTier = markerTiers.get(group.key) || "dot";
+
+          // z-index: dot=1, pill=2, rich=3, hovered=50, active=100
+          let zIndex = tier === "rich" ? 3 : tier === "pill" ? 2 : 1;
+          if (isHovered) zIndex = 50;
+          if (isActive) zIndex = 100;
 
           return (
             <AdvancedMarker
               key={group.key}
-              position={{
-                lat: group.lat,
-                lng: group.lng,
-              }}
-              zIndex={isActive ? 100 : 1}
+              position={{ lat: group.lat, lng: group.lng }}
+              zIndex={zIndex}
             >
               <TransformableMarker
                 properties={group.properties}
                 activeIndex={isActive ? activeIndexInGroup : 0}
+                tier={tier}
                 isActive={isActive}
+                isHovered={isHovered}
                 onClick={() => handleMarkerClick(group)}
                 onClose={handleClose}
                 onNavigate={(dir) => handleNavigate(group, dir)}
+                onHoverStart={() => setHoveredGroupKey(group.key)}
+                onHoverEnd={() => setHoveredGroupKey(null)}
               />
             </AdvancedMarker>
           );

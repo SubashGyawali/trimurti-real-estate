@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/auth/auth-provider";
-import { MainLayout } from "@/components/layout";
+import { ConditionalLayout } from "@/components/layout/conditional-layout";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo";
 import { OfflineIndicator } from "@/components/offline-indicator";
 import { siteConfig } from "@/lib/site-config";
@@ -122,7 +122,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
         <AuthProvider>
-          <MainLayout>{children}</MainLayout>
+          <ConditionalLayout>{children}</ConditionalLayout>
           <Toaster position="top-right" richColors />
           <OfflineIndicator />
         </AuthProvider>

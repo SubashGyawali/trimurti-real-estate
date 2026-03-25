@@ -11,6 +11,7 @@ import { ContactCard, MobileContactBar } from "@/components/property/contact-car
 import { SimilarProperties } from "@/components/property/similar-properties";
 import { formatPrice } from "@/components/property/price-display";
 import { PropertyMapContainer } from "@/components/maps";
+import { AdminEditButton } from "@/components/property/admin-edit-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PropertyWithDetails, PropertyWithImages } from "@/types";
 
@@ -148,6 +149,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           <span className="line-clamp-1 text-foreground">
             {typedProperty.title}
           </span>
+          <div className="ml-auto">
+            <AdminEditButton propertyId={typedProperty.id} />
+          </div>
         </nav>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">

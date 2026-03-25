@@ -14,7 +14,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex min-h-screen flex-col bg-gradient-to-br from-[hsl(var(--brand-blue))] to-primary">
+    <div className="fixed inset-0 z-50 flex min-h-screen flex-col overflow-y-auto bg-gradient-to-br from-[hsl(var(--brand-blue))] to-primary">
       {/* Decorative Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/5" />

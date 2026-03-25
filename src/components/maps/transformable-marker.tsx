@@ -11,24 +11,28 @@ import {
   Sofa,
   ChevronLeft,
   ChevronRight,
+  ArrowRight,
+  Star,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/components/property/price-display";
-import { MARKER_COLORS } from "@/lib/map-config";
 import type { PropertyWithImages } from "@/types";
+import type { MarkerTier } from "@/lib/map-utils";
 import { cn } from "@/lib/utils";
 
 interface TransformableMarkerProps {
   properties: PropertyWithImages[];
   activeIndex: number;
+  tier: MarkerTier;
   isActive: boolean;
+  isHovered: boolean;
   onClick: () => void;
   onClose: () => void;
   onNavigate: (direction: "prev" | "next") => void;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
 }
 
-const propertyTypeLabels: Record<string, string> = {
+const typeLabels: Record<string, string> = {
   "1rk": "1 RK",
   "1bhk": "1 BHK",
   "2bhk": "2 BHK",
@@ -37,221 +41,436 @@ const propertyTypeLabels: Record<string, string> = {
   office: "Office",
 };
 
-const furnishingLabels: Record<string, string> = {
+const furnLabels: Record<string, string> = {
   unfurnished: "Unfurnished",
   semi_furnished: "Semi-Furn.",
   fully_furnished: "Furnished",
 };
 
-export function TransformableMarker({
-  properties,
-  activeIndex,
-  isActive,
-  onClick,
-  onClose,
-  onNavigate,
-}: TransformableMarkerProps) {
-  // Use the first property for collapsed state display
-  const displayProperty = properties[activeIndex] || properties[0];
-  const price = formatPrice(displayProperty.price, displayProperty.listing_type);
-  const isFeatured = displayProperty.is_featured;
-  const isRent = displayProperty.listing_type === "rent";
-  const hasMultiple = properties.length > 1;
+function getImage(property: PropertyWithImages) {
+  const primary = property.property_images?.find((img) => img.is_primary);
+  return primary || property.property_images?.[0];
+}
 
-  // Collapsed state: render price pill
-  if (!isActive) {
-    return (
+// ─── Collapsed Tiers ────────────────────────────────────────────────────────
+
+function DotMarker({
+  property,
+  count,
+}: {
+  property: PropertyWithImages;
+  count: number;
+}) {
+  const isRent = property.listing_type === "rent";
+  const isFeatured = property.is_featured;
+
+  return (
+    <div className="relative">
       <div
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick();
-        }}
         className={cn(
-          "relative flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold",
-          "shadow-md transition-all duration-150 cursor-pointer select-none whitespace-nowrap",
+          "h-[18px] w-[18px] rounded-full shadow-md transition-transform duration-150",
+          "hover:scale-125",
+          "border-2",
+          isRent
+            ? "bg-blue-500 border-blue-300"
+            : "bg-green-500 border-green-300",
+          isFeatured && "border-[#d4a853] ring-2 ring-[#d4a853]/30"
+        )}
+      />
+      {count > 1 && (
+        <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#1e3a5f] text-[9px] font-bold text-white shadow-sm">
+          {count}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function PillMarker({
+  property,
+  count,
+}: {
+  property: PropertyWithImages;
+  count: number;
+}) {
+  const isRent = property.listing_type === "rent";
+  const isFeatured = property.is_featured;
+  const price = formatPrice(property.price, property.listing_type);
+
+  return (
+    <div className="relative">
+      <div
+        className={cn(
+          "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold",
+          "shadow-md transition-all duration-150 select-none whitespace-nowrap",
           "hover:scale-105 hover:shadow-lg",
           "border-2",
-          // Rent vs Sale visual differentiation
           isRent
             ? "bg-blue-50 border-blue-500 text-blue-900"
             : "bg-green-50 border-green-600 text-green-900",
-          // Featured override (gold border)
           isFeatured && "border-[#d4a853]"
         )}
       >
-        {/* Icon indicator */}
         {isRent ? (
           <Key className="h-3 w-3 shrink-0" />
         ) : (
           <Home className="h-3 w-3 shrink-0" />
         )}
         <span>{price}</span>
-
-        {/* Stacked properties count badge */}
-        {hasMultiple && (
-          <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm">
-            {properties.length}
-          </span>
-        )}
       </div>
-    );
-  }
+      {count > 1 && (
+        <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#1e3a5f] text-[9px] font-bold text-white shadow-sm">
+          {count}
+        </span>
+      )}
+    </div>
+  );
+}
 
-  // Expanded state: render card with pointer
-  const property = properties[activeIndex] || properties[0];
-  const primaryImage = property.property_images?.find((img) => img.is_primary);
-  const firstImage = property.property_images?.[0];
-  const displayImage = primaryImage || firstImage;
-  const propertyTypeLabel =
-    propertyTypeLabels[property.property_type] || property.property_type;
-  const furnishingLabel =
-    furnishingLabels[property.furnishing] || property.furnishing;
-  const expandedPrice = formatPrice(property.price, property.listing_type);
-  const expandedIsRent = property.listing_type === "rent";
+function RichMarker({
+  property,
+  count,
+}: {
+  property: PropertyWithImages;
+  count: number;
+}) {
+  const isRent = property.listing_type === "rent";
+  const isFeatured = property.is_featured;
+  const price = formatPrice(property.price, property.listing_type);
+  const typeLabel = typeLabels[property.property_type] || property.property_type;
+  const displayImage = getImage(property);
 
   return (
-    <div
-      className="flex flex-col items-center animate-marker-expand"
-      style={{ transform: "translateY(-100%)" }}
-    >
-      {/* Card */}
+    <div className="relative">
       <div
-        className="relative w-[260px] overflow-hidden rounded-xl bg-background shadow-xl border"
+        className={cn(
+          "flex items-stretch rounded-lg bg-background shadow-md overflow-hidden",
+          "border transition-shadow duration-150",
+          "hover:shadow-lg",
+          isRent
+            ? "border-l-[3px] border-l-blue-500"
+            : "border-l-[3px] border-l-green-500",
+          isFeatured && "ring-1 ring-[#d4a853]"
+        )}
+      >
+        {/* Thumbnail */}
+        <div className="relative h-11 w-11 shrink-0 bg-muted">
+          {displayImage ? (
+            <Image
+              src={displayImage.image_url}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="44px"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        {/* Info */}
+        <div className="flex flex-col justify-center px-2 py-1 min-w-0">
+          <span className="text-[11px] font-bold text-primary leading-tight truncate">
+            {price}
+          </span>
+          <span className="text-[10px] text-muted-foreground leading-tight truncate">
+            {typeLabel}
+          </span>
+        </div>
+      </div>
+      {count > 1 && (
+        <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#1e3a5f] text-[9px] font-bold text-white shadow-sm">
+          {count}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ─── Hover Preview ──────────────────────────────────────────────────────────
+
+function HoverCard({
+  property,
+  count,
+}: {
+  property: PropertyWithImages;
+  count: number;
+}) {
+  const isRent = property.listing_type === "rent";
+  const price = formatPrice(property.price, property.listing_type);
+  const typeLabel = typeLabels[property.property_type] || property.property_type;
+  const furnLabel = furnLabels[property.furnishing] || property.furnishing;
+  const displayImage = getImage(property);
+
+  return (
+    <div className="flex flex-col items-center animate-marker-hover">
+      <div
+        className={cn(
+          "flex items-stretch rounded-lg bg-background shadow-lg overflow-hidden border",
+          isRent
+            ? "border-l-[3px] border-l-blue-500"
+            : "border-l-[3px] border-l-green-500"
+        )}
+      >
+        {/* Image */}
+        <div className="relative h-16 w-16 shrink-0 bg-muted">
+          {displayImage ? (
+            <Image
+              src={displayImage.image_url}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="64px"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <MapPin className="h-5 w-5 text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        {/* Info */}
+        <div className="flex flex-col justify-center px-2.5 py-1.5 min-w-0">
+          <span className="text-xs font-bold text-primary leading-tight">
+            {price}
+          </span>
+          <span className="text-[11px] text-foreground leading-tight">
+            {typeLabel}
+            {property.carpet_area && (
+              <span className="text-muted-foreground">
+                {" "}
+                · {property.carpet_area} sqft
+              </span>
+            )}
+          </span>
+          <span className="text-[10px] text-muted-foreground leading-tight">
+            {furnLabel}
+          </span>
+        </div>
+        {/* Count indicator */}
+        {count > 1 && (
+          <div className="flex items-center pr-2.5 pl-0.5">
+            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              +{count - 1}
+            </span>
+          </div>
+        )}
+      </div>
+      {/* Pointer triangle */}
+      <div
+        className="w-0 h-0 -mt-px border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-background"
+        style={{ filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.08))" }}
+      />
+    </div>
+  );
+}
+
+// ─── Expanded Card (click state) ────────────────────────────────────────────
+
+function ExpandedCard({
+  properties,
+  activeIndex,
+  onClose,
+  onNavigate,
+}: {
+  properties: PropertyWithImages[];
+  activeIndex: number;
+  onClose: () => void;
+  onNavigate: (dir: "prev" | "next") => void;
+}) {
+  const property = properties[activeIndex] || properties[0];
+  const isRent = property.listing_type === "rent";
+  const isFeatured = property.is_featured;
+  const price = formatPrice(property.price, property.listing_type);
+  const typeLabel = typeLabels[property.property_type] || property.property_type;
+  const furnLabel = furnLabels[property.furnishing] || property.furnishing;
+  const displayImage = getImage(property);
+  const hasMultiple = properties.length > 1;
+
+  return (
+    <div className="flex flex-col items-center animate-marker-expand">
+      <div
+        className={cn(
+          "flex items-stretch rounded-xl bg-background shadow-xl overflow-hidden border",
+          isRent
+            ? "border-l-[4px] border-l-blue-500"
+            : "border-l-[4px] border-l-green-500"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-          className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-          aria-label="Close"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
-
         {/* Image */}
-        <div className="relative h-[130px] w-full bg-muted">
+        <div className="relative w-[88px] shrink-0 bg-muted">
           {displayImage ? (
             <Image
               src={displayImage.image_url}
               alt={property.title}
               fill
               className="object-cover"
-              sizes="260px"
+              sizes="88px"
             />
           ) : (
-            <div className="flex h-full items-center justify-center">
-              <MapPin className="h-8 w-8 text-muted-foreground" />
-            </div>
-          )}
-
-          {/* Listing type badge */}
-          <Badge
-            className={cn(
-              "absolute left-2 top-2 text-xs font-semibold",
-              expandedIsRent
-                ? "bg-blue-500 text-white hover:bg-blue-600"
-                : "bg-green-600 text-white hover:bg-green-700"
-            )}
-          >
-            {expandedIsRent ? (
-              <>
-                <Key className="mr-1 h-3 w-3" />
-                For Rent
-              </>
-            ) : (
-              <>
-                <Home className="mr-1 h-3 w-3" />
-                For Sale
-              </>
-            )}
-          </Badge>
-
-          {/* Featured badge */}
-          {property.is_featured && (
-            <Badge className="absolute right-8 top-2 border-amber-500 bg-amber-500 text-xs text-white">
-              Featured
-            </Badge>
-          )}
-
-          {/* Navigation for stacked properties */}
-          {hasMultiple && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-black/60 rounded-full px-2 py-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onNavigate("prev");
-                }}
-                disabled={activeIndex === 0}
-                className="text-white disabled:opacity-40 hover:text-white/80 transition-colors"
-                aria-label="Previous property"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <span className="text-xs text-white font-medium min-w-[32px] text-center">
-                {activeIndex + 1} / {properties.length}
-              </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onNavigate("next");
-                }}
-                disabled={activeIndex === properties.length - 1}
-                className="text-white disabled:opacity-40 hover:text-white/80 transition-colors"
-                aria-label="Next property"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
+            <div className="flex h-full w-full items-center justify-center">
+              <MapPin className="h-6 w-6 text-muted-foreground" />
             </div>
           )}
         </div>
 
         {/* Content */}
-        <div className="p-3.5">
-          {/* Property type + Price */}
-          <div className="mb-2.5">
-            <h3 className="text-sm font-semibold text-foreground leading-tight">
-              {propertyTypeLabel}
-            </h3>
-            <p className="text-lg font-bold text-primary leading-tight mt-0.5">
-              {expandedPrice}
-            </p>
+        <div className="flex flex-col justify-between p-2.5 min-w-0 w-[162px]">
+          {/* Header: listing type + property type + featured + close */}
+          <div className="flex items-center gap-1">
+            <span
+              className={cn(
+                "text-[11px] font-semibold shrink-0",
+                isRent ? "text-blue-600" : "text-green-600"
+              )}
+            >
+              {isRent ? "Rent" : "Sale"}
+            </span>
+            <span className="text-[11px] text-foreground font-medium truncate">
+              · {typeLabel}
+            </span>
+            {isFeatured && (
+              <Star className="h-3 w-3 shrink-0 text-[#d4a853] fill-[#d4a853]" />
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              aria-label="Close"
+            >
+              <X className="h-3 w-3" />
+            </button>
           </div>
 
-          {/* Details with icons */}
-          <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
+          {/* Price */}
+          <span className="text-sm font-bold text-primary leading-tight">
+            {price}
+          </span>
+
+          {/* Details */}
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             {property.carpet_area && (
-              <span className="flex items-center gap-1">
-                <Maximize2 className="h-3 w-3 text-muted-foreground/70" />
+              <span className="flex items-center gap-0.5">
+                <Maximize2 className="h-2.5 w-2.5" />
                 {property.carpet_area} sqft
               </span>
             )}
-            <span className="flex items-center gap-1">
-              <Sofa className="h-3 w-3 text-muted-foreground/70" />
-              {furnishingLabel}
+            <span className="flex items-center gap-0.5">
+              <Sofa className="h-2.5 w-2.5" />
+              {furnLabel}
             </span>
           </div>
 
-          <Button asChild size="sm" className="w-full h-8 text-xs">
-            <Link href={`/properties/${property.slug}`}>View Details</Link>
-          </Button>
+          {/* Footer: link + navigation */}
+          <div className="flex items-center justify-between">
+            <Link
+              href={`/properties/${property.slug}`}
+              className="inline-flex items-center gap-0.5 text-[11px] font-medium text-primary hover:underline"
+            >
+              View Details
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+            {hasMultiple && (
+              <div className="flex items-center gap-0.5">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNavigate("prev");
+                  }}
+                  disabled={activeIndex === 0}
+                  className="text-muted-foreground disabled:opacity-30 hover:text-foreground transition-colors"
+                  aria-label="Previous property"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+                <span className="text-[10px] text-muted-foreground font-medium tabular-nums">
+                  {activeIndex + 1}/{properties.length}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNavigate("next");
+                  }}
+                  disabled={activeIndex === properties.length - 1}
+                  className="text-muted-foreground disabled:opacity-30 hover:text-foreground transition-colors"
+                  aria-label="Next property"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Bottom pointer/pin triangle */}
+      {/* Pointer triangle */}
       <div
-        className={cn(
-          "w-0 h-0 -mt-[1px]",
-          "border-l-[12px] border-l-transparent",
-          "border-r-[12px] border-r-transparent",
-          "border-t-[12px] border-t-background"
-        )}
-        style={{
-          filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.1))",
-        }}
+        className="w-0 h-0 -mt-px border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-background"
+        style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }}
       />
+    </div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────────────────
+
+export function TransformableMarker({
+  properties,
+  activeIndex,
+  tier,
+  isActive,
+  isHovered,
+  onClick,
+  onClose,
+  onNavigate,
+  onHoverStart,
+  onHoverEnd,
+}: TransformableMarkerProps) {
+  const displayProperty = properties[0];
+  const count = properties.length;
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+    >
+      {/* Floating card (hover preview or expanded) — positioned above the marker */}
+      {(isActive || isHovered) && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 pointer-events-auto">
+          {isActive ? (
+            <ExpandedCard
+              properties={properties}
+              activeIndex={activeIndex}
+              onClose={onClose}
+              onNavigate={onNavigate}
+            />
+          ) : (
+            <HoverCard property={displayProperty} count={count} />
+          )}
+        </div>
+      )}
+
+      {/* Collapsed marker — always visible, tier-adaptive */}
+      <div
+        className="cursor-pointer"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+      >
+        {tier === "dot" && (
+          <DotMarker property={displayProperty} count={count} />
+        )}
+        {tier === "pill" && (
+          <PillMarker property={displayProperty} count={count} />
+        )}
+        {tier === "rich" && (
+          <RichMarker property={displayProperty} count={count} />
+        )}
+      </div>
     </div>
   );
 }

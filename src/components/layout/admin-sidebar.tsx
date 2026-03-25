@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Building, List, MessageSquare, Calendar } from "lucide-react";
+import {
+  LayoutDashboard,
+  Building2,
+  List,
+  MessageSquare,
+  CalendarClock,
+  ArrowLeft,
+  Sparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface NavItem {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-}
-
-const nav: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: <Home className="h-4 w-4" /> },
-  { href: "/admin/properties", label: "Properties", icon: <List className="h-4 w-4" /> },
-  { href: "/admin/buildings", label: "Buildings", icon: <Building className="h-4 w-4" /> },
-  { href: "/admin/inquiries", label: "Inquiries", icon: <MessageSquare className="h-4 w-4" /> },
-  { href: "/admin/visits", label: "Visits", icon: <Calendar className="h-4 w-4" /> },
+const nav = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/properties", label: "Properties", icon: List },
+  { href: "/admin/buildings", label: "Buildings", icon: Building2 },
+  { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
+  { href: "/admin/visits", label: "Visits", icon: CalendarClock },
 ];
 
 interface AdminSidebarProps {
@@ -27,40 +29,76 @@ interface AdminSidebarProps {
 export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
 
+  const isActive = (href: string) =>
+    href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
   return (
-    <aside className={cn("bg-background border-r w-64 p-4 flex flex-col h-full", className)}>
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold">Admin</h3>
+    <aside
+      className={cn(
+        "flex w-[240px] flex-col bg-[#1e3a5f] text-white",
+        className
+      )}
+    >
+      {/* Brand */}
+      <div className="flex items-center gap-2.5 border-b border-white/10 px-5 py-5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#d4a853]/20">
+          <Sparkles className="h-4 w-4 text-[#d4a853]" />
+        </div>
+        <div className="leading-none">
+          <span className="text-sm font-bold tracking-tight">Trimurti</span>
+          <span className="ml-1 text-sm font-bold tracking-tight text-[#d4a853]">
+            RE
+          </span>
+          <p className="mt-0.5 text-[10px] font-medium uppercase tracking-widest text-white/40">
+            Admin Panel
+          </p>
+        </div>
       </div>
 
-      <nav className="flex-1 overflow-auto">
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
-          {nav.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                onClick={onNavigate}
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                  pathname === item.href
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                )}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          ))}
+          {nav.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={onNavigate}
+                  className={cn(
+                    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
+                    active
+                      ? "bg-white/15 text-white shadow-sm"
+                      : "text-white/60 hover:bg-white/8 hover:text-white/90"
+                  )}
+                >
+                  <item.icon
+                    className={cn(
+                      "h-[18px] w-[18px] shrink-0 transition-colors",
+                      active
+                        ? "text-[#d4a853]"
+                        : "text-white/40 group-hover:text-white/70"
+                    )}
+                  />
+                  <span>{item.label}</span>
+                  {active && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#d4a853]" />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
-      <div className="mt-4 pt-4 border-t">
+      {/* Footer */}
+      <div className="border-t border-white/10 px-3 py-4">
         <Link
           href="/"
           onClick={onNavigate}
-          className="text-sm text-muted-foreground hover:underline"
+          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-white/50 transition-colors hover:bg-white/8 hover:text-white/80"
         >
+          <ArrowLeft className="h-4 w-4" />
           Back to site
         </Link>
       </div>

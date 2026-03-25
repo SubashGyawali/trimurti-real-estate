@@ -155,7 +155,7 @@ export function Header() {
               </div>
 
               <div className="hidden w-full items-center justify-end gap-2 lg:flex lg:w-auto">
-                {!isScrolled && (
+                {!isPillShape && (
                   <Button
                     variant="outline"
                     size="sm"
