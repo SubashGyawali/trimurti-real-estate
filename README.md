@@ -1,4 +1,4 @@
-# Trimurti Real Estate
+<img width="2560" height="1600" alt="image" src="https://github.com/user-attachments/assets/ba8b3e00-cb23-4616-8c73-15994034daff" /># Trimurti Real Estate
 
 A modern real estate web application for Trimurti Real Estate, specializing in MHADA complex properties in Kandivali West, Mumbai.
 
@@ -39,7 +39,7 @@ A modern real estate web application for Trimurti Real Estate, specializing in M
    pnpm dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000)
+5. Open [http://www.trimurtirealestate.com](https://www.trimurtirealestate.com)
 
 ## Project Structure
 
