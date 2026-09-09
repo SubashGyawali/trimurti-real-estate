@@ -10,6 +10,7 @@ import {
   AgentProfileSection,
   LandingContactForm,
 } from "./(public)/_components";
+import { getHomeGalleryImages } from "@/lib/data/gallery";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamic imports for heavy components with carousels and animations
@@ -92,19 +93,24 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // Fetch featured properties
-  const { data: featuredProperties } = await supabase
-    .from("properties")
-    .select("*, property_images(*)")
-    .eq("is_featured", true)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(6);
+  // Fetch featured properties and home gallery images in parallel
+  const [featuredResult, galleryImages] = await Promise.all([
+    supabase
+      .from("properties")
+      .select("*, property_images(*)")
+      .eq("is_featured", true)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(6),
+    getHomeGalleryImages(),
+  ]);
+
+  const featuredProperties = featuredResult.data;
 
   return (
     <>
       {/* Hero with background image, search bar, and CTAs */}
-      <HeroSection />
+      <HeroSection images={galleryImages} />
 
       {/* Trust badges with animated stats */}
       <TrustBadgesSection />
@@ -119,7 +125,7 @@ export default async function HomePage() {
       <FeaturesSection />
 
       {/* Full-width CTA banner with background image */}
-      <BackgroundBanner />
+      <BackgroundBanner images={galleryImages} />
 
       {/* Customer testimonials carousel */}
       <TestimonialsSection />

@@ -1,13 +1,26 @@
 "use client";
 
-// Hero Section V2 - Full-screen hero with cycling background images and cross-fade transitions
-// Features: 10-second auto-cycle, random image selection, smooth 1-second cross-fade
+// Hero Section V3 – Redesigned to match the premium real-estate landing mockup.
+// Features:
+// - Full-bleed background image carousel (10-second auto-cycle, 1-second cross-fade)
+// - "SINCE 2004" badge, location markers, vertical sidebar words
+// - Search bar with Rent/Buy tabs & property type selector
+// - Stats row (experience, families, specialty, trust)
+// - Bottom tagline "Mumbai Lives Better Here" + slide counter & arrows
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Building, ChevronDown } from "lucide-react";
+import {
+  Search,
+  Home,
+  Users,
+  MapPin,
+  ShieldCheck,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -16,80 +29,119 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROPERTY_TYPE_OPTIONS } from "@/types/forms";
-import { heroContent } from "@/lib/data/landing-data";
-import { buildingImages, getNextRandomIndex } from "@/lib/data/building-images";
+import {
+  type BuildingImage,
+  DEFAULT_BUILDING_IMAGES,
+  getNextRandomIndex,
+} from "@/lib/data/building-images";
 import { cn } from "@/lib/utils";
 
-// Animation variants
+// ─── constants ──────────────────────────────────────────────
+const IMAGE_CYCLE_INTERVAL = 10_000;
+const CROSSFADE_DURATION = 1;
+
+// For the slide counter we always show groups of 3
+const SLIDES_PER_GROUP = 3;
+
+// Vertical sidebar words
+const SIDEBAR_WORDS = [
+  "HOMES",
+  "COMMUNITIES",
+  "CONNECTIONS",
+  "BRIGHTER",
+  "TOMORROWS",
+];
+
+// Stats row data
+const HERO_STATS = [
+  {
+    icon: Home,
+    value: "20+",
+    label: "Years Experience",
+  },
+  {
+    icon: Users,
+    value: "500+",
+    label: "Happy Families",
+  },
+  {
+    icon: MapPin,
+    value: "Kandivali &",
+    sublabel: "Malad West",
+    label: "Our Specialty",
+  },
+  {
+    icon: ShieldCheck,
+    value: "Transparent",
+    sublabel: "& Genuine Deals",
+    label: "Always",
+  },
+];
+
+// ─── animation variants ─────────────────────────────────────
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
-};
-
-const fadeInLeft = {
-  hidden: { opacity: 0, x: -30 },
-  visible: { opacity: 1, x: 0 },
 };
 
 const staggerContainer = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.3,
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
 };
 
-// Locations that cycle in the hero headline
-const CYCLING_LOCATIONS = ["Kandivali", "Malad"];
-const LOCATION_CYCLE_INTERVAL = 3000;
+// ─── component ───────────────────────────────────────────────
+interface HeroSectionProps {
+  images?: BuildingImage[];
+}
 
-// Image transition interval in milliseconds (10 seconds)
-const IMAGE_CYCLE_INTERVAL = 10000;
-// Cross-fade transition duration in seconds
-const CROSSFADE_DURATION = 1;
-
-export function HeroSection() {
+export function HeroSection({ images }: HeroSectionProps) {
   const router = useRouter();
-  const heroSectionRef = useRef<HTMLElement | null>(null);
+
+  // Use passed images or fallback to defaults
+  const heroImages =
+    images && images.length > 0 ? images : DEFAULT_BUILDING_IMAGES;
+
+  // Search state
   const [listingType, setListingType] = useState<"rent" | "sale">("rent");
   const [propertyType, setPropertyType] = useState<string>("");
 
-  // Cycling location name in the headline
-  const [locationIndex, setLocationIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLocationIndex((prev) => {
-        const next = (prev + 1) % CYCLING_LOCATIONS.length;
-        return next;
-      });
-    }, LOCATION_CYCLE_INTERVAL);
-    return () => clearInterval(interval);
-  }, []);
-
-
-  // Image carousel state - start with index 0 to avoid hydration mismatch
+  // Image carousel
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Set random initial image on client mount only (prevents hydration mismatch)
   useEffect(() => {
-    setCurrentImageIndex(Math.floor(Math.random() * buildingImages.length));
-  }, []);
+    setCurrentImageIndex(Math.floor(Math.random() * heroImages.length));
+  }, [heroImages.length]);
 
-  // Auto-cycle through images every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => getNextRandomIndex(prevIndex));
+      setCurrentImageIndex((prev) =>
+        getNextRandomIndex(prev, heroImages)
+      );
     }, IMAGE_CYCLE_INTERVAL);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages]);
 
-  const currentImage = buildingImages[currentImageIndex];
+  const currentImage = heroImages[currentImageIndex] ?? heroImages[0];
+
+  const goNext = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+  }, [heroImages.length]);
+
+  const goPrev = useCallback(() => {
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + heroImages.length) % heroImages.length
+    );
+  }, [heroImages.length]);
+
+  // Slide counter (1-indexed, grouped)
+  const slideNumber = (currentImageIndex % SLIDES_PER_GROUP) + 1;
+  const slideDisplay = String(slideNumber).padStart(2, "0");
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -98,16 +150,9 @@ export function HeroSection() {
     router.push(`/properties?${params.toString()}`);
   };
 
-  const scrollToContent = () => {
-    window.scrollTo({
-      top: window.innerHeight,
-      behavior: "smooth",
-    });
-  };
-
   return (
     <section className="relative -mt-16 min-h-screen overflow-hidden md:-mt-20">
-      {/* Background Images Container with Cross-Fade */}
+      {/* ═══════ Background Image Carousel ═══════ */}
       <div className="absolute inset-0">
         <AnimatePresence initial={false}>
           <motion.div
@@ -126,164 +171,124 @@ export function HeroSection() {
               className="object-cover object-center"
               sizes="100vw"
               quality={85}
+              unoptimized={currentImage.src.startsWith("http")}
             />
           </motion.div>
         </AnimatePresence>
 
-        {/* ============CHUNK 1============ */}
-
-        {/* Dark gradient overlay — heavy on left for text readability, transparent on right to show images */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628]/85 via-[#0a1628]/45 to-transparent" />
-        {/* Bottom gradient for scroll indicator readability */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a1628]/60 to-transparent" />
+        {/* Overlay gradients */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/30 via-transparent to-[#0a1628]/10" />
       </div>
 
-      {/* Content Container */}
-        <div className="container relative z-10 mx-auto flex min-h-screen flex-col justify-center px-4 py-20 lg:py-24">
+      {/* ═══════ Content ═══════ */}
+      <div className="container relative z-10 mx-auto flex min-h-screen flex-col justify-between px-4 pb-6 pt-24 lg:px-8 lg:pt-28">
+        {/* Top area – headline + badge + search */}
+        <div className="flex flex-1 items-start pt-4 lg:pt-8">
+          {/* Left column */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            className="max-w-2xl lg:max-w-3xl"
+            className="w-full max-w-2xl"
           >
-            {/* Badge */}
-            {heroContent.badge && (
-              <motion.div variants={fadeInLeft} className="mb-6">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white/90 backdrop-blur-sm">
-                  <Building className="h-4 w-4" />
-                  {heroContent.badge}
-                </span>
-              </motion.div>
-            )}
-
-            {/* Headline with cycling location */}
-            <motion.h1
+            {/* Trusted badge */}
+            <motion.p
               variants={fadeInUp}
-              className="font-plus-jakarta text-4xl font-bold leading-tight text-white drop-shadow-lg sm:text-5xl md:text-6xl lg:text-7xl"
+              className="mb-2 flex items-center gap-3 text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase"
             >
-              {heroContent.title}
+              TRUSTED IN MUMBAI REAL ESTATE
+              <span className="inline-block h-px w-16 bg-gray-400" />
+            </motion.p>
+
+            {/* Main heading */}
+            <motion.h1 variants={fadeInUp} className="leading-none">
+              <span className="font-playfair text-4xl font-bold text-[#0a1628] sm:text-5xl md:text-6xl lg:text-7xl">
+                Find Your
+              </span>
               <br />
-              <span className="inline-flex flex-wrap items-baseline gap-[0.25em]">
-                {/* Cycling location name with vertical flip */}
-                <span className="relative inline-block h-[1.15em] overflow-hidden align-bottom">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={CYCLING_LOCATIONS[locationIndex]}
-                      initial={{ y: "100%", opacity: 0 }}
-                      animate={{ y: "0%", opacity: 1 }}
-                      exit={{ y: "-100%", opacity: 0 }}
-                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block text-[hsl(var(--brand-gold))]"
-                    >
-                      {CYCLING_LOCATIONS[locationIndex]}
-                    </motion.span>
-                  </AnimatePresence>
-                  {/* Gold underline accent */}
-                  <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-full bg-[hsl(var(--brand-gold))]/60" />
-                </span>
-                <span className="text-white/60">&amp;</span>
-                {/* Counter-cycling other location + "West." */}
-                <span className="relative inline-block h-[1.15em] overflow-hidden align-bottom">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={CYCLING_LOCATIONS[(locationIndex + 1) % CYCLING_LOCATIONS.length]}
-                      initial={{ y: "-100%", opacity: 0 }}
-                      animate={{ y: "0%", opacity: 1 }}
-                      exit={{ y: "100%", opacity: 0 }}
-                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block text-[hsl(var(--brand-gold))]"
-                    >
-                      {CYCLING_LOCATIONS[(locationIndex + 1) % CYCLING_LOCATIONS.length]}
-                    </motion.span>
-                  </AnimatePresence>
-                  <span className="absolute bottom-0 left-0 h-[3px] w-full rounded-full bg-[hsl(var(--brand-gold))]/60" />
-                </span>
-                <span className="text-[hsl(var(--brand-gold))]">West.</span>
+              <span className="font-playfair text-5xl font-extrabold text-[#0a1628] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+                Next Chapter
+              </span>
+              <br />
+              <span className="mt-2 inline-block font-playfair text-2xl font-normal italic text-[#0a1628]/80 sm:text-3xl md:text-4xl">
+                in Kandivali &amp; Malad West
               </span>
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p
               variants={fadeInUp}
-              className="mt-6 max-w-xl text-lg text-white/85 drop-shadow-md sm:text-xl"
+              className="mt-5 max-w-md text-sm leading-relaxed text-gray-600 sm:text-base"
             >
-              {heroContent.subtitle}
+              500+ families settled. Every deal, face-to-face.
+              <br />
+              Two decades of honest real estate in Kandivali &amp; Malad West.
             </motion.p>
 
-            {/* CTA Buttons */}
-            <motion.div
-              variants={fadeInUp}
-              className="mt-8 flex flex-col gap-4 sm:flex-row"
-            >
-              <Button
-                size="lg"
-                className="gap-2 bg-[hsl(var(--brand-gold))] px-8 text-white hover:bg-[hsl(var(--brand-gold))]/90"
-                onClick={() => router.push(heroContent.primaryCta.href)}
+            {/* ─── Search Bar ─── */}
+            <motion.div variants={fadeInUp} className="mt-7 max-w-lg">
+              <div
+                className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-xl sm:flex-row sm:items-center"
+                suppressHydrationWarning
               >
-                {heroContent.primaryCta.text}
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
-                onClick={() => router.push(heroContent.secondaryCta.href)}
-              >
-                {heroContent.secondaryCta.text}
-              </Button>
-            </motion.div>
-
-            {/* Search Bar */}
-            <motion.div variants={fadeInUp} className="mt-10 max-w-xl">
-              <div className="rounded-2xl bg-white/10 p-2 backdrop-blur-md">
-                <div
-                  className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-2xl sm:flex-row sm:items-center"
-                  suppressHydrationWarning
-                >
-                  {/* Listing Type Tabs */}
-                  <Tabs
-                    value={listingType}
-                    onValueChange={(v) => setListingType(v as "rent" | "sale")}
-                    className="w-full sm:w-auto"
+                {/* Rent / Buy toggle */}
+                <div className="flex overflow-hidden rounded-lg border border-gray-200">
+                  <button
+                    onClick={() => setListingType("rent")}
+                    className={cn(
+                      "px-5 py-2 text-sm font-medium transition-colors",
+                      listingType === "rent"
+                        ? "bg-white text-[#0a1628]"
+                        : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                    )}
                   >
-                    <TabsList className="grid w-full grid-cols-2 sm:w-[160px]">
-                      <TabsTrigger value="rent">Rent</TabsTrigger>
-                      <TabsTrigger value="sale">Buy</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-
-                  {/* Property Type Select */}
-                  <Select value={propertyType} onValueChange={setPropertyType}>
-                    <SelectTrigger className="w-full border-0 bg-muted/50 sm:w-[160px]">
-                      <SelectValue placeholder="Property Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PROPERTY_TYPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Search Button */}
-                  <Button
-                    onClick={handleSearch}
-                    size="lg"
-                    className="w-full gap-2 sm:w-auto"
+                    Rent
+                  </button>
+                  <button
+                    onClick={() => setListingType("sale")}
+                    className={cn(
+                      "px-5 py-2 text-sm font-medium transition-colors",
+                      listingType === "sale"
+                        ? "bg-white text-[#0a1628]"
+                        : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                    )}
                   >
-                    <Search className="h-4 w-4" />
-                    Search
-                  </Button>
+                    Buy
+                  </button>
                 </div>
+
+                {/* Property type */}
+                <Select value={propertyType} onValueChange={setPropertyType}>
+                  <SelectTrigger className="w-full border-0 bg-transparent text-sm sm:w-[140px]">
+                    <SelectValue placeholder="Property Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROPERTY_TYPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Search button */}
+                <Button
+                  onClick={handleSearch}
+                  className="gap-2 bg-[#1a4b8c] px-6 hover:bg-[#153d73]"
+                >
+                  <Search className="h-4 w-4" />
+                  Search
+                </Button>
               </div>
             </motion.div>
 
-            {/* Quick Links */}
+            {/* Popular searches */}
             <motion.div
               variants={fadeInUp}
-              className="mt-6 flex flex-wrap items-center gap-3 text-sm text-white/70"
+              className="mt-4 flex flex-wrap items-center gap-2 text-xs text-gray-500"
             >
-              <span>Popular:</span>
+              <span className="mr-1 font-medium">Popular Searches:</span>
               <QuickSearchButton
                 label="2 BHK for Rent"
                 onClick={() => {
@@ -306,54 +311,164 @@ export function HeroSection() {
                 }}
               />
             </motion.div>
+
+            {/* ─── Stats Row ─── */}
+            <motion.div
+              variants={fadeInUp}
+              className="mt-8 flex flex-wrap items-start gap-6 lg:gap-8"
+            >
+              {HERO_STATS.map((stat, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#1a4b8c]">
+                    <stat.icon className="h-4 w-4" />
+                  </div>
+                  <div className="leading-tight">
+                    <p className="text-sm font-bold text-[#0a1628]">
+                      {stat.value}
+                    </p>
+                    {stat.sublabel && (
+                      <p className="text-sm font-bold text-[#0a1628]">
+                        {stat.sublabel}
+                      </p>
+                    )}
+                    <p className="text-[11px] text-gray-500">{stat.label}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* ─── "SINCE 2004" Badge (desktop) ─── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="ml-6 mt-2 hidden shrink-0 flex-col items-center lg:flex"
+          >
+            <div className="flex h-28 w-28 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm">
+              <span className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                Since
+              </span>
+              <span className="font-playfair text-4xl font-bold text-[#0a1628]">
+                2004
+              </span>
+              <span className="mt-0.5 text-center text-[9px] font-semibold leading-tight tracking-wider text-gray-400 uppercase">
+                Building
+                <br />
+                Better Lives
+              </span>
+            </div>
           </motion.div>
         </div>
 
-      {/* Scroll Indicator */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        onClick={scrollToContent}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 cursor-pointer"
-        aria-label="Scroll to content"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="flex flex-col items-center gap-2 text-white/50 transition-colors hover:text-white/80"
-        >
-          <span className="text-xs tracking-wider uppercase">Explore</span>
-          <ChevronDown className="h-5 w-5" />
-        </motion.div>
-      </motion.button>
+        {/* ─── Location Labels (floating over background, desktop only) ─── */}
+        <div className="pointer-events-none absolute top-1/3 right-[30%] z-20 hidden xl:block">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="text-center"
+          >
+            <MapPin className="mx-auto mb-1 h-4 w-4 text-white/80" />
+            <p className="text-xs font-bold tracking-wider text-white drop-shadow-lg uppercase">
+              Kandivali
+            </p>
+            <p className="text-[9px] tracking-wider text-white/70 uppercase">
+              A Vibrant Community
+            </p>
+          </motion.div>
+        </div>
 
-      {/* Image indicator dots (optional, shows which image is active) */}
-      <div className="absolute bottom-24 left-1/2 z-10 -translate-x-1/2 hidden md:flex items-center gap-1.5">
-        {buildingImages.slice(0, 5).map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentImageIndex(index)}
-            className={cn(
-              "h-2 w-2 rounded-full transition-all duration-300",
-              currentImageIndex === index
-                ? "bg-white w-6"
-                : "bg-white/40 hover:bg-white/60"
-            )}
-            aria-label={`View image ${index + 1}`}
-          />
-        ))}
-        {buildingImages.length > 5 && (
-          <span className="ml-1 text-xs text-white/40">
-            +{buildingImages.length - 5}
-          </span>
-        )}
+        <div className="pointer-events-none absolute top-[30%] right-[12%] z-20 hidden xl:block">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1, duration: 0.5 }}
+            className="text-center"
+          >
+            <p className="text-xs font-bold tracking-wider text-white drop-shadow-lg uppercase">
+              Malad West
+            </p>
+            <p className="text-[9px] tracking-wider text-white/70 uppercase">
+              Endless Possibilities
+            </p>
+          </motion.div>
+        </div>
+
+        {/* ─── Vertical Sidebar Words (desktop only) ─── */}
+        <div className="pointer-events-none absolute top-1/4 right-4 z-20 hidden flex-col items-end gap-3 xl:flex">
+          {SIDEBAR_WORDS.map((word, i) => (
+            <motion.span
+              key={word}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 + i * 0.1, duration: 0.4 }}
+              className="text-[11px] font-medium tracking-[0.2em] text-white/60"
+            >
+              {word}
+            </motion.span>
+          ))}
+          <span className="mt-1 h-10 w-px bg-white/30" />
+        </div>
+
+        {/* ═══════ Bottom Bar ═══════ */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.6 }}
+          className="mt-auto flex flex-col items-start justify-between gap-4 border-t border-white/20 pt-5 sm:flex-row sm:items-end"
+        >
+          {/* Left – Mumbai tagline */}
+          <div className="flex items-end gap-4">
+            <div>
+              <p className="font-playfair text-2xl italic text-[#0a1628] sm:text-3xl">
+                Mumbai
+              </p>
+              <p className="font-playfair text-lg italic text-[#0a1628]/70 sm:text-xl">
+                Lives Better Here
+              </p>
+            </div>
+            <span className="mb-1 h-10 w-px bg-gray-300" />
+            <div className="mb-1">
+              <p className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+                More than properties.
+              </p>
+              <p className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+                We build futures.
+              </p>
+            </div>
+          </div>
+
+          {/* Right – Slide nav */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-white/80 drop-shadow">
+              {slideDisplay}{" "}
+              <span className="text-white/40">
+                / {String(SLIDES_PER_GROUP).padStart(2, "0")}
+              </span>
+            </span>
+            <button
+              onClick={goPrev}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={goNext}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-[#1a4b8c] text-white transition-colors hover:bg-[#153d73]"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-// Quick search button component
+// ─── Quick search chip ──────────────────────────────────────
 function QuickSearchButton({
   label,
   onClick,
@@ -365,9 +480,9 @@ function QuickSearchButton({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border border-white/20 px-3 py-1.5",
+        "rounded-full border border-gray-300 px-3 py-1 text-xs",
         "transition-all duration-200",
-        "hover:border-white/40 hover:bg-white/10 hover:text-white"
+        "hover:border-gray-400 hover:bg-gray-50"
       )}
     >
       {label}

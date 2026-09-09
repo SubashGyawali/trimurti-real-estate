@@ -3,24 +3,36 @@
 // Background Banner - Full-width CTA section with random building image background
 // Image changes only on page refresh (not cycling like hero)
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ctaBannerContent } from "@/lib/data/landing-data";
-import { buildingImages } from "@/lib/data/building-images";
+import {
+  DEFAULT_BUILDING_IMAGES,
+  getRandomBuildingImage,
+  type BuildingImage,
+} from "@/lib/data/building-images";
 import { cn } from "@/lib/utils";
 
-export function BackgroundBanner() {
+interface BackgroundBannerProps {
+  images?: BuildingImage[];
+}
+
+export function BackgroundBanner({ images }: BackgroundBannerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
-  // Random building image - selected once on mount, only changes on page refresh
-  const [randomImage] = useState(() =>
-    buildingImages[Math.floor(Math.random() * buildingImages.length)]
-  );
+  const activeImages = images && images.length > 0 ? images : DEFAULT_BUILDING_IMAGES;
+
+  // Random building image - selected after mount to avoid SSR hydration mismatch
+  const [randomImage, setRandomImage] = useState(activeImages[0] || DEFAULT_BUILDING_IMAGES[0]);
+
+  useEffect(() => {
+    setRandomImage(getRandomBuildingImage(activeImages));
+  }, [activeImages]);
 
   // Parallax effect for background
   const { scrollYProgress } = useScroll({
@@ -43,6 +55,7 @@ export function BackgroundBanner() {
           className="object-cover object-center"
           sizes="100vw"
           quality={80}
+          unoptimized={randomImage.src.startsWith("http")}
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/70" />

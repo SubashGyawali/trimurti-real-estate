@@ -221,6 +221,26 @@ CREATE TABLE user_favorites (
 
 COMMENT ON TABLE user_favorites IS 'User saved/favorited properties';
 
+-- -----------------------------------------------------
+-- Table: home_gallery_images
+-- Rotating hero & CTA gallery images on the home page
+-- -----------------------------------------------------
+CREATE TABLE home_gallery_images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  src TEXT NOT NULL,
+  alt TEXT NOT NULL DEFAULT '',
+  display_order INTEGER NOT NULL DEFAULT 0,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL
+);
+
+COMMENT ON TABLE home_gallery_images IS 'Rotating hero & CTA gallery images on the home page';
+COMMENT ON COLUMN home_gallery_images.src IS 'Image source URL (local path or Cloudinary/CDN URL)';
+COMMENT ON COLUMN home_gallery_images.alt IS 'Descriptive text for accessibility and SEO';
+COMMENT ON COLUMN home_gallery_images.display_order IS 'Order in which images appear in hero rotation';
+COMMENT ON COLUMN home_gallery_images.is_active IS 'Whether this image is included in active rotation';
+
 -- =====================================================
 -- SECTION 3: INDEXES
 -- =====================================================
@@ -250,6 +270,9 @@ CREATE INDEX idx_property_visits_property_id ON property_visits(property_id);
 CREATE INDEX idx_user_favorites_user_id ON user_favorites(user_id);
 CREATE INDEX idx_user_favorites_property_id ON user_favorites(property_id);
 
+-- Home gallery images index
+CREATE INDEX idx_home_gallery_images_order ON home_gallery_images(display_order ASC) WHERE is_active = TRUE;
+
 -- =====================================================
 -- SECTION 4: ROW LEVEL SECURITY (RLS)
 -- =====================================================
@@ -262,6 +285,7 @@ ALTER TABLE property_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE property_visits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE home_gallery_images ENABLE ROW LEVEL SECURITY;
 
 -- -----------------------------------------------------
 -- Profiles Policies
@@ -502,6 +526,52 @@ CREATE POLICY "Users can remove own favorites"
   ON user_favorites FOR DELETE
   USING (auth.uid() = user_id);
 
+-- -----------------------------------------------------
+-- Home Gallery Images Policies
+-- -----------------------------------------------------
+
+-- Anyone can view active gallery images (admins can view all)
+CREATE POLICY "Active gallery images are viewable by everyone"
+  ON home_gallery_images FOR SELECT
+  USING (
+    is_active = TRUE OR (
+      EXISTS (
+        SELECT 1 FROM profiles
+        WHERE id = auth.uid() AND is_admin = TRUE
+      )
+    )
+  );
+
+-- Only admins can insert gallery images
+CREATE POLICY "Admins can insert gallery images"
+  ON home_gallery_images FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid() AND is_admin = TRUE
+    )
+  );
+
+-- Only admins can update gallery images
+CREATE POLICY "Admins can update gallery images"
+  ON home_gallery_images FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid() AND is_admin = TRUE
+    )
+  );
+
+-- Only admins can delete gallery images
+CREATE POLICY "Admins can delete gallery images"
+  ON home_gallery_images FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid() AND is_admin = TRUE
+    )
+  );
+
 -- =====================================================
 -- SECTION 5: FUNCTIONS
 -- =====================================================
@@ -681,6 +751,11 @@ CREATE TRIGGER set_profiles_updated_at
 
 CREATE TRIGGER set_properties_updated_at
   BEFORE UPDATE ON properties
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+CREATE TRIGGER set_home_gallery_images_updated_at
+  BEFORE UPDATE ON home_gallery_images
   FOR EACH ROW
   EXECUTE FUNCTION handle_updated_at();
 

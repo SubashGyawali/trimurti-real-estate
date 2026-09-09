@@ -124,6 +124,16 @@ export interface UserFavorite {
   created_at: string;
 }
 
+export interface HomeGalleryImage {
+  id: string;
+  src: string;
+  alt: string;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // -----------------------------------------------------
 // JSONB Types
 // -----------------------------------------------------
@@ -157,6 +167,15 @@ export type PropertyVisitInsert = Omit<PropertyVisit, 'id' | 'status' | 'created
 
 export type UserFavoriteInsert = Omit<UserFavorite, 'id' | 'created_at'>;
 
+export type HomeGalleryImageInsert = Omit<HomeGalleryImage, 'id' | 'created_at' | 'updated_at'> & {
+  id?: string;
+  alt?: string;
+  display_order?: number;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 // -----------------------------------------------------
 // Update Types (for updating records)
 // -----------------------------------------------------
@@ -172,6 +191,8 @@ export type PropertyImageUpdate = Partial<Omit<PropertyImage, 'id' | 'property_i
 export type InquiryUpdate = Partial<Pick<Inquiry, 'status'>>;
 
 export type PropertyVisitUpdate = Partial<Pick<PropertyVisit, 'status' | 'preferred_date' | 'preferred_time'>>;
+
+export type HomeGalleryImageUpdate = Partial<HomeGalleryImageInsert>;
 
 // -----------------------------------------------------
 // Extended Types (with relations)
@@ -243,6 +264,11 @@ export interface Database {
         Row: UserFavorite;
         Insert: UserFavoriteInsert;
         Update: never;
+      };
+      home_gallery_images: {
+        Row: HomeGalleryImage;
+        Insert: HomeGalleryImageInsert;
+        Update: HomeGalleryImageUpdate;
       };
     };
     Enums: {

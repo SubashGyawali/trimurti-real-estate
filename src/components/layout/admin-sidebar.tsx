@@ -10,6 +10,7 @@ import {
   CalendarClock,
   ArrowLeft,
   Sparkles,
+  SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ const nav = [
   { href: "/admin/buildings", label: "Buildings", icon: Building2 },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
   { href: "/admin/visits", label: "Visits", icon: CalendarClock },
+  { href: "/admin/home-settings", label: "Home Settings", icon: SlidersHorizontal },
 ];
 
 interface AdminSidebarProps {
