@@ -22,6 +22,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -110,6 +111,8 @@ export function HeroSection({ images }: HeroSectionProps) {
   // Search state
   const [listingType, setListingType] = useState<"rent" | "sale">("rent");
   const [propertyType, setPropertyType] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   // Image carousel
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -143,11 +146,20 @@ export function HeroSection({ images }: HeroSectionProps) {
   const slideNumber = (currentImageIndex % SLIDES_PER_GROUP) + 1;
   const slideDisplay = String(slideNumber).padStart(2, "0");
 
-  const handleSearch = () => {
+  const getSearchHref = useCallback(() => {
     const params = new URLSearchParams();
     if (listingType) params.set("listing", listingType);
     if (propertyType) params.set("types", propertyType);
-    router.push(`/properties?${params.toString()}`);
+    if (searchQuery.trim()) params.set("q", searchQuery.trim());
+    return `/properties?${params.toString()}`;
+  }, [listingType, propertyType, searchQuery]);
+
+  const prefetchSearch = useCallback(() => {
+    router.prefetch(getSearchHref());
+  }, [getSearchHref, router]);
+
+  const handleSearch = () => {
+    router.push(getSearchHref());
   };
 
   return (
@@ -227,17 +239,26 @@ export function HeroSection({ images }: HeroSectionProps) {
             </motion.p>
 
             {/* ─── Search Bar ─── */}
-            <motion.div variants={fadeInUp} className="mt-7 max-w-lg">
+            <motion.form
+              variants={fadeInUp}
+              onMouseEnter={prefetchSearch}
+              onFocusCapture={prefetchSearch}
+              onSubmit={(event) => {
+                event.preventDefault();
+                handleSearch();
+              }}
+              className="mt-7 w-fit max-w-full"
+            >
               <div
-                className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-xl sm:flex-row sm:items-center"
+                className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-xl sm:flex-row sm:items-center"
                 suppressHydrationWarning
               >
                 {/* Rent / Buy toggle */}
-                <div className="flex overflow-hidden rounded-lg border border-gray-200">
+                <div className="flex shrink-0 overflow-hidden rounded-lg border border-gray-200">
                   <button
                     onClick={() => setListingType("rent")}
                     className={cn(
-                      "px-5 py-2 text-sm font-medium transition-colors",
+                      "px-4 py-2 text-sm font-medium transition-colors",
                       listingType === "rent"
                         ? "bg-white text-[#0a1628]"
                         : "bg-gray-50 text-gray-500 hover:bg-gray-100"
@@ -248,7 +269,7 @@ export function HeroSection({ images }: HeroSectionProps) {
                   <button
                     onClick={() => setListingType("sale")}
                     className={cn(
-                      "px-5 py-2 text-sm font-medium transition-colors",
+                      "px-4 py-2 text-sm font-medium transition-colors",
                       listingType === "sale"
                         ? "bg-white text-[#0a1628]"
                         : "bg-gray-50 text-gray-500 hover:bg-gray-100"
@@ -258,9 +279,32 @@ export function HeroSection({ images }: HeroSectionProps) {
                   </button>
                 </div>
 
+                <motion.div
+                  className="relative shrink-0"
+                  animate={{ width: isSearchExpanded ? 200 : 42 }}
+                  transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.7 }}
+                  onMouseEnter={() => setIsSearchExpanded(true)}
+                  onMouseLeave={() => {
+                    if (!searchQuery) setIsSearchExpanded(false);
+                  }}
+                >
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder={isSearchExpanded ? "Area, building or property" : ""}
+                    aria-label="Search properties by area, building, or name"
+                    onFocus={() => setIsSearchExpanded(true)}
+                    onBlur={() => {
+                      if (!searchQuery) setIsSearchExpanded(false);
+                    }}
+                    className="h-10 w-full border-gray-200 bg-gray-50 pl-9 text-sm shadow-none focus-visible:ring-[#1a4b8c]/30"
+                  />
+                </motion.div>
+
                 {/* Property type */}
                 <Select value={propertyType} onValueChange={setPropertyType}>
-                  <SelectTrigger className="w-full border-0 bg-transparent text-sm sm:w-[140px]">
+                  <SelectTrigger className="w-full shrink-0 border-0 bg-transparent text-sm sm:w-[140px]">
                     <SelectValue placeholder="Property Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -274,14 +318,14 @@ export function HeroSection({ images }: HeroSectionProps) {
 
                 {/* Search button */}
                 <Button
-                  onClick={handleSearch}
-                  className="gap-2 bg-[#1a4b8c] px-6 hover:bg-[#153d73]"
+                  type="submit"
+                  className="shrink-0 gap-2 bg-[#1a4b8c] px-5 hover:bg-[#153d73]"
                 >
                   <Search className="h-4 w-4" />
                   Search
                 </Button>
               </div>
-            </motion.div>
+            </motion.form>
 
             {/* Popular searches */}
             <motion.div
