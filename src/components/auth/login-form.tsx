@@ -36,7 +36,7 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      const result = await signInWithGoogle();
+      const result = await signInWithGoogle(searchParams.get("redirect") || undefined);
       if (!result.success) {
         throw new Error(result.error);
       }

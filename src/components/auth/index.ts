@@ -5,3 +5,4 @@ export { RegisterForm } from "./register-form";
 export { ForgotPasswordForm } from "./forgot-password-form";
 export { ResetPasswordForm } from "./reset-password-form";
 export { PasswordStrengthIndicator } from "./password-strength-indicator";
+export { AuthPrompt } from "./auth-prompt";

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { Upload, X, Star, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Star, Loader2, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadPropertyImage, deletePropertyImage } from '@/lib/cloudinary/client';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,8 @@ export function ImageUploader({
 }: ImageUploaderProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [isDragOver, setIsDragOver] = useState(false);
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,6 +167,23 @@ export function ImageUploader({
         onChange(newValue);
     };
 
+    const handleReorder = (fromIndex: number, toIndex: number) => {
+        if (disabled || fromIndex === toIndex) return;
+
+        const reordered = [...value];
+        const [movedImage] = reordered.splice(fromIndex, 1);
+        reordered.splice(toIndex, 0, movedImage);
+
+        // Primary selection belongs to the image, not its position. This lets an
+        // admin reorder the gallery without accidentally changing listing cards.
+        onChange(
+            reordered.map((image, index) => ({
+                ...image,
+                display_order: index,
+            }))
+        );
+    };
+
     return (
         <div className="space-y-4">
             <div
@@ -210,7 +229,45 @@ export function ImageUploader({
             {value.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {value.map((image, index) => (
-                        <div key={image.image_url} className="group relative aspect-square rounded-md overflow-hidden border bg-background">
+                        <div
+                            key={image.image_url}
+                            draggable={!disabled}
+                            onDragStart={(event) => {
+                                event.dataTransfer.effectAllowed = 'move';
+                                event.dataTransfer.setData('text/plain', String(index));
+                                setDraggedIndex(index);
+                            }}
+                            onDragEnter={(event) => {
+                                event.preventDefault();
+                                if (draggedIndex !== null && draggedIndex !== index) {
+                                    setDragOverIndex(index);
+                                }
+                            }}
+                            onDragOver={(event) => {
+                                event.preventDefault();
+                                event.dataTransfer.dropEffect = 'move';
+                            }}
+                            onDrop={(event) => {
+                                event.preventDefault();
+                                const fromIndex = draggedIndex ?? Number(event.dataTransfer.getData('text/plain'));
+                                if (Number.isInteger(fromIndex)) {
+                                    handleReorder(fromIndex, index);
+                                }
+                                setDraggedIndex(null);
+                                setDragOverIndex(null);
+                            }}
+                            onDragEnd={() => {
+                                setDraggedIndex(null);
+                                setDragOverIndex(null);
+                            }}
+                            aria-grabbed={draggedIndex === index}
+                            className={cn(
+                                'group relative aspect-square overflow-hidden rounded-md border bg-background transition-all',
+                                !disabled && 'cursor-grab active:cursor-grabbing',
+                                draggedIndex === index && 'scale-95 opacity-50',
+                                dragOverIndex === index && 'ring-2 ring-primary ring-offset-2'
+                            )}
+                        >
                             <Image
                                 src={image.image_url}
                                 alt={`Property image ${index + 1}`}
@@ -218,6 +275,13 @@ export function ImageUploader({
                                 sizes="(max-width: 768px) 50vw, 25vw"
                                 className="object-cover"
                             />
+
+                            {!disabled && (
+                                <div className="absolute right-2 top-2 rounded bg-black/50 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                    <GripVertical className="h-4 w-4" aria-hidden="true" />
+                                    <span className="sr-only">Drag to reorder image {index + 1}</span>
+                                </div>
+                            )}
 
                             {/* Overlay Overlay */}
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">

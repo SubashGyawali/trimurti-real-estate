@@ -186,13 +186,18 @@ export async function getUser() {
 /**
  * Sign in with Google OAuth
  */
-export async function signInWithGoogle(): Promise<AuthResult> {
+export async function signInWithGoogle(returnPath?: string): Promise<AuthResult> {
   const supabase = createClient();
+  const callbackUrl = new URL("/auth/callback", window.location.origin);
+
+  if (returnPath?.startsWith("/") && !returnPath.startsWith("//")) {
+    callbackUrl.searchParams.set("next", returnPath);
+  }
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: callbackUrl.toString(),
       queryParams: {
         access_type: "offline",
         prompt: "consent",

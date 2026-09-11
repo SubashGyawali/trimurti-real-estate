@@ -612,7 +612,7 @@ export function PropertyForm({ initialData, buildings, onSubmit, isEdit = false 
                     <CardHeader>
                         <CardTitle>Property Images</CardTitle>
                         <CardDescription>
-                            Upload at least 3 images. Drag to reorder (coming soon), verify primary image.
+                            Upload at least 3 images. Drag images to reorder, then verify the primary image.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>

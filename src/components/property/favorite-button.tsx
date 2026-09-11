@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AuthPrompt } from "@/components/auth/auth-prompt";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import type { UserFavoriteInsert } from "@/types";
@@ -24,8 +25,13 @@ export function FavoriteButton({
 }: FavoriteButtonProps) {
   const [isFavorite, setIsFavorite] = useState(isFavorited);
   const [isPending, startTransition] = useTransition();
+  const [isAuthPromptOpen, setIsAuthPromptOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+  const search = searchParams.toString();
+  const returnPath = `${pathname}${search ? `?${search}` : ""}`;
 
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,12 +43,7 @@ export function FavoriteButton({
     } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error("Please login to save properties", {
-        action: {
-          label: "Login",
-          onClick: () => router.push("/login"),
-        },
-      });
+      setIsAuthPromptOpen(true);
       return;
     }
 
@@ -87,50 +88,64 @@ export function FavoriteButton({
 
   if (variant === "button") {
     return (
-      <Button
-        variant={isFavorite ? "default" : "outline"}
-        size="sm"
-        onClick={handleToggleFavorite}
-        disabled={isPending}
-        className={cn(
-          isFavorite && "bg-red-500 hover:bg-red-600",
-          className
-        )}
-      >
-        <Heart
+      <>
+        <Button
+          variant={isFavorite ? "default" : "outline"}
+          size="sm"
+          onClick={handleToggleFavorite}
+          disabled={isPending}
           className={cn(
-            "mr-2 h-4 w-4",
-            isFavorite && "fill-current"
+            isFavorite && "bg-red-500 hover:bg-red-600",
+            className
           )}
+        >
+          <Heart
+            className={cn(
+              "mr-2 h-4 w-4",
+              isFavorite && "fill-current"
+            )}
+          />
+          {isFavorite ? "Saved" : "Save"}
+        </Button>
+        <AuthPrompt
+          open={isAuthPromptOpen}
+          onOpenChange={setIsAuthPromptOpen}
+          returnPath={returnPath}
         />
-        {isFavorite ? "Saved" : "Save"}
-      </Button>
+      </>
     );
   }
 
   return (
-    <button
-      onClick={handleToggleFavorite}
-      disabled={isPending}
-      className={cn(
-        "flex h-9 w-9 items-center justify-center rounded-full",
-        "bg-white/90 shadow-md backdrop-blur-sm",
-        "transition-all duration-200",
-        "hover:scale-110 hover:bg-white",
-        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        className
-      )}
-      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-    >
-      <Heart
+    <>
+      <button
+        onClick={handleToggleFavorite}
+        disabled={isPending}
         className={cn(
-          "h-5 w-5 transition-colors",
-          isFavorite
-            ? "fill-red-500 text-red-500"
-            : "text-gray-600 hover:text-red-500"
+          "flex h-9 w-9 items-center justify-center rounded-full",
+          "bg-white/90 shadow-md backdrop-blur-sm",
+          "transition-all duration-200",
+          "hover:scale-110 hover:bg-white",
+          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+          "disabled:opacity-50 disabled:cursor-not-allowed",
+          className
         )}
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      >
+        <Heart
+          className={cn(
+            "h-5 w-5 transition-colors",
+            isFavorite
+              ? "fill-red-500 text-red-500"
+              : "text-gray-600 hover:text-red-500"
+          )}
+        />
+      </button>
+      <AuthPrompt
+        open={isAuthPromptOpen}
+        onOpenChange={setIsAuthPromptOpen}
+        returnPath={returnPath}
       />
-    </button>
+    </>
   );
 }
