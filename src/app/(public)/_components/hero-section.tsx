@@ -11,6 +11,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import companyLogo from "../../../../logo/logo-medium-small.png";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -44,15 +45,6 @@ const CROSSFADE_DURATION = 1;
 
 // For the slide counter we always show groups of 3
 const SLIDES_PER_GROUP = 3;
-
-// Vertical sidebar words
-const SIDEBAR_WORDS = [
-  "HOMES",
-  "COMMUNITIES",
-  "CONNECTIONS",
-  "BRIGHTER",
-  "TOMORROWS",
-];
 
 // Stats row data
 const HERO_STATS = [
@@ -189,25 +181,25 @@ export function HeroSection({ images }: HeroSectionProps) {
         </AnimatePresence>
 
         {/* Overlay gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/[0.97] via-white/75 via-[46%] to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/30 via-transparent to-[#0a1628]/10" />
       </div>
 
       {/* ═══════ Content ═══════ */}
-      <div className="container relative z-10 mx-auto flex min-h-screen flex-col justify-between px-4 pb-6 pt-24 lg:px-8 lg:pt-28">
+      <div className="container relative z-10 mx-auto flex min-h-screen flex-col justify-between px-4 pb-7 pt-24 lg:px-8 lg:pt-28">
         {/* Top area – headline + badge + search */}
-        <div className="flex flex-1 items-start pt-4 lg:pt-8">
+        <div className="flex flex-1 items-start pt-5 lg:pt-10">
           {/* Left column */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-2xl"
+            className="w-full max-w-xl xl:max-w-2xl"
           >
             {/* Trusted badge */}
             <motion.p
               variants={fadeInUp}
-              className="mb-2 flex items-center gap-3 text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase"
+              className="mb-3 flex items-center gap-3 text-xs font-semibold tracking-[0.2em] text-gray-500 uppercase"
             >
               TRUSTED IN MUMBAI REAL ESTATE
               <span className="inline-block h-px w-16 bg-gray-400" />
@@ -231,7 +223,7 @@ export function HeroSection({ images }: HeroSectionProps) {
             {/* Subtitle */}
             <motion.p
               variants={fadeInUp}
-              className="mt-5 max-w-md text-sm leading-relaxed text-gray-600 sm:text-base"
+              className="mt-6 max-w-md text-sm leading-relaxed text-gray-600 sm:text-base"
             >
               500+ families settled. Every deal, face-to-face.
               <br />
@@ -247,7 +239,7 @@ export function HeroSection({ images }: HeroSectionProps) {
                 event.preventDefault();
                 handleSearch();
               }}
-              className="mt-7 w-fit max-w-full"
+              className="mt-8 w-fit max-w-full"
             >
               <div
                 className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-2 shadow-xl sm:flex-row sm:items-center"
@@ -330,7 +322,7 @@ export function HeroSection({ images }: HeroSectionProps) {
             {/* Popular searches */}
             <motion.div
               variants={fadeInUp}
-              className="mt-4 flex flex-wrap items-center gap-2 text-xs text-gray-500"
+              className="mt-5 flex flex-wrap items-center gap-2 text-xs text-gray-500"
             >
               <span className="mr-1 font-medium">Popular Searches:</span>
               <QuickSearchButton
@@ -359,7 +351,7 @@ export function HeroSection({ images }: HeroSectionProps) {
             {/* ─── Stats Row ─── */}
             <motion.div
               variants={fadeInUp}
-              className="mt-8 flex flex-wrap items-start gap-6 lg:gap-8"
+              className="mt-10 flex flex-wrap items-start gap-x-8 gap-y-5 lg:gap-x-10"
             >
               {HERO_STATS.map((stat, i) => (
                 <div key={i} className="flex items-start gap-2.5">
@@ -382,77 +374,22 @@ export function HeroSection({ images }: HeroSectionProps) {
             </motion.div>
           </motion.div>
 
-          {/* ─── "SINCE 2004" Badge (desktop) ─── */}
+          {/* ─── Company mark (desktop) ─── */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="ml-6 mt-2 hidden shrink-0 flex-col items-center lg:flex"
+            className="ml-10 mt-4 hidden shrink-0 items-center lg:flex xl:ml-16"
           >
-            <div className="flex h-28 w-28 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white/90 shadow-lg backdrop-blur-sm">
-              <span className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                Since
-              </span>
-              <span className="font-playfair text-4xl font-bold text-[#0a1628]">
-                2004
-              </span>
-              <span className="mt-0.5 text-center text-[9px] font-semibold leading-tight tracking-wider text-gray-400 uppercase">
-                Building
-                <br />
-                Better Lives
-              </span>
+            <div className="flex w-44 items-center justify-center rounded-2xl border border-white/70 bg-white/90 px-4 py-3 shadow-lg shadow-[#0a1628]/10 backdrop-blur-sm">
+              <Image
+                src={companyLogo}
+                alt="Trimurti Real Estate"
+                className="h-auto w-full"
+                priority
+              />
             </div>
           </motion.div>
-        </div>
-
-        {/* ─── Location Labels (floating over background, desktop only) ─── */}
-        <div className="pointer-events-none absolute top-1/3 right-[30%] z-20 hidden xl:block">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="text-center"
-          >
-            <MapPin className="mx-auto mb-1 h-4 w-4 text-white/80" />
-            <p className="text-xs font-bold tracking-wider text-white drop-shadow-lg uppercase">
-              Kandivali
-            </p>
-            <p className="text-[9px] tracking-wider text-white/70 uppercase">
-              A Vibrant Community
-            </p>
-          </motion.div>
-        </div>
-
-        <div className="pointer-events-none absolute top-[30%] right-[12%] z-20 hidden xl:block">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            className="text-center"
-          >
-            <p className="text-xs font-bold tracking-wider text-white drop-shadow-lg uppercase">
-              Malad West
-            </p>
-            <p className="text-[9px] tracking-wider text-white/70 uppercase">
-              Endless Possibilities
-            </p>
-          </motion.div>
-        </div>
-
-        {/* ─── Vertical Sidebar Words (desktop only) ─── */}
-        <div className="pointer-events-none absolute top-1/4 right-4 z-20 hidden flex-col items-end gap-3 xl:flex">
-          {SIDEBAR_WORDS.map((word, i) => (
-            <motion.span
-              key={word}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 + i * 0.1, duration: 0.4 }}
-              className="text-[11px] font-medium tracking-[0.2em] text-white/60"
-            >
-              {word}
-            </motion.span>
-          ))}
-          <span className="mt-1 h-10 w-px bg-white/30" />
         </div>
 
         {/* ═══════ Bottom Bar ═══════ */}
@@ -460,24 +397,24 @@ export function HeroSection({ images }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.6 }}
-          className="mt-auto flex flex-col items-start justify-between gap-4 border-t border-white/20 pt-5 sm:flex-row sm:items-end"
+          className="mt-auto flex flex-col items-start justify-between gap-4 border-t border-white/30 pt-5 sm:flex-row sm:items-end"
         >
           {/* Left – Mumbai tagline */}
-          <div className="flex items-end gap-4">
+          <div className="flex items-end gap-4 rounded-xl border border-white/70 bg-white/75 px-4 py-3 shadow-sm shadow-[#0a1628]/10 backdrop-blur-sm">
             <div>
               <p className="font-playfair text-2xl italic text-[#0a1628] sm:text-3xl">
                 Mumbai
               </p>
-              <p className="font-playfair text-lg italic text-[#0a1628]/70 sm:text-xl">
+              <p className="font-playfair text-lg italic text-[#0a1628]/80 sm:text-xl">
                 Lives Better Here
               </p>
             </div>
-            <span className="mb-1 h-10 w-px bg-gray-300" />
+            <span className="mb-1 h-10 w-px bg-[#0a1628]/20" />
             <div className="mb-1">
-              <p className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+              <p className="text-[10px] font-semibold tracking-[0.15em] text-[#0a1628]/65 uppercase">
                 More than properties.
               </p>
-              <p className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase">
+              <p className="text-[10px] font-semibold tracking-[0.15em] text-[#0a1628]/65 uppercase">
                 We build futures.
               </p>
             </div>

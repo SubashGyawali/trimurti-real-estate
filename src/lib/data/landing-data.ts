@@ -250,7 +250,7 @@ export const teamMembers: TeamMember[] = [
     id: "1",
     name: "Mr. Niraj Koirala",
     title: "Proprietor & Principal Broker",
-    image: "/images/Niraj Picture.jpg",
+    image: "/images/Niraj Picture.png",
     experience: "20+ years in Kandivali real estate",
     phone: "+91 98194 46163",
     whatsapp: "919819446163",
@@ -298,6 +298,21 @@ export const teamMembers: TeamMember[] = [
     email: "subash@trimurtirealestate.com",
     bio: "Manages digital presence, property photography, and media outreach to showcase Trimurti's listings effectively.",
     specializations: ["Digital Marketing", "Property Photography", "Social Media"],
+  },
+  {
+    id: "4",
+    name: "Kartik Sharma",
+    title: "Client Services & Agreements",
+    image: "/images/Kartik Sharma.png",
+    experience: "Agreements, tailored searches & visits",
+    phone: "+91 70392 71261",
+    whatsapp: "917039271261",
+    bio: "Helps clients with Leave and Licence Agreements, tailored flat searches, and property visits.",
+    specializations: [
+      "Leave & Licence Agreements",
+      "Flats for Specific Needs",
+      "Property Visits",
+    ],
   },
 ];
 

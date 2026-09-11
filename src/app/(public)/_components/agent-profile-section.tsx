@@ -68,7 +68,7 @@ export function AgentProfileSection() {
             <h3 className="mb-8 text-center font-plus-jakarta text-xl font-semibold text-foreground md:text-2xl">
               Our Dedicated Team
             </h3>
-            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {otherMembers.map((member, index) => (
                 <TeamMemberCard
                   key={member.id}
@@ -320,7 +320,7 @@ function TeamMemberCard({
         {/* Specializations */}
         {member.specializations && (
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {member.specializations.slice(0, 2).map((spec) => (
+            {member.specializations.map((spec) => (
               <span
                 key={spec}
                 className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"

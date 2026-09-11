@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { siteConfig } from "@/lib/site-config";
 import {
   HeroSection,
-  TrustBadgesSection,
   FeaturesSection,
   BackgroundBanner,
   AgentProfileSection,
@@ -111,9 +110,6 @@ export default async function HomePage() {
     <>
       {/* Hero with background image, search bar, and CTAs */}
       <HeroSection images={galleryImages} />
-
-      {/* Trust badges with animated stats */}
-      <TrustBadgesSection />
 
       {/* Featured property listings from database */}
       <FeaturedProperties properties={featuredProperties || []} />
