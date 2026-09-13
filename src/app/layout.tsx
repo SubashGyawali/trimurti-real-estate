@@ -62,7 +62,6 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: "Trimurti Real Estate | Mumbai Properties",
     description: siteConfig.description.og,
-    appId: facebookAppId,
     images: [
       buildOpenGraphImage(
         siteConfig.images.ogDefault,
