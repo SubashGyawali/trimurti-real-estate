@@ -63,6 +63,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const ogDescription =
     property.description ||
     `${priceText} - ${property.listing_type === "rent" ? "For Rent" : "For Sale"}`;
+  const ogImage = buildOpenGraphImage(primaryImage, property.title);
 
   return {
     title: property.title,
@@ -76,7 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: property.title,
       description: ogDescription,
       url: shareUrl,
-      images: [buildOpenGraphImage(primaryImage, property.title)],
+      images: [ogImage],
       type: "website",
       locale: "en_IN",
       siteName: siteConfig.name,

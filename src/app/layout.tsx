@@ -24,6 +24,8 @@ const playfairDisplay = Playfair_Display({
   variable: "--font-playfair",
 });
 
+const facebookAppId = process.env.NEXT_PUBLIC_FB_APP_ID;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
@@ -60,6 +62,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: "Trimurti Real Estate | Mumbai Properties",
     description: siteConfig.description.og,
+    appId: facebookAppId,
     images: [
       buildOpenGraphImage(
         siteConfig.images.ogDefault,
@@ -107,6 +110,7 @@ export const metadata: Metadata = {
   other: {
     "pinterest-rich-pin": "true",
     "msapplication-TileColor": "#1e3a5f",
+    ...(facebookAppId ? { "fb:app_id": facebookAppId } : {}),
   },
   verification: {
     // Add verification codes when available
