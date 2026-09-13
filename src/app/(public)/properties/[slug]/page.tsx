@@ -13,6 +13,7 @@ import { formatPrice } from "@/components/property/price-display";
 import { PropertyMapContainer } from "@/components/maps";
 import { AdminEditButton } from "@/components/property/admin-edit-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { buildOpenGraphImage } from "@/lib/social-meta";
 import type { PropertyWithDetails, PropertyWithImages } from "@/types";
 
 // ISR - revalidate every 60 seconds for fresh property data
@@ -58,19 +59,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const priceText = formatPrice(property.price, property.listing_type);
 
+  const shareUrl = `${siteConfig.url}/properties/${slug}`;
+  const ogDescription =
+    property.description ||
+    `${priceText} - ${property.listing_type === "rent" ? "For Rent" : "For Sale"}`;
+
   return {
     title: property.title,
     description:
       property.description ||
       `${property.title} - ${priceText} in Kandivali West, Mumbai`,
+    alternates: {
+      canonical: shareUrl,
+    },
     openGraph: {
       title: property.title,
-      description:
-        property.description ||
-        `${priceText} - ${property.listing_type === "rent" ? "For Rent" : "For Sale"}`,
-      images: [{ url: primaryImage, width: 1200, height: 630, alt: property.title }],
+      description: ogDescription,
+      url: shareUrl,
+      images: [buildOpenGraphImage(primaryImage, property.title)],
       type: "website",
       locale: "en_IN",
+      siteName: siteConfig.name,
     },
     twitter: {
       card: "summary_large_image",

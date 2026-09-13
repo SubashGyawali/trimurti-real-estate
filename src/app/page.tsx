@@ -10,6 +10,7 @@ import {
   LandingContactForm,
 } from "./(public)/_components";
 import { getHomeGalleryImages } from "@/lib/data/gallery";
+import { buildOpenGraphImage } from "@/lib/social-meta";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamic imports for heavy components with carousels and animations
@@ -73,18 +74,17 @@ export const metadata: Metadata = {
       "Find Your Dream Home in Mumbai, Kandivali and Malad West | Trimurti Real Estate",
     description:
       "20+ years of trusted real estate service. Apartments & flats for sale and rent in Kandivali West and Malad West, Mumbai.",
-    url: "/",
+    url: siteConfig.url,
     type: "website",
     locale: "en_IN",
     siteName: siteConfig.name,
     images: [
-      {
-        url: siteConfig.images.ogDefault,
-        width: siteConfig.images.ogWidth,
-        height: siteConfig.images.ogHeight,
-        alt: siteConfig.images.ogDefaultAlt,
-        type: "image/jpeg",
-      },
+      buildOpenGraphImage(
+        siteConfig.images.ogDefault,
+        siteConfig.images.ogDefaultAlt,
+        siteConfig.images.ogWidth,
+        siteConfig.images.ogHeight
+      ),
     ],
   },
 };

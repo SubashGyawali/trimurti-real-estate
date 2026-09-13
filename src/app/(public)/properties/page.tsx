@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { siteConfig } from "@/lib/site-config";
 import { parseFiltersFromParams } from "@/lib/filters";
 import { PropertiesPageContent } from "@/components/property";
+import { buildOpenGraphImage } from "@/lib/social-meta";
 import type { PropertySearchFilters, PropertyWithImages, Building } from "@/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -15,17 +16,17 @@ export const metadata: Metadata = {
     title: "Properties for Sale & Rent | Trimurti Real Estate",
     description:
       "Browse apartments, flats, and shops for sale and rent in Kandivali West, Mumbai.",
+    url: `${siteConfig.url}/properties`,
     type: "website",
     locale: "en_IN",
     siteName: siteConfig.name,
     images: [
-      {
-        url: siteConfig.images.ogDefault,
-        width: siteConfig.images.ogWidth,
-        height: siteConfig.images.ogHeight,
-        alt: siteConfig.images.ogDefaultAlt,
-        type: "image/jpeg",
-      },
+      buildOpenGraphImage(
+        siteConfig.images.ogDefault,
+        siteConfig.images.ogDefaultAlt,
+        siteConfig.images.ogWidth,
+        siteConfig.images.ogHeight
+      ),
     ],
   },
 };

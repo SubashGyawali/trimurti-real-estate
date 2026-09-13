@@ -6,6 +6,7 @@ import { ConditionalLayout } from "@/components/layout/conditional-layout";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/seo";
 import { OfflineIndicator } from "@/components/offline-indicator";
 import { siteConfig } from "@/lib/site-config";
+import { buildOpenGraphImage, resolveAbsoluteUrl } from "@/lib/social-meta";
 import "./globals.css";
 
 const inter = Inter({
@@ -55,18 +56,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "/",
+    url: siteConfig.url,
     siteName: siteConfig.name,
     title: "Trimurti Real Estate | Mumbai Properties",
     description: siteConfig.description.og,
     images: [
-      {
-        url: siteConfig.images.ogDefault,
-        width: siteConfig.images.ogWidth,
-        height: siteConfig.images.ogHeight,
-        alt: siteConfig.images.ogDefaultAlt,
-        type: "image/jpeg",
-      },
+      buildOpenGraphImage(
+        siteConfig.images.ogDefault,
+        siteConfig.images.ogDefaultAlt,
+        siteConfig.images.ogWidth,
+        siteConfig.images.ogHeight
+      ),
     ],
   },
   twitter: {
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     description: siteConfig.description.og,
     images: [
       {
-        url: siteConfig.images.ogDefault,
+        url: resolveAbsoluteUrl(siteConfig.images.ogDefault),
         alt: siteConfig.images.ogDefaultAlt,
       },
     ],

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site-config";
+import { buildOpenGraphImage } from "@/lib/social-meta";
 import { AboutContent } from "./_components/about-content";
 
 // Static page - revalidate every 24 hours
@@ -13,17 +14,17 @@ export const metadata: Metadata = {
     title: "About Us | Trimurti Real Estate",
     description:
       "20+ years of trusted real estate service in Kandivali West, Mumbai.",
+    url: `${siteConfig.url}/about`,
     type: "website",
     locale: "en_IN",
     siteName: siteConfig.name,
     images: [
-      {
-        url: siteConfig.images.ogDefault,
-        width: siteConfig.images.ogWidth,
-        height: siteConfig.images.ogHeight,
-        alt: siteConfig.images.ogDefaultAlt,
-        type: "image/jpeg",
-      },
+      buildOpenGraphImage(
+        siteConfig.images.ogDefault,
+        siteConfig.images.ogDefaultAlt,
+        siteConfig.images.ogWidth,
+        siteConfig.images.ogHeight
+      ),
     ],
   },
 };

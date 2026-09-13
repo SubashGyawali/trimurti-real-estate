@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site-config";
+import { buildOpenGraphImage } from "@/lib/social-meta";
 import { ContactContent } from "./_components/contact-content";
 
 export const metadata: Metadata = {
@@ -10,17 +11,17 @@ export const metadata: Metadata = {
     title: "Contact Us | Trimurti Real Estate",
     description:
       "Reach out to Trimurti Real Estate for property inquiries in Kandivali West, Mumbai.",
+    url: `${siteConfig.url}/contact`,
     type: "website",
     locale: "en_IN",
     siteName: siteConfig.name,
     images: [
-      {
-        url: siteConfig.images.ogDefault,
-        width: siteConfig.images.ogWidth,
-        height: siteConfig.images.ogHeight,
-        alt: siteConfig.images.ogDefaultAlt,
-        type: "image/jpeg",
-      },
+      buildOpenGraphImage(
+        siteConfig.images.ogDefault,
+        siteConfig.images.ogDefaultAlt,
+        siteConfig.images.ogWidth,
+        siteConfig.images.ogHeight
+      ),
     ],
   },
 };
