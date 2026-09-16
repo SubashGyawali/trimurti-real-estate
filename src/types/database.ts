@@ -23,6 +23,10 @@ export type InquiryStatus = 'new' | 'contacted' | 'closed';
 
 export type VisitStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
+export type InstagramCommentCategory = 'simple' | 'contact' | 'ignore';
+
+export type InstagramCommentStatus = 'pending' | 'queued' | 'awaiting_approval' | 'approved' | 'sent' | 'failed' | 'ignored';
+
 // -----------------------------------------------------
 // Table Types
 // -----------------------------------------------------
@@ -134,6 +138,48 @@ export interface HomeGalleryImage {
   updated_at: string;
 }
 
+export interface InstagramAgentComment {
+  id: string;
+  comment_id: string;
+  comment_text: string;
+  username: string | null;
+  media_id: string | null;
+  media_url: string | null;
+  media_title: string | null;
+  category: InstagramCommentCategory | null;
+  reply: string | null;
+  status: InstagramCommentStatus;
+  error_message: string | null;
+  proposed_reply: string | null;
+  confidence: number | null;
+  decision_reason: string | null;
+  scheduled_for: string | null;
+  reply_source: string | null;
+  admin_action: string | null;
+  admin_reviewed_at: string | null;
+  admin_reviewed_by: string | null;
+  hidden_at: string | null;
+  hidden_by: string | null;
+  property_id: string | null;
+  property_title: string | null;
+  property_price: number | null;
+  property_price_text: string | null;
+  property_listing_type: ListingType | null;
+  response_language: string | null;
+  response_style: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InstagramAgentTeaching {
+  id: string;
+  rule: string;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // -----------------------------------------------------
 // JSONB Types
 // -----------------------------------------------------
@@ -175,6 +221,21 @@ export type HomeGalleryImageInsert = Omit<HomeGalleryImage, 'id' | 'created_at' 
   created_at?: string;
   updated_at?: string;
 };
+
+export type InstagramAgentCommentInsert = Omit<InstagramAgentComment, 'id' | 'created_at' | 'updated_at' | 'status'> & {
+  status?: InstagramCommentStatus;
+};
+
+export type InstagramAgentCommentUpdate = Partial<Omit<InstagramAgentComment, 'id' | 'comment_id' | 'created_at' | 'updated_at'>>;
+
+export type InstagramAgentTeachingInsert = Omit<InstagramAgentTeaching, 'id' | 'created_at' | 'updated_at'> & {
+  id?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type InstagramAgentTeachingUpdate = Partial<Omit<InstagramAgentTeaching, 'id' | 'created_at' | 'updated_at'>>;
 
 // -----------------------------------------------------
 // Update Types (for updating records)
@@ -269,6 +330,16 @@ export interface Database {
         Row: HomeGalleryImage;
         Insert: HomeGalleryImageInsert;
         Update: HomeGalleryImageUpdate;
+      };
+      instagram_agent_comments: {
+        Row: InstagramAgentComment;
+        Insert: InstagramAgentCommentInsert;
+        Update: InstagramAgentCommentUpdate;
+      };
+      instagram_agent_teachings: {
+        Row: InstagramAgentTeaching;
+        Insert: InstagramAgentTeachingInsert;
+        Update: InstagramAgentTeachingUpdate;
       };
     };
     Enums: {

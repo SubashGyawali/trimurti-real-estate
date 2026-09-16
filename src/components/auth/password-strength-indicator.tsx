@@ -11,10 +11,10 @@ interface PasswordStrengthIndicatorProps {
 }
 
 const strengthColors: Record<PasswordStrength["label"], string> = {
-  weak: "bg-red-500",
-  fair: "bg-orange-500",
+  weak: "bg-status-error",
+  fair: "bg-status-warning",
   good: "bg-yellow-500",
-  strong: "bg-green-500",
+  strong: "bg-status-success",
 };
 
 const strengthLabels: Record<PasswordStrength["label"], string> = {
@@ -43,10 +43,10 @@ export function PasswordStrengthIndicator({
           <span
             className={cn(
               "text-xs font-medium",
-              strength.label === "weak" && "text-red-500",
-              strength.label === "fair" && "text-orange-500",
+              strength.label === "weak" && "text-status-error",
+              strength.label === "fair" && "text-status-warning",
               strength.label === "good" && "text-yellow-600",
-              strength.label === "strong" && "text-green-500"
+              strength.label === "strong" && "text-status-success"
             )}
           >
             {strengthLabels[strength.label]}
@@ -96,14 +96,14 @@ function RequirementItem({ met, text }: { met: boolean; text: string }) {
   return (
     <div className="flex items-center gap-2">
       {met ? (
-        <Check className="h-3.5 w-3.5 text-green-500" />
+        <Check className="h-3.5 w-3.5 text-status-success" />
       ) : (
         <X className="h-3.5 w-3.5 text-muted-foreground" />
       )}
       <span
         className={cn(
           "text-xs",
-          met ? "text-green-600" : "text-muted-foreground"
+          met ? "text-status-success" : "text-muted-foreground"
         )}
       >
         {text}

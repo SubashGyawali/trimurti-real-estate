@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Sparkles,
   SlidersHorizontal,
+  Instagram,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ const nav = [
   { href: "/admin/buildings", label: "Buildings", icon: Building2 },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
   { href: "/admin/visits", label: "Visits", icon: CalendarClock },
+  { href: "/admin/instagram", label: "Instagram AI", icon: Instagram },
   { href: "/admin/home-settings", label: "Home Settings", icon: SlidersHorizontal },
 ];
 
@@ -37,18 +39,18 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
   return (
     <aside
       className={cn(
-        "flex w-[240px] flex-col bg-[#1e3a5f] text-white",
+        "flex w-[240px] flex-col bg-brand-blue text-white",
         className
       )}
     >
       {/* Brand */}
       <div className="flex items-center gap-2.5 border-b border-white/10 px-5 py-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#d4a853]/20">
-          <Sparkles className="h-4 w-4 text-[#d4a853]" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gold/20">
+          <Sparkles className="h-4 w-4 text-brand-gold" />
         </div>
         <div className="leading-none">
           <span className="text-sm font-bold tracking-tight">Trimurti</span>
-          <span className="ml-1 text-sm font-bold tracking-tight text-[#d4a853]">
+          <span className="ml-1 text-sm font-bold tracking-tight text-brand-gold">
             RE
           </span>
           <p className="mt-0.5 text-[10px] font-medium uppercase tracking-widest text-white/40">
@@ -78,13 +80,13 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
                     className={cn(
                       "h-[18px] w-[18px] shrink-0 transition-colors",
                       active
-                        ? "text-[#d4a853]"
+                        ? "text-brand-gold"
                         : "text-white/40 group-hover:text-white/70"
                     )}
                   />
                   <span>{item.label}</span>
                   {active && (
-                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#d4a853]" />
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-brand-gold" />
                   )}
                 </Link>
               </li>

@@ -354,8 +354,8 @@ function ContactItem({ icon: Icon, label, value, href }: ContactItemProps) {
 function SuccessMessage() {
   return (
     <div className="flex flex-col items-center justify-center py-8 text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-        <CheckCircle className="h-8 w-8 text-emerald-600" />
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-status-success/10">
+        <CheckCircle className="h-8 w-8 text-status-success" />
       </div>
       <h3 className="font-plus-jakarta text-xl font-semibold text-foreground">
         Message Sent Successfully!

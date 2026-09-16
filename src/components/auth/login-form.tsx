@@ -90,13 +90,13 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         {verified === "true" && (
-          <div className="mb-6 rounded-lg bg-green-50 p-3 text-center text-sm text-green-700">
+          <div className="mb-6 rounded-lg bg-status-success/10 p-3 text-center text-sm text-status-success">
             Email verified successfully! You can now sign in.
           </div>
         )}
 
         {authError === "auth_callback_error" && (
-          <div className="mb-6 rounded-lg bg-red-50 p-3 text-center text-sm text-red-700">
+          <div className="mb-6 rounded-lg bg-status-error/10 p-3 text-center text-sm text-status-error">
             Authentication failed. Please try again.
           </div>
         )}

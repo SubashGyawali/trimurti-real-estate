@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { ConditionalLayout } from "@/components/layout/conditional-layout";
@@ -129,11 +130,13 @@ export default function RootLayout({
         <WebsiteJsonLd />
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
-        <AuthProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
-          <Toaster position="top-right" richColors />
-          <OfflineIndicator />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ConditionalLayout>{children}</ConditionalLayout>
+            <Toaster position="top-right" richColors />
+            <OfflineIndicator />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

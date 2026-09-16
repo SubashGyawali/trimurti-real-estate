@@ -8,6 +8,7 @@ import {
   Phone,
   Clock,
   Building2,
+  Instagram,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,17 @@ async function fetchStats() {
     pendingVisits = count ?? 0;
   }
 
+  let instagramReplied = 0;
+  try {
+    const { count } = await supabase
+      .from("instagram_agent_comments")
+      .select("id", { count: "exact" })
+      .eq("status", "sent");
+    instagramReplied = count ?? 0;
+  } catch {
+    instagramReplied = 0;
+  }
+
   const { data: recentInquiries } = await supabase
     .from("inquiries")
     .select("id, name, phone, email, message, created_at, status")
@@ -59,13 +71,21 @@ async function fetchStats() {
     .order("created_at", { ascending: false })
     .limit(6);
 
+  const { data: recentInstagramComments } = await supabase
+    .from("instagram_agent_comments")
+    .select("id, username, comment_text, category, status, created_at")
+    .order("created_at", { ascending: false })
+    .limit(5);
+
   return {
     totalProperties: totalProperties ?? 0,
     activeListings: activeCount ?? 0,
     inquiriesThisMonth: inquiriesThisMonth ?? 0,
     pendingVisits,
+    instagramReplied,
     recentInquiries: recentInquiries ?? [],
     recentProperties: recentProperties ?? [],
+    recentInstagramComments: recentInstagramComments ?? [],
   };
 }
 
@@ -88,33 +108,41 @@ const statCards = [
     label: "Total Properties",
     key: "totalProperties" as const,
     icon: Home,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "text-brand-blue",
+    bg: "bg-brand-blue/10",
     href: "/admin/properties",
   },
   {
     label: "Active Listings",
     key: "activeListings" as const,
     icon: TrendingUp,
-    color: "text-emerald-600",
-    bg: "bg-emerald-50",
+    color: "text-status-success",
+    bg: "bg-status-success/10",
     href: "/admin/properties",
   },
   {
     label: "Inquiries This Month",
     key: "inquiriesThisMonth" as const,
     icon: MessageSquare,
-    color: "text-amber-600",
-    bg: "bg-amber-50",
+    color: "text-status-warning",
+    bg: "bg-status-warning/10",
     href: "/admin/inquiries",
   },
   {
     label: "Pending Visits",
     key: "pendingVisits" as const,
     icon: CalendarClock,
-    color: "text-violet-600",
-    bg: "bg-violet-50",
+    color: "text-violet-600 dark:text-violet-400",
+    bg: "bg-violet-50 dark:bg-violet-950/40",
     href: "/admin/visits",
+  },
+  {
+    label: "IG Replies Sent",
+    key: "instagramReplied" as const,
+    icon: Instagram,
+    color: "text-brand-coral",
+    bg: "bg-brand-coral/10",
+    href: "/admin/instagram",
   },
 ];
 
@@ -128,9 +156,9 @@ const typeLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  new: "bg-blue-100 text-blue-700",
-  contacted: "bg-amber-100 text-amber-700",
-  closed: "bg-gray-100 text-gray-600",
+  new: "bg-status-info/10 text-status-info",
+  contacted: "bg-status-warning/10 text-status-warning",
+  closed: "bg-muted text-muted-foreground",
 };
 
 export default async function AdminPage() {
@@ -181,7 +209,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Inquiries */}
         <div className="rounded-xl border bg-background">
           <div className="flex items-center justify-between border-b px-5 py-4">
@@ -208,7 +236,7 @@ export default async function AdminPage() {
                   className="flex items-start gap-3 px-5 py-3.5 transition-colors hover:bg-muted/50"
                 >
                   {/* Avatar circle */}
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1e3a5f]/10 text-xs font-bold text-[#1e3a5f]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-blue/10 text-xs font-bold text-brand-blue">
                     {inq.name
                       ?.split(" ")
                       .map((w: string) => w[0])
@@ -284,8 +312,8 @@ export default async function AdminPage() {
                     className={cn(
                       "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold",
                       p.listing_type === "rent"
-                        ? "bg-blue-50 text-blue-600"
-                        : "bg-emerald-50 text-emerald-600"
+                        ? "bg-status-info/10 text-status-info"
+                        : "bg-status-success/10 text-status-success"
                     )}
                   >
                     {p.listing_type === "rent" ? "R" : "S"}
@@ -302,7 +330,7 @@ export default async function AdminPage() {
                       <span
                         className={cn(
                           "font-medium",
-                          p.is_active ? "text-emerald-600" : "text-muted-foreground"
+                          p.is_active ? "text-status-success" : "text-muted-foreground"
                         )}
                       >
                         {p.is_active ? "Active" : "Inactive"}
@@ -312,6 +340,75 @@ export default async function AdminPage() {
                     </div>
                   </div>
                   <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Recent Instagram Comments */}
+        <div className="rounded-xl border bg-background">
+          <div className="flex items-center justify-between border-b px-5 py-4">
+            <div className="flex items-center gap-2">
+              <Instagram className="h-4 w-4 text-[#E4405F]" />
+              <h2 className="text-sm font-semibold">Recent Instagram Comments</h2>
+            </div>
+            <Link
+              href="/admin/instagram"
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              View all
+            </Link>
+          </div>
+          <div className="divide-y">
+            {stats.recentInstagramComments.length === 0 ? (
+              <p className="px-5 py-8 text-center text-sm text-muted-foreground">
+                No comments yet
+              </p>
+            ) : (
+              stats.recentInstagramComments.map((c: any) => (
+                <div
+                  key={c.id}
+                  className="flex items-start gap-3 px-5 py-3.5 transition-colors hover:bg-muted/50"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-coral/10 text-xs font-bold text-brand-coral">
+                    {c.username?.charAt(0)?.toUpperCase() || '?'}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium truncate">
+                        {c.username || 'Unknown'}
+                      </span>
+                      {c.status && (
+                        <span
+                          className={cn(
+                            "inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
+                            c.status === 'sent' && 'bg-status-success/10 text-status-success',
+                            c.status === 'failed' && 'bg-status-error/10 text-status-error',
+                            c.status === 'pending' && 'bg-status-warning/10 text-status-warning',
+                            c.status === 'ignored' && 'bg-muted text-muted-foreground',
+                            'bg-status-info/10 text-status-info'
+                          )}
+                        >
+                          {c.status}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                      {c.comment_text?.slice(0, 80) || 'No comment'}
+                    </p>
+                    <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
+                      {c.category && (
+                        <span className="flex items-center gap-1">
+                          <span className="text-[10px] uppercase">{c.category}</span>
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {timeAgo(c.created_at)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               ))
             )}

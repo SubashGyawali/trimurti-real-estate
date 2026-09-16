@@ -1,22 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Menu,
-  X,
   LayoutDashboard,
   Building2,
   List,
   MessageSquare,
   CalendarClock,
-  ArrowLeft,
   Sparkles,
+  Instagram,
 } from "lucide-react";
 import AdminSidebar from "./admin-sidebar";
 import { ProtectedRoute } from "@/components/auth/protected-route";
-import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -24,6 +23,7 @@ const navItems = [
   { href: "/admin/buildings", label: "Buildings", icon: Building2 },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
   { href: "/admin/visits", label: "Visits", icon: CalendarClock },
+  { href: "/admin/instagram", label: "Instagram AI", icon: Instagram },
 ];
 
 export function AdminLayoutClient({
@@ -39,7 +39,7 @@ export function AdminLayoutClient({
 
   return (
     <ProtectedRoute requireAdmin>
-      <div className="flex min-h-screen bg-muted/30">
+      <div className="admin flex min-h-screen bg-muted/30">
         {/* Desktop Sidebar */}
         <div className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen">
           <AdminSidebar />
@@ -98,7 +98,10 @@ export function AdminLayoutClient({
             </div>
 
             {/* Right side spacer */}
-            <div className="ml-auto" />
+            <div className="ml-auto flex items-center gap-1">
+              <ThemeToggle />
+            </div>
+
           </header>
 
           {/* Page content */}

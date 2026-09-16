@@ -116,8 +116,6 @@ export function MobileNav({
           </Button>
         </div>
 
-        <Separator className="bg-white/20" />
-
         <div className="flex flex-col gap-2 p-6">
           {isAuthenticated ? (
             <>

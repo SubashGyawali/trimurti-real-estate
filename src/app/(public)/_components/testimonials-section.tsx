@@ -161,8 +161,8 @@ export function TestimonialsSection({ className }: TestimonialsSectionProps) {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-2 text-sm text-emerald-600">
-            <Star className="h-4 w-4 fill-emerald-500 text-emerald-500" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-status-success/10 px-4 py-2 text-sm text-status-success">
+            <Star className="h-4 w-4 fill-status-success text-status-success" />
             <span>4.9/5 average rating from 100+ reviews</span>
           </div>
         </motion.div>

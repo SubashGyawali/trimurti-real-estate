@@ -35,6 +35,18 @@
     --brand-coral: 217 91% 60%;
     --brand-accent: 217 91% 60%;
     --brand-gold: 217 91% 60%;
+
+    /* Status colors (light mode) - Instagram style */
+    --status-pending: 42 90% 55%;
+    --status-pending-bg: 42 80% 92%;
+    --status-success: 150 60% 35%;
+    --status-success-bg: 150 60% 92%;
+    --status-error: 0 84% 60%;
+    --status-error-bg: 0 80% 94%;
+    --status-warning: 42 90% 55%;
+    --status-warning-bg: 42 80% 92%;
+    --status-info: 209 88% 44%;
+    --status-info-bg: 209 80% 92%;
   }
 
   .dark {
@@ -62,7 +74,26 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Brand colors (dark mode) */
+    --brand-blue: 210 80% 55%;
+    --brand-coral: 15 90% 60%;
+    --brand-accent: 15 90% 60%;
+    --brand-gold: 42 90% 60%;
+
+    /* Status colors (dark mode) - Instagram style */
+    --status-pending: 42 90% 55%;
+    --status-pending-bg: 42 50% 25%;
+    --status-success: 150 60% 45%;
+    --status-success-bg: 150 40% 20%;
+    --status-error: 0 70% 55%;
+    --status-error-bg: 0 50% 20%;
+    --status-warning: 42 90% 55%;
+    --status-warning-bg: 42 50% 25%;
+    --status-info: 200 80% 55%;
+    --status-info-bg: 200 50% 20%;
   }
+
 }
 
 @layer base {
@@ -72,6 +103,50 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Admin-only smooth theme transitions — public stays instant, no site-wide flash */
+  .admin *,
+  .admin *::before,
+  .admin *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 150ms;
+    transition-timing-function: ease-in-out;
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .admin *,
+    .admin *::before,
+    .admin *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
+  /* Theme toggle icon animations */
+  [data-theme="light"] .theme-sun {
+    @apply rotate-0 scale-100;
+  }
+  [data-theme="light"] .theme-moon,
+  [data-theme="light"] .theme-monitor {
+    @apply rotate-90 scale-0;
+  }
+
+  [data-theme="dark"] .theme-moon {
+    @apply rotate-0 scale-100;
+  }
+  [data-theme="dark"] .theme-sun,
+  [data-theme="dark"] .theme-monitor {
+    @apply rotate-90 scale-0;
+  }
+
+  [data-theme="system"] .theme-monitor {
+    @apply rotate-0 scale-100;
+  }
+  [data-theme="system"] .theme-sun,
+  [data-theme="system"] .theme-moon {
+    @apply rotate-90 scale-0;
   }
 }
 
@@ -110,7 +185,7 @@ header .glass {
   width: 100% !important;
 }
 
-/* Grid dot pattern + glass effect for header */
+/* Grid dot pattern + glass effect for header — light (default) */
 .header-grid-glass {
   background:
     radial-gradient(rgba(6, 56, 102, 0.45) 1px, transparent 1px),
@@ -135,4 +210,21 @@ header .glass {
     inset 0 1px 4px 0 rgba(255, 255, 255, 0.35),
     inset 0 -1px 3px 0 rgba(255, 255, 255, 0.18),
     0 0 28px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode header — uses theme card/popover so it adapts */
+.dark .header-grid-glass {
+  background:
+    radial-gradient(hsla(var(--border), 0.35) 1px, transparent 1px),
+    linear-gradient(hsla(var(--card), 0.85), hsla(var(--card), 0.85));
+  background-size: 5px 5px, 100% 100%;
+  border-color: hsl(var(--border));
+}
+
+.dark .header-grid-glass-scrolled {
+  background:
+    radial-gradient(hsla(var(--border), 0.4) 1px, transparent 1px),
+    linear-gradient(hsla(var(--card), 0.92), hsla(var(--card), 0.92));
+  background-size: 5px 5px, 100% 100%;
+  border-color: hsl(var(--border));
 }

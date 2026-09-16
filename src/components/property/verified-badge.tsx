@@ -21,7 +21,7 @@ export function VerifiedBadge({ className, showText = true }: VerifiedBadgeProps
           <Badge 
             variant="secondary" 
             className={cn(
-              "gap-1 bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200 cursor-help transition-colors", 
+              "gap-1 bg-status-info/10 text-status-info hover:bg-status-info/20 border-status-info/20 cursor-help transition-colors", 
               className
             )}
           >

@@ -12,24 +12,24 @@ const services = [
     title: "Property Sales",
     description:
       "Find your dream home with our curated selection of apartments and shops in prime Kandivali locations. Expert guidance through every step of the buying process.",
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10",
+    color: "text-status-success",
+    bgColor: "bg-status-success/10",
   },
   {
     icon: Key,
     title: "Rental Services",
     description:
       "Discover quality rental properties that match your budget and lifestyle preferences. Wide range of options from 1 RK to 3 BHK apartments.",
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    color: "text-status-info",
+    bgColor: "bg-status-info/10",
   },
   {
     icon: FileText,
     title: "Documentation Help",
     description:
       "Hassle-free documentation support for property registration, agreements, and legal formalities. We handle the paperwork so you don't have to.",
-    color: "text-amber-500",
-    bgColor: "bg-amber-500/10",
+    color: "text-status-warning",
+    bgColor: "bg-status-warning/10",
   },
 ];
 

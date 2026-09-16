@@ -39,3 +39,12 @@ next-env.d.ts
 # IDE
 .vscode
 .idea
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+.env*
+
+_tmp_*.txt
+.env.vercel.tmp
+.env.local.bak

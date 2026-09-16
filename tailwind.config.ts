@@ -53,6 +53,34 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        brand: {
+          blue: "hsl(var(--brand-blue))",
+          coral: "hsl(var(--brand-coral))",
+          accent: "hsl(var(--brand-accent))",
+          gold: "hsl(var(--brand-gold))",
+        },
+        status: {
+          pending: {
+            DEFAULT: "hsl(var(--status-pending))",
+            bg: "hsl(var(--status-pending-bg))",
+          },
+          success: {
+            DEFAULT: "hsl(var(--status-success))",
+            bg: "hsl(var(--status-success-bg))",
+          },
+          error: {
+            DEFAULT: "hsl(var(--status-error))",
+            bg: "hsl(var(--status-error-bg))",
+          },
+          warning: {
+            DEFAULT: "hsl(var(--status-warning))",
+            bg: "hsl(var(--status-warning-bg))",
+          },
+          info: {
+            DEFAULT: "hsl(var(--status-info))",
+            bg: "hsl(var(--status-info-bg))",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

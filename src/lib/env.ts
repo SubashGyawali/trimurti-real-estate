@@ -1,11 +1,10 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  // Supabase
+  // Supabase — public (exposed to browser)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-
-  // Optional: Supabase Service Role Key (for admin operations)
+  // Supabase — server-only (service_role, never exposed to browser)
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
 
   // Resend (for emails)
@@ -13,6 +12,14 @@ const envSchema = z.object({
 
   // Admin email used for simple admin check (server-only, not exposed to client)
   ADMIN_EMAIL: z.string().email().optional(),
+
+  // Secrets used by Instagram webhooks (server-only)
+  // Legacy worker secret (for POST /api/instagram/comments)
+  INSTAGRAM_WEBHOOK_SECRET: z.string().min(1).optional(),
+  // Vercel webhook verify token (Meta hub.verify_token)
+  META_VERIFY_TOKEN: z.string().min(1).optional(),
+  // Meta app secret for X-Hub-Signature-256 verification
+  META_APP_SECRET: z.string().min(1).optional(),
 
   // Node environment
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),

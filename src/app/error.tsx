@@ -19,8 +19,8 @@ export default function Error({
     return (
         <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-4 text-center p-4">
             <div className="flex flex-col items-center gap-2">
-                <div className="rounded-full bg-red-100 p-3 dark:bg-red-900/20">
-                    <AlertCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
+                <div className="rounded-full bg-status-error/10 p-3">
+                    <AlertCircle className="h-10 w-10 text-status-error" />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight">
                     Something went wrong!

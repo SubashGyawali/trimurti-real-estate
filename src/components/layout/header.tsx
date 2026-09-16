@@ -27,7 +27,6 @@ import { MobileNav } from "./mobile-nav";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/components/auth/auth-provider";
 import { useScrollState } from "@/hooks/use-scroll-state";
-
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/properties", label: "Properties" },

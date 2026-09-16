@@ -1,0 +1,59 @@
+{
+  "name": "trimurti-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Trimurti Instagram AI — Desktop Tray, Autostart & Monitor",
+  "author": "Trimurti Real Estate",
+  "main": "dist-electron/main.js",
+  "build": {
+    "appId": "com.trimurtirealestate.desktop",
+    "productName": "Trimurti Agent",
+    "win": {
+      "target": "nsis",
+      "icon": "resources/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "resources/**/*"
+    ]
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "tsc -p tsconfig.electron.json && electron dist-electron/main.js",
+    "dev:all": "concurrently -k -n VITE,ELECTRON -c blue,green \"vite\" \"wait-on http://localhost:5173 && tsc -p tsconfig.electron.json && electron dist-electron/main.js\"",
+    "build:renderer": "vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build": "npm run build:electron && npm run build:renderer && electron-builder",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.electron.json --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^8.2.2",
+    "electron": "^30.4.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8",
+    "wait-on": "^7.2.0"
+  },
+  "allowScripts": {
+    "electron@30.5.1": true,
+    "esbuild@0.21.5": true
+  }
+}

@@ -26,6 +26,8 @@ vi.mock('next/navigation', () => ({
     forward: vi.fn(),
   }),
   usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({}),
 }))
 
 const mockProperty: PropertyWithImages = {

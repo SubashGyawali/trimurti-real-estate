@@ -704,14 +704,14 @@ export function HomeSettingsClient({ initialImages }: HomeSettingsClientProps) {
       {hasChanges && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl border bg-card p-3 shadow-xl animate-in slide-in-from-bottom-3">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-status-warning animate-pulse" />
             <span className="text-xs font-medium">You have unsaved changes</span>
           </div>
           <Button
             size="sm"
             onClick={handleSave}
             disabled={isSaving}
-            className="gap-1.5 bg-[#1e3a5f] text-white hover:bg-[#1e3a5f]/90 text-xs"
+            className="gap-1.5 bg-brand-blue text-white hover:bg-brand-blue/90 text-xs"
           >
             {isSaving ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

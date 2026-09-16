@@ -7,13 +7,13 @@ const propertyBadgeVariants = cva(
   {
     variants: {
       variant: {
-        sale: "bg-emerald-500/90 text-white",
-        rent: "bg-blue-500/90 text-white",
-        featured: "bg-[hsl(var(--brand-gold))] text-white",
-        type: "bg-white/90 text-gray-800 border border-gray-200",
-        furnished: "bg-purple-100 text-purple-800",
-        semiFurnished: "bg-orange-100 text-orange-800",
-        unfurnished: "bg-gray-100 text-gray-800",
+        sale: "bg-status-success/90 text-white",
+        rent: "bg-status-info/90 text-white",
+        featured: "bg-brand-gold text-white",
+        type: "bg-background text-foreground border border-border",
+        furnished: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+        semiFurnished: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+        unfurnished: "bg-muted text-muted-foreground",
       },
     },
     defaultVariants: {

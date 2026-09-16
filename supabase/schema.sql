@@ -801,6 +801,136 @@ INSERT INTO buildings (name, type, address, total_floors, year_built, location_l
 ('Dotam Complex', 'private', 'Dotam Building, Kandivali West', 10, 2012, 19.2060, 72.8320);
 */
 
+-- -----------------------------------------------------
+-- Table: instagram_agent_comments
+-- Instagram comments processed by the AI agent
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS instagram_agent_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  comment_id TEXT UNIQUE NOT NULL,
+  comment_text TEXT NOT NULL,
+  username TEXT,
+  media_id TEXT,
+  media_url TEXT,
+  media_title TEXT,
+  category TEXT CHECK (category IN ('simple', 'contact', 'ignore')),
+  reply TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'queued', 'awaiting_approval', 'approved', 'sent', 'failed', 'ignored')),
+  error_message TEXT,
+  proposed_reply TEXT,
+  confidence REAL,
+  decision_reason TEXT,
+  scheduled_for TIMESTAMPTZ,
+  reply_source TEXT,
+  admin_action TEXT,
+  admin_reviewed_at TIMESTAMPTZ,
+  admin_reviewed_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  hidden_at TIMESTAMPTZ,
+  hidden_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  property_id UUID REFERENCES properties(id) ON DELETE SET NULL,
+  property_title TEXT,
+  property_price INTEGER,
+  property_price_text TEXT,
+  property_listing_type TEXT CHECK (property_listing_type IN ('sale', 'rent')),
+  response_language TEXT,
+  response_style TEXT,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL
+);
+
+COMMENT ON TABLE instagram_agent_comments IS 'Instagram comments processed by the AI agent';
+COMMENT ON COLUMN instagram_agent_comments.media_url IS 'Instagram post permalink (e.g. https://www.instagram.com/p/<shortcode>/)';
+COMMENT ON COLUMN instagram_agent_comments.category IS 'Classification: simple=AI reply, contact=fixed contact reply, ignore=spam/skip';
+COMMENT ON COLUMN instagram_agent_comments.status IS 'pending, queued, awaiting_approval, approved, sent, failed, or ignored';
+COMMENT ON COLUMN instagram_agent_comments.proposed_reply IS 'AI-generated draft reply awaiting admin approval';
+COMMENT ON COLUMN instagram_agent_comments.confidence IS 'AI confidence score (0-1) for reply decision';
+COMMENT ON COLUMN instagram_agent_comments.scheduled_for IS 'Scheduled time for posting (for human-like delays)';
+COMMENT ON COLUMN instagram_agent_comments.reply_source IS 'Source of reply: ai, contact, admin';
+COMMENT ON COLUMN instagram_agent_comments.admin_action IS 'Admin action taken: approved, rejected, edited';
+
+CREATE INDEX IF NOT EXISTS idx_instagram_agent_comments_created
+  ON instagram_agent_comments (created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_instagram_agent_comments_scheduled
+  ON instagram_agent_comments (status, scheduled_for)
+  WHERE status IN ('queued', 'pending');
+
+CREATE INDEX IF NOT EXISTS idx_instagram_agent_comments_approved
+  ON instagram_agent_comments (admin_reviewed_at)
+  WHERE status = 'approved';
+
+ALTER TABLE instagram_agent_comments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view instagram agent comments"
+  ON instagram_agent_comments FOR SELECT
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE)
+  );
+
+CREATE POLICY "Admins can update instagram agent comments"
+  ON instagram_agent_comments FOR UPDATE
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE)
+  );
+
+CREATE TRIGGER set_instagram_agent_comments_updated_at
+  BEFORE UPDATE ON instagram_agent_comments
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+
+-- -----------------------------------------------------
+-- Table: instagram_agent_teachings
+-- Admin teachings/rules for the Instagram AI agent
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS instagram_agent_teachings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  rule TEXT NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT timezone('utc', now()) NOT NULL
+);
+
+COMMENT ON TABLE instagram_agent_teachings IS 'Admin teachings/rules for the Instagram AI agent';
+COMMENT ON COLUMN instagram_agent_teachings.rule IS 'Natural language rule for the agent to follow';
+
+CREATE INDEX IF NOT EXISTS idx_instagram_agent_teachings_active
+  ON instagram_agent_teachings (created_at DESC)
+  WHERE is_active = TRUE;
+
+ALTER TABLE instagram_agent_teachings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view teachings"
+  ON instagram_agent_teachings FOR SELECT
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE)
+  );
+
+CREATE POLICY "Admins can insert teachings"
+  ON instagram_agent_teachings FOR INSERT
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE)
+  );
+
+CREATE POLICY "Admins can update teachings"
+  ON instagram_agent_teachings FOR UPDATE
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE)
+  );
+
+CREATE POLICY "Admins can delete teachings"
+  ON instagram_agent_teachings FOR DELETE
+  USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = TRUE)
+  );
+
+CREATE TRIGGER set_instagram_agent_teachings_updated_at
+  BEFORE UPDATE ON instagram_agent_teachings
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_updated_at();
+
+
 -- =====================================================
 -- SECTION 8: STORAGE POLICIES
 -- =====================================================

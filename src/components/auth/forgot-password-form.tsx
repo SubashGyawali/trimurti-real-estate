@@ -58,8 +58,8 @@ export function ForgotPasswordForm() {
     return (
       <Card className="border-0 shadow-xl">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <Mail className="h-8 w-8 text-green-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-status-success/10">
+            <Mail className="h-8 w-8 text-status-success" />
           </div>
           <CardTitle className="font-plus-jakarta text-2xl font-bold">
             Check Your Email

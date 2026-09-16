@@ -73,10 +73,10 @@ interface VisitsTableProps {
 }
 
 const STATUS_COLORS: Record<VisitStatus, string> = {
-    pending: 'bg-amber-500',
-    confirmed: 'bg-blue-500',
-    completed: 'bg-green-500',
-    cancelled: 'bg-gray-500',
+    pending: 'bg-status-warning',
+    confirmed: 'bg-status-info',
+    completed: 'bg-status-success',
+    cancelled: 'bg-muted-foreground',
 };
 
 const STATUS_LABELS: Record<VisitStatus, string> = {

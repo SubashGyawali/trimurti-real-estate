@@ -72,9 +72,9 @@ interface InquiriesTableProps {
 }
 
 const STATUS_COLORS: Record<InquiryStatus, string> = {
-    new: 'bg-blue-500 hover:bg-blue-600',
-    contacted: 'bg-amber-500 hover:bg-amber-600',
-    closed: 'bg-gray-500 hover:bg-gray-600',
+    new: 'bg-status-info hover:bg-status-info/90',
+    contacted: 'bg-status-warning hover:bg-status-warning/90',
+    closed: 'bg-muted-foreground hover:bg-muted-foreground/90',
 };
 
 const STATUS_LABELS: Record<InquiryStatus, string> = {

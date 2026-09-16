@@ -258,9 +258,9 @@ export function RequirementsForm({ buildings }: RequirementsFormProps) {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", duration: 0.5 }}
-          className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100"
+          className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-status-success/10"
         >
-          <Check className="h-10 w-10 text-green-600" />
+          <Check className="h-10 w-10 text-status-success" />
         </motion.div>
 
         <motion.div
@@ -279,7 +279,7 @@ export function RequirementsForm({ buildings }: RequirementsFormProps) {
           <div className="mt-8 space-y-4">
             <Button
               size="lg"
-              className="w-full bg-[#25D366] hover:bg-[#128C7E]"
+              className="w-full bg-brand-coral hover:bg-brand-coral/90"
               onClick={handleWhatsAppClick}
             >
               <MessageCircle className="mr-2 h-5 w-5" />
