@@ -297,7 +297,15 @@ async function warmOllamaModel() {
 async function startFastApi() {
   const s = store.get();
   if (procs.fastapi) {
-    pushLog("fastapi", "info", "already running");
+    pushLog("fastapi", "info", "already running (Electron-owned)");
+    return;
+  }
+  const port = s.fastApiPort;
+  // If something already answers on the port (e.g. a manual `python -m uvicorn` you started in a terminal),
+  // reuse it — don't spawn a second one that will crash with EADDRINUSE 10048.
+  const pre = await httpGet(`http://127.0.0.1:${port}/`, 1500);
+  if (pre.ok) {
+    pushLog("fastapi", "info", `port :${port} already in use — reusing existing FastAPI (close the external 'python -m uvicorn' if you want Electron to own it)`);
     return;
   }
   const agentPath = s.agentPath;
@@ -311,9 +319,7 @@ async function startFastApi() {
   }
   // prefer configured pythonPath, else try python, py, python3
   const pyCandidates = [s.pythonPath, "python", "py", "python3"].filter(Boolean) as string[];
-  // On Windows, also try explicit Python installs if default fails — we just attempt in order via shell
   shouldRestart.fastapi = true;
-  const port = s.fastApiPort;
   // Use first candidate; spawn will fallback via shouldRestart log if fails
   const py = pyCandidates[0] || "python";
   spawnLogged("fastapi", py, ["-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", String(port)], { cwd: agentPath });

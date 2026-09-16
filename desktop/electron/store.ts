@@ -25,7 +25,7 @@ export type StoreShape = {
 const DEFAULTS: StoreShape = {
   agentPath: "D:\\Projects\\instagram-ai-agent",
   websitePath: "E:\\Trimurti\\website",
-  pythonPath: "python",
+  pythonPath: "py",
   ollamaUrl: "http://127.0.0.1:11434",
   ollamaModel: "gemma4:e2b",
   fastApiPort: 8001,
@@ -98,6 +98,11 @@ export class Store {
       if (seeded.supabaseUrl) { this.data.supabaseUrl = seeded.supabaseUrl; dirty = true; }
       if (seeded.supabaseAnonKey) { this.data.supabaseAnonKey = seeded.supabaseAnonKey; dirty = true; }
       if (seeded.supabaseServiceRoleKey) { this.data.supabaseServiceRoleKey = seeded.supabaseServiceRoleKey; dirty = true; }
+    }
+    // Migrate old default "python" -> "py" on Windows (C:\Python314 where deps live)
+    if (this.data.pythonPath === "python") {
+      this.data.pythonPath = "py";
+      dirty = true;
     }
     if (dirty) this.save();
   }
