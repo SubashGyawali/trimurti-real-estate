@@ -175,14 +175,15 @@ async function probeHealth(): Promise<HealthSnapshot> {
       : { ok: false, latencyMs: (websiteRes as { ms: number }).ms, error: `HTTP ${(websiteRes as { status?: number }).status ?? "timeout"}` }
     : { ok: true };
 
-  // Supabase: try anon key count if configured
+  // Supabase: desktop is trusted — use service_role if present (anon is RLS-blocked → 0 rows)
+  const supaKey = s.supabaseServiceRoleKey || s.supabaseAnonKey;
   let supabase: HealthSnapshot["supabase"] = { ok: true };
-  if (s.supabaseUrl && s.supabaseAnonKey) {
+  if (s.supabaseUrl && supaKey) {
     const supaUrl = `${s.supabaseUrl.replace(/\/$/, "")}/rest/v1/instagram_agent_comments?select=id&limit=1`;
     const started = Date.now();
     try {
       const r = await fetch(supaUrl, {
-        headers: { apikey: s.supabaseAnonKey, Authorization: `Bearer ${s.supabaseAnonKey}` },
+        headers: { apikey: supaKey, Authorization: `Bearer ${supaKey}` },
         signal: AbortSignal.timeout(4000),
       } as RequestInit);
       supabase = r.ok ? { ok: true, latencyMs: Date.now() - started } : { ok: false, latencyMs: Date.now() - started, error: `HTTP ${r.status}` };
