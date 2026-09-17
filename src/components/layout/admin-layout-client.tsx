@@ -32,18 +32,21 @@ export function AdminLayoutClient({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
+  const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
 
   // Auth is enforced server-side in src/app/admin/layout.tsx (getUser + is_admin check + redirect).
   // Keeping this component client-only for sidebar/topbar interactivity avoids the
   // previous full-screen ProtectedRoute "Loading..." flash on every hard refresh.
   return (
-    <div className="admin flex min-h-screen bg-muted/30">
+    <div className="admin flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen">
-        <AdminSidebar />
+        <AdminSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       </div>
 
       {/* Mobile Sidebar Overlay */}
@@ -75,11 +78,24 @@ export function AdminLayoutClient({
             <Menu className="h-5 w-5" />
           </button>
 
+          {/* Desktop sidebar toggle */}
+          <button
+            onClick={toggleSidebar}
+            className="hidden lg:flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {sidebarCollapsed ? (
+              <span className="text-lg font-bold">→</span>
+            ) : (
+              <span className="text-lg font-bold">←</span>
+            )}
+          </button>
+
           {/* Mobile brand */}
           <div className="flex items-center gap-2 lg:hidden">
-            <Sparkles className="h-4 w-4 text-[#d4a853]" />
+            <Sparkles className="h-4 w-4 text-primary" />
             <span className="text-sm font-bold">
-              Trimurti <span className="text-[#d4a853]">RE</span>
+              Trimurti <span className="text-primary">RE</span>
             </span>
           </div>
 

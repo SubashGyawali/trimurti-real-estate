@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -12,6 +13,8 @@ import {
   Sparkles,
   SlidersHorizontal,
   Instagram,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,9 +31,11 @@ const nav = [
 interface AdminSidebarProps {
   className?: string;
   onNavigate?: () => void;
+  collapsed?: boolean;
+  onToggle?: () => void;
 }
 
-export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
+export function AdminSidebar({ className, onNavigate, collapsed = false, onToggle }: AdminSidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
@@ -39,28 +44,41 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
   return (
     <aside
       className={cn(
-        "flex w-[240px] flex-col bg-brand-blue text-white",
+        "flex flex-col transition-all duration-200 ease-in-out bg-card border-r border-border",
+        collapsed ? "w-16" : "w-64",
         className
       )}
+      aria-label="Admin navigation"
     >
       {/* Brand */}
-      <div className="flex items-center gap-2.5 border-b border-white/10 px-5 py-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gold/20">
-          <Sparkles className="h-4 w-4 text-brand-gold" />
+      <div className="flex items-center gap-2.5 border-b border-border px-4 py-4">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
+          <Sparkles className="h-4 w-4 text-primary" />
         </div>
-        <div className="leading-none">
-          <span className="text-sm font-bold tracking-tight">Trimurti</span>
-          <span className="ml-1 text-sm font-bold tracking-tight text-brand-gold">
-            RE
-          </span>
-          <p className="mt-0.5 text-[10px] font-medium uppercase tracking-widest text-white/40">
-            Admin Panel
-          </p>
-        </div>
+        {!collapsed && (
+          <div className="leading-none min-w-0 flex-1 overflow-hidden">
+            <span className="text-sm font-bold tracking-tight text-foreground truncate block">Trimurti</span>
+            <span className="ml-1 text-sm font-bold tracking-tight text-primary truncate block">RE</span>
+            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+              Admin Panel
+            </p>
+          </div>
+        )}
+        <button
+          onClick={onToggle}
+          className={cn(
+            "ml-auto flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
+            collapsed && "rotate-180"
+          )}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
+      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
         <ul className="space-y-1">
           {nav.map((item) => {
             const active = isActive(item.href);
@@ -70,23 +88,24 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
                   href={item.href}
                   onClick={onNavigate}
                   className={cn(
-                    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150",
+                    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
                     active
-                      ? "bg-white/15 text-white shadow-sm"
-                      : "text-white/60 hover:bg-white/8 hover:text-white/90"
+                      ? "bg-primary/10 text-primary shadow-sm"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
+                  title={collapsed ? item.label : undefined}
                 >
                   <item.icon
                     className={cn(
-                      "h-[18px] w-[18px] shrink-0 transition-colors",
+                      "h-[18px] w-[18px] shrink-0 transition-colors flex-shrink-0",
                       active
-                        ? "text-brand-gold"
-                        : "text-white/40 group-hover:text-white/70"
+                        ? "text-primary"
+                        : "text-muted-foreground group-hover:text-foreground"
                     )}
                   />
-                  <span>{item.label}</span>
-                  {active && (
-                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-brand-gold" />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                  {active && !collapsed && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
                   )}
                 </Link>
               </li>
@@ -96,14 +115,20 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-white/10 px-3 py-4">
+      <div className="border-t border-border px-3 py-4">
         <Link
           href="/"
           onClick={onNavigate}
-          className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium text-white/50 transition-colors hover:bg-white/8 hover:text-white/80"
+          className={cn(
+            "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+            collapsed
+              ? "justify-center"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          )}
+          title={collapsed ? "Back to site" : undefined}
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to site
+          <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+          {!collapsed && <span>Back to site</span>}
         </Link>
       </div>
     </aside>
