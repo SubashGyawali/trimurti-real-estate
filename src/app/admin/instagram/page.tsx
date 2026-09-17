@@ -49,7 +49,7 @@ export default async function AdminInstagramPage() {
 
     return (
         <InstagramDashboard
-            comments={allComments}
+            initialComments={allComments}
             teachings={allTeachings}
         />
     );

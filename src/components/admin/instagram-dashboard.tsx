@@ -7,18 +7,22 @@ import { InstagramCommentsTable } from './instagram-comments-table';
 import { TeachPanel } from './instagram-teach-panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-
+import { useRealtimeComments } from '@/hooks/useRealtimeComments';
 import type { InstagramCommentCategory, InstagramCommentStatus, InstagramAgentComment, InstagramAgentTeaching } from '@/types/database';
 
 interface InstagramDashboardProps {
-    comments: InstagramAgentComment[];
+    initialComments: InstagramAgentComment[];
     teachings: InstagramAgentTeaching[];
 }
 
-export function InstagramDashboard({ comments, teachings }: InstagramDashboardProps) {
+export function InstagramDashboard({ initialComments, teachings }: InstagramDashboardProps) {
+    const { comments: realtimeComments, connected, setComments } = useRealtimeComments();
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState<'all' | InstagramCommentCategory>('all');
     const [activeTab, setActiveTab] = useState<'all' | 'needs-review' | 'queue' | 'history' | 'rules'>('all');
+
+    // Initialize realtime comments with initial server data
+    const comments = realtimeComments.length > 0 ? realtimeComments : initialComments;
 
     // Compute stats
     const stats = useMemo(() => {
@@ -75,6 +79,9 @@ export function InstagramDashboard({ comments, teachings }: InstagramDashboardPr
                         <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                             <Bot className="h-4 w-4 text-primary" />
                             Instagram AI Agent
+                            <span className={cn('px-2 py-0.5 rounded text-xs', connected ? 'bg-green-500/20 text-green-500' : 'bg-gray-500/20 text-gray-500')}>
+                                {connected ? '● Live' : '○ Offline'}
+                            </span>
                         </div>
                         <h1 className="mt-1 text-2xl font-semibold tracking-tight">
                             {needsReviewCount > 0

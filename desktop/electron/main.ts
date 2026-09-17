@@ -5,6 +5,7 @@ import { spawn, ChildProcess } from "child_process";
 import * as http from "http";
 import * as https from "https";
 import { Store, StoreShape } from "./store";
+import { autoUpdater } from "electron-updater";
 
 // Single instance
 if (!app.requestSingleInstanceLock()) app.quit();
@@ -29,6 +30,11 @@ const logs: LogEntry[] = [];
 const MAX_LOGS = 600;
 let healthTimer: NodeJS.Timeout | null = null;
 let lastHealth: HealthSnapshot | null = null;
+
+// Auto-updater config
+autoUpdater.logger = { info: (msg: string) => pushLog("updater", "info", msg), warn: (msg: string) => pushLog("updater", "warn", msg), error: (msg: string) => pushLog("updater", "error", msg) };
+autoUpdater.autoDownload = false; // We'll prompt before downloading
+autoUpdater.autoInstallOnAppQuit = true;
 
 function pushLog(source: string, level: LogEntry["level"], msg: string) {
   const entry: LogEntry = { ts: new Date().toISOString(), source, level, msg: msg.slice(0, 4000) };
@@ -443,6 +449,37 @@ function setupIpc() {
     shell.showItemInFolder(p);
     return p;
   });
+  ipcMain.handle("check-for-updates", async () => {
+    try {
+      const result = await autoUpdater.checkForUpdates();
+      return { updateAvailable: !!result?.updateInfo };
+    } catch (e) {
+      pushLog("updater", "error", `Check failed: ${(e as Error).message}`);
+      return { updateAvailable: false, error: (e as Error).message };
+    }
+  });
+  ipcMain.handle("download-update", async () => {
+    try {
+      await autoUpdater.downloadUpdate();
+      return { success: true };
+    } catch (e) {
+      pushLog("updater", "error", `Download failed: ${(e as Error).message}`);
+      return { success: false, error: (e as Error).message };
+    }
+  });
+  ipcMain.handle("install-update", async () => {
+    autoUpdater.quitAndInstall();
+    return { success: true };
+  });
+
+  // Auto-check on startup + every 6 hours
+  autoUpdater.checkForUpdates().catch((e) => pushLog("updater", "warn", `Startup check failed: ${e.message}`));
+  setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), 6 * 60 * 60 * 1000);
+
+  // Forward updater events to renderer
+  autoUpdater.on("update-available", (info) => mainWindow?.webContents.send("update-available", info));
+  autoUpdater.on("update-downloaded", (info) => mainWindow?.webContents.send("update-downloaded", info));
+  autoUpdater.on("error", (e) => pushLog("updater", "error", e.message));
 }
 
 app.whenReady().then(async () => {
