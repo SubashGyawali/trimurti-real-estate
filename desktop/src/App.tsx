@@ -382,7 +382,7 @@ export default function App() {
                   <div className="banner-title">{needsYou} comment{needsYou === 1 ? "" : "s"} need your review</div>
                   <div className="banner-desc">AI drafted replies but wants your OK before posting. One click to approve or edit.</div>
                 </div>
-                <button className="btn primary" onClick={() => window.trimurti!.openExternal("http://127.0.0.1:3000/admin/instagram")}>Review Now →</button>
+                <button className="btn primary" onClick={() => window.trimurti!.openExternal("https://trimurtirealestate.com/admin/instagram")}>Review Now →</button>
               </div>
             ) : sys.cls === "warn" ? (
               <div className="banner warn">
@@ -455,7 +455,7 @@ export default function App() {
                 <div className="activity-list">{recent.slice(0, 6).map((r) => renderRow(r))}</div>
               )}
               <div className="card-footer">
-                <button className="btn primary" onClick={() => window.trimurti!.openExternal("http://127.0.0.1:3000/admin/instagram")}>Review Comments</button>
+                <button className="btn primary" onClick={() => window.trimurti!.openExternal("https://trimurtirealestate.com/admin/instagram")}>Review Comments</button>
                 <span className="hint">Approve or edit in the web admin — the AI learns from your changes.</span>
               </div>
             </div>
@@ -497,7 +497,7 @@ export default function App() {
 
               <div className="card-footer">
                 <button className="btn small" onClick={() => settings && void fetchQueue(settings)} disabled={queueLoading || !hasSupabase}>{queueLoading ? "Loading…" : "↻ Refresh"}</button>
-                <button className="btn small ghost" onClick={() => window.trimurti!.openExternal("http://127.0.0.1:3000/admin/instagram")}>Open Web Admin</button>
+                <button className="btn small ghost" onClick={() => window.trimurti!.openExternal("https://trimurtirealestate.com/admin/instagram")}>Open Web Admin</button>
               </div>
             </div>
           </>
