@@ -1,13 +1,25 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { env } from '@/lib/env';
 import { InstagramDashboard } from '@/components/admin/instagram-dashboard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import type { InstagramAgentComment, InstagramAgentTeaching } from '@/types/database';
 
-export default async function AdminInstagramPage() {
-    const supabase = await createClient();
+function getSupabaseAdmin() {
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not configured');
+  }
+  return createSupabaseClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { persistSession: false } }
+  );
+}
 
-    // Fetch all Instagram agent comments
+export default async function AdminInstagramPage() {
+    const supabase = getSupabaseAdmin();
+
+    // Fetch all Instagram agent comments (service_role bypasses RLS)
     const { data: comments, error } = await supabase
         .from('instagram_agent_comments')
         .select('*')
