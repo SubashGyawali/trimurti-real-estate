@@ -14,7 +14,31 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      const redirectUrl = new URL(safePath, requestUrl.origin);
+      // Check if user is admin and redirect to admin dashboard
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      let finalPath = safePath;
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single() as { data: { is_admin: boolean | null } | null };
+
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const isProfileAdmin = !!profile?.is_admin;
+        const isEnvAdmin = !!(
+          adminEmail && user.email?.toLowerCase() === adminEmail.toLowerCase()
+        );
+
+        if (isProfileAdmin || isEnvAdmin) {
+          finalPath = "/admin";
+        }
+      }
+
+      const redirectUrl = new URL(finalPath, requestUrl.origin);
       return NextResponse.redirect(redirectUrl);
     }
   }

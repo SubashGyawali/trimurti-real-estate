@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 import { signIn, signInWithGoogle } from "@/lib/supabase/auth";
+import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
   const router = useRouter();
@@ -57,26 +58,49 @@ export function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
-    try {
-      const result = await signIn(data.email, data.password);
+      setIsSubmitting(true);
+      try {
+        const result = await signIn(data.email, data.password);
 
-      if (!result.success) {
-        throw new Error(result.error);
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+
+        toast.success("Welcome back!");
+
+        // Determine redirect: use explicit redirect param, or check if admin -> /admin, else home
+        let redirectTo = searchParams.get("redirect");
+        if (!redirectTo) {
+                  // Check if user is admin
+                  const supabase = createClient();
+                  const {
+                    data: { user },
+                  } = await supabase.auth.getUser();
+                  if (user) {
+                    const { data: profile } = await supabase
+                      .from("profiles")
+                      .select("is_admin")
+                      .eq("id", user.id)
+                      .single() as { data: { is_admin: boolean | null } | null };
+                    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+                    const isProfileAdmin = !!profile?.is_admin;
+                    const isEnvAdmin = !!(
+                      adminEmail && user.email?.toLowerCase() === adminEmail.toLowerCase()
+                    );
+                    if (isProfileAdmin || isEnvAdmin) {
+                      redirectTo = "/admin";
+                    }
+                  }
+                }
+        redirectTo = redirectTo || "/";
+        router.push(redirectTo);
+        router.refresh();
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to sign in");
+      } finally {
+        setIsSubmitting(false);
       }
-
-      toast.success("Welcome back!");
-
-      // Redirect to previous page or home
-      const redirectTo = searchParams.get("redirect") || "/";
-      router.push(redirectTo);
-      router.refresh();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to sign in");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    };
 
   return (
     <Card className="border-0 shadow-xl">

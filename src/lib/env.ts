@@ -12,6 +12,8 @@ const envSchema = z.object({
 
   // Admin email used for simple admin check (server-only, not exposed to client)
   ADMIN_EMAIL: z.string().email().optional(),
+  // Public admin email for client-side redirect logic (exposed to browser)
+  NEXT_PUBLIC_ADMIN_EMAIL: z.string().email().optional(),
 
   // Secrets used by Instagram webhooks (server-only)
   // Legacy worker secret (for POST /api/instagram/comments)
