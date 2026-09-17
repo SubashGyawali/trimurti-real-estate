@@ -11,6 +11,9 @@ import type { Database } from "@/types/database";
 // Local python worker (FastAPI /webhook) stays for local debug only.
 // Desktop polls Supabase; it no longer needs a cloudflared tunnel for prod.
 
+// Agent's own Instagram username — must match INSTAGRAM_USERNAME in D:\Projects\instagram-ai-agent\.env
+const AGENT_USERNAME = "trimurti.real.estate";
+
 function getSupabaseAdmin() {
   if (!env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured");
@@ -104,6 +107,12 @@ export async function POST(request: Request) {
         (value.media_id as string | undefined) ??
         ((value.media as Record<string, unknown> | undefined)?.id as string | undefined) ??
         null;
+
+      // Skip our own comments — prevent the agent from replying to itself
+      if (username && username.toLowerCase() === AGENT_USERNAME.toLowerCase()) {
+        console.log(`[instagram/webhook] Skipping own comment ${comment_id} from @${username}`);
+        continue;
+      }
 
       rows.push({
         comment_id: String(comment_id),
